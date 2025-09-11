@@ -15,7 +15,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          We are developing Savings and Loan Application
         </a>
       </header>
     </div>
