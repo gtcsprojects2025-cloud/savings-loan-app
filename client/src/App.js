@@ -1,23 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
+import Register from './Auth/register';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          lets get to work .....
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          We are developing Savings and Loan Application
-        </a>
-      </header>
+    <div className="App"> 
+  
+       <Register /> 
     </div>
   );
 }
