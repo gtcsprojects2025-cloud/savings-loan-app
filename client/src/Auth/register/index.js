@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import './register.css';
-import gtcslogo from './assets/gtcslogo.png';
-import check from './assets/check.png';
+import gtcslogo from '../../assets/gtcslogo.png';
+import check from '../../assets/check.png';
 
 function Register() {
   const [formData, setFormData] = useState({
