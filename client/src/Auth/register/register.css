@@ -251,4 +251,8 @@ select option:hover{
   .full-width {
     grid-column: span 2;
   }
+  /* .app-container{
+    margin:50px;
+    margin-top: 30px;
+  } */
 }
