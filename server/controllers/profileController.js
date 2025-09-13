@@ -33,13 +33,17 @@ export async function memberLogin(req, res){
     try {
        
        const user = await Register.findOne({email: req.body.email?.trim()});
+            if(!user){
+                res.status(403).json({ message: 'User NOT found!' });
+            }else{
+                if (user.password === req.body.password) {
+                console.log("Login successful:");
+                res.status(200).json({ message: 'Login was successful!' });
+                } else {
+                res.status(403).json({ message: 'Wrong login credentials!' });
+                }
+            }
 
-        if (user.password === req.body.password) {
-        console.log("Login successful:");
-        res.status(200).json({ message: 'Login was successful!' });
-        } else {
-        res.status(403).json({ message: 'User NOT found!' });
-        }
 
     } catch (error) {
         res.status(503).json({ message: 'Server Error. Contact Admin' });
