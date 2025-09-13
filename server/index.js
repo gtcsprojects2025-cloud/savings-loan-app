@@ -9,9 +9,9 @@ const { default: Login } = require("./models/login.js");
 PORT = process.env.PORT || 5001
 const app = express()
 const corsOptions = {
-  origin: `http://localhost:${process.env.PORT}`, // Allow only this origin
+  origin: `http://localhost:3000`, // Allow only this origin
   methods: ['GET', 'POST', 'PUT'],        // Allowed HTTP methods
-  credentials: false                // Allow cookies/auth headers
+  allowedHeaders: ['Content-Type']               // Allow cookies/auth headers
 };
 
 app.use(cors(corsOptions));
