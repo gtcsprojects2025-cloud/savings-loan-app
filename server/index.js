@@ -1,8 +1,9 @@
 const express = require("express")
 const { connectDB } = require("./db");
-const { registerMember } = require("./controllers/profileController.js");
+const { registerMember, memberLogin } = require("./controllers/profileController.js");
 require('dotenv').config();
 const cors = require('cors');
+const { default: Login } = require("./models/login.js");
 
 
 PORT = process.env.PORT || 5001
@@ -24,7 +25,9 @@ app.get("/api/register", (req, res)=>{
 // middleware
 app.use(express.urlencoded({ extended: true })); // 👈 Parses URL-encoded bodies
 app.use(express.json())
+
 app.post("/api/register", registerMember)
+app.post("/api/login", memberLogin)
 
 connectDB().then(()=>{
     app.listen(PORT, console.log(`Server is running on port ${PORT}`))
