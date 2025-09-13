@@ -17,7 +17,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.get("/", (req, res)=>{
-    res.send("root endpoint")
+    res.send("root end-point")
 })
 app.get("/api/register", (req, res)=>{
    res.status(201).send({ message: 'User created'});
@@ -30,5 +30,6 @@ app.post("/api/register", registerMember)
 app.post("/api/login", memberLogin)
 
 connectDB().then(()=>{
-    app.listen(PORT, console.log(`Server is running on port ${PORT}`))
+    app.listen(PORT, console.log(`Server is running on port ${PORT}`));
+    //module.exports = app; // ✅ Export instead of listen
 })
