@@ -17,7 +17,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.get("/", (req, res)=>{
-    res.send("root end-point")
+    res.send("root end-point changed")
 })
 app.get("/api/register", (req, res)=>{
    res.status(201).send({ message: 'User created'});
