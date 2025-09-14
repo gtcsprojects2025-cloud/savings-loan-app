@@ -1,7 +1,10 @@
 
 import Login from "../models/login.js";
 import Register from "../models/register.js";
-//const Login = require("../models/login.js")
+import otpGenerator from "otp-generator";
+import nodemailer from "nodemailer"
+import OTP from "../models/otp.js";
+
 
 export async function registerMember(req, res) {
     const newMember ={title:req.body.title, firstName:req.body.firstName,
@@ -50,4 +53,93 @@ export async function memberLogin(req, res){
         console.log("Server issues: ", error)
     }
 
+}
+
+export async function generateOTP(req, res){
+    try {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ error: 'Email is required' });
+
+  const otp = otpGenerator.generate(6, {
+    upperCaseAlphabets: false,
+    specialChars: false,
+  });
+console.log("otp :", otp)
+  // Send OTP via email (or SMS)
+  const transporter = nodemailer.createTransport({
+    secure:false,
+    host: 'smtp.gmail.com',
+    port:587,
+    requireTLS:true,
+    logger: true,
+    debug:true,
+    auth: {
+      user: 'rolandmario2@gmail.com',
+      pass: 'nnlykezsxuhyibbp',
+    },
+
+
+  });
+    const mailOptions = {
+    from: "rolandmario2@gmail.com",
+    to: email,
+    subject: 'Your OTP Code',
+    text: `Your OTP is: ${otp}`,
+  };
+
+/* function sendMail(to, sub, msg){
+   transporter.sendMail({
+      to: to,
+      subject: sub,
+      html:msg
+    })
+  }*/
+
+   const otpRec = {email:req.body.email, otp}
+   const newOTP = new OTP(otpRec)
+  
+    await transporter.sendMail(mailOptions);
+    await newOTP.save();//sendMail(email, "Your OTP Code", otp)
+    res.status(200).json({ message: 'OTP sent successfully', otp }); // Don't send OTP in production!
+    
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
+}
+
+export async function verifyOTP(req, res) {
+    try {
+               const user = await OTP.findOne({email: req.body.email?.trim()});
+            if(!user){
+                res.status(403).json({ message: 'User has NOT requested OTP!' });
+            }else{
+                if (user.otp === req.body.otp) {
+                console.log("OTP Verification successful:");
+                res.status(200).json({ message: 'OTP verification  was successful!' });
+                } else {
+                res.status(403).json({ message: 'Wrong OTP!' });
+                }
+            }
+    } catch (error) {
+        res.status(503).json({ message: 'Server Error. Contact Admin' });
+        console.log("Server issues: ", error)
+    }
+}
+
+
+// update your forgotten password
+
+export async function updatePassword(req, res) {
+    try {
+   
+    const updatedUser = await Register.updateOne(
+     { email: req.body.email },           // Filter
+     { $set: { password: req.body.password } } );
+
+    if (!updatedUser) return res.status(404).send('User not found');
+    res.status(200).json({ message: 'password updated successfully!' });
+    } catch (error) {
+        res.status(500).json({message: 'Error updating user'});
+    }
 }

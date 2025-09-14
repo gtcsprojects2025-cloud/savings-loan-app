@@ -1,18 +1,40 @@
 const express = require("express")
 const { connectDB } = require("./db");
-const { registerMember, memberLogin } = require("./controllers/profileController.js");
+const { registerMember, memberLogin, generateOTP, verifyOTP, updatePassword } = require("./controllers/profileController.js");
+
 require('dotenv').config();
 const cors = require('cors');
-const { default: Login } = require("./models/login.js");
+
 
 
 PORT = process.env.PORT || 5001
 const app = express()
-const corsOptions = {
-  origin: `http://localhost:3000`, // Allow only this origin
+/*const corsOptions = {
+  origin: [`http://localhost:3000`, "https://savings-loan-app-n3mm.vercel.app/"], // Allow only this origin
   methods: ['GET', 'POST', 'PUT'],        // Allowed HTTP methods
   allowedHeaders: ['Content-Type']               // Allow cookies/auth headers
+};*/
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://savings-loan-app-n3mm.vercel.app'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT'],
+  allowedHeaders: ['Content-Type'],
+  credentials: false // If you're using cookies or auth headers
 };
+
 
 app.use(cors(corsOptions));
 
@@ -28,6 +50,9 @@ app.use(express.json())
 
 app.post("/api/register", registerMember)
 app.post("/api/login", memberLogin)
+app.post('/api/generate-otp', generateOTP);
+app.post("/api/verify-otp", verifyOTP);
+app.put("/api/update-password", updatePassword)
 
 connectDB().then(()=>{
     app.listen(PORT, console.log(`Server is running on port ${PORT}`));
