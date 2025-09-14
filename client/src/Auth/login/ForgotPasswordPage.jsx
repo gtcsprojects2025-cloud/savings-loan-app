@@ -10,56 +10,104 @@ const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otpConfirmed, setOtpConfirmed] = useState(false);
+  const [canResend, setCanResend] = useState(true);
+  const [countdown, setCountdown] = useState(0);
   const navigate = useNavigate();
 
-  // STEP 1: Submit Email
+  const startCountdown = () => {
+    setCanResend(false);
+    setCountdown(60);
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  // STEP 1 & RESEND: Generate OTP
   const handleEmailSubmit = async (data) => {
+    const userEmail = (data.email || email).trim();
     setLoading(true);
-    setEmail(data.email);
+    setEmail(userEmail);
 
-    await new Promise((r) => setTimeout(r, 1500)); // Simulated delay
+    try {
+      const response = await fetch('https://savings-loan-app.vercel.app/api/generate-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail }),
+      });
 
-    //email check
-    if (data.email === 'juliusedicha@gmail.com') {
-      toast.success(`OTP sent to ${data.email}`);
-      setOtpSent(true);
-      setStep(2);
-    } else {
-      toast.error('Email does not exist or is not valid');
+      const result = await response.json();
+
+      if (response.status === 200) {
+        toast.success(result.message || 'OTP sent successfully');
+        setOtpSent(true);
+        setStep(2);
+        startCountdown();
+      } else {
+        toast.error(result.error || 'Failed to send OTP');
+      }
+    } catch (error) {
+      toast.error('Network error. Please try again.');
     }
 
     setLoading(false);
   };
 
-  // STEP 2: Submit OTP
+  // STEP 2: Verify OTP
   const handleOtpSubmit = async (data) => {
     setLoading(true);
 
-    await new Promise((r) => setTimeout(r, 1500)); // Simulated delay
+    try {
+      const response = await fetch('https://savings-loan-app.vercel.app/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp: data.otp.trim() }),
+      });
 
-    if (data.otp === '123456') {
-      toast.success('OTP confirmed!');
-      setOtpConfirmed(true);
-      setStep(3);
-    } else {
-      toast.error('Invalid OTP');
+      const result = await response.json();
+
+      if (response.status === 200) {
+        toast.success(result.message || 'OTP verified');
+        setOtpConfirmed(true);
+        setStep(3);
+      } else {
+        toast.error(result.message || 'OTP verification failed');
+      }
+    } catch (error) {
+      toast.error('Network error. Please try again.');
     }
 
     setLoading(false);
   };
 
-  // STEP 3: Submit New Password
+  // STEP 3: Update Password
   const handlePasswordReset = async (data) => {
     setLoading(true);
 
-    await new Promise((r) => setTimeout(r, 1500)); // Simulated delay
+    try {
+      const response = await fetch('https://savings-loan-app.vercel.app/api/update-password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: data.newPassword }),
+      });
 
-    toast.success('Password reset successful!');
+      const result = await response.json();
 
-    
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
+      if (response.status === 200) {
+        toast.success(result.message || 'Password updated successfully!');
+        setTimeout(() => navigate('/'), 2000);
+      } else {
+        toast.error(result.message || 'Password update failed');
+      }
+    } catch (error) {
+      toast.error('Network error. Please try again.');
+    }
 
     setLoading(false);
   };
@@ -67,7 +115,7 @@ const ForgotPasswordPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white border border-gray-200 shadow-xl rounded-xl p-8 sm:p-10">
-         <div className="flex justify-center mb-4">
+              <div className="flex justify-center mb-4">
   <img src="/logo.jpg" alt="Company Logo" className="h-12 sm:h-14" />
 </div>
 
@@ -91,11 +139,22 @@ const ForgotPasswordPage = () => {
             </div>
             <button
               type="submit"
-              disabled={loading}
-              className="w-full bg-brandOrange text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition"
+              disabled={loading || !canResend}
+              className={`w-full bg-brandOrange text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition ${
+                !canResend ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              {loading ? 'Sending OTP...' : 'Send OTP'}
+              {loading
+                ? 'Sending OTP...'
+                : !canResend
+                ? `Wait ${countdown}s`
+                : 'Send OTP'}
             </button>
+            {!canResend && (
+              <p className="text-sm text-center text-gray-500 mt-2">
+                You can request a new OTP in <span className="font-semibold">{countdown}s</span>
+              </p>
+            )}
           </form>
         )}
 
@@ -122,6 +181,20 @@ const ForgotPasswordPage = () => {
             >
               {loading ? 'Verifying...' : 'Verify OTP'}
             </button>
+
+            {canResend ? (
+              <button
+                type="button"
+                onClick={() => handleEmailSubmit({ email })}
+                className="w-full bg-brandBlue text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition mt-3"
+              >
+                Resend OTP
+              </button>
+            ) : (
+              <p className="text-sm text-center text-gray-500 mt-3">
+                You can resend OTP in <span className="font-semibold">{countdown}s</span>
+              </p>
+            )}
           </form>
         )}
 
