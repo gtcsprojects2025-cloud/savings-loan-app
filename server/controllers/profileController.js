@@ -120,7 +120,7 @@ export async function verifyOTP(req, res) {
                 console.log("OTP Verification successful:");
                 res.status(200).json({ message: 'OTP verification  was successful!' });
                 } else {
-                res.status(405).json({ message: 'Wrong OTP!' });
+                res.status(400).json({ message: 'Wrong OTP!' });
                 }
             }
     } catch (error) {

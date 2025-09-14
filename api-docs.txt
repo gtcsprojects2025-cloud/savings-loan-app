@@ -104,7 +104,7 @@ Responds:
 
 Status Code: 200 { message: 'OTP verification  was successful!' }
 Status Code 403:{ message: 'User has NOT requested OTP!' }
-Status Code 405: { message: 'Wrong OTP!' }
+Status Code 400: { message: 'Wrong OTP!' }
 Status Code 503: { message: 'Server Error. Contact Admin' }
 
 ======================================================================================
