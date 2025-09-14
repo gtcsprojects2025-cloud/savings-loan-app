@@ -1,0 +1,134 @@
+/*
+---------------------
+API  documentations
+---------------------
+
+====================================================================================
+End-point: "/api/register
+--------------------------
+Method: ['POST']
+--------------------------
+Body:{
+    title,
+firstName,
+lastName,
+otherNames,
+DOB,
+email,
+password,
+phoneNo,
+PhoneNo2,
+NIN,
+BVN,
+residentialAddress,
+residentialState.
+officeAddress,
+referenceName,
+referencePhoneNo,
+guarantorName,
+guarantorPhone,
+guarantorName2,
+guarantorPhone2,
+}
+-----------------------------
+Responds:
+-----------------------------
+success: {message: 'Member registration successfull'}
+Status Code: 200
+UserAlreadyExists:{message: 'user with this email already exist try another email'}
+Status Code: 400
+Server Error: {message: 'server error try again later'}
+
+======================================================================================
+
+
+
+====================================================================================
+
+End-point: "/api/login
+--------------------------
+Method: ['POST']
+--------------------------
+Body:{
+    email,
+    password
+}
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 200 {message: 'Login was successful!'}
+Status Code 403:{ message: 'User NOT found!' } 
+Status Code: 405 { message: 'Wrong login credentials!' }
+Status Code 503: { message: 'Server Error. Contact Admin' }
+
+======================================================================================
+
+
+
+====================================================================================
+
+End-point: "/api/generate-otp
+--------------------------
+Method: ['POST']
+--------------------------
+Body:{
+    email,
+    otp
+}
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 200 { message: 'OTP sent successfully'}
+Status Code 400:{ error: 'Email is required' }
+
+Status Code 500: { error: 'Failed to send OTP' }
+
+======================================================================================
+
+
+====================================================================================
+
+End-point: "/api/verify-otp
+--------------------------
+Method: ['POST']
+--------------------------
+Body:{
+    email,
+    otp
+}
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 200 { message: 'OTP verification  was successful!' }
+Status Code 403:{ message: 'User has NOT requested OTP!' }
+Status Code 405: { message: 'Wrong OTP!' }
+Status Code 503: { message: 'Server Error. Contact Admin' }
+
+======================================================================================
+
+
+====================================================================================
+
+End-point: "/api/update-password"
+--------------------------
+Method: ['PUT']
+--------------------------
+Body:{
+    email,
+    password
+}
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 200 { message: 'password updated successfully!' }
+Status Code 404:{message:'User not found'}
+Status Code 500: {message: 'Error updating user'}
+
+======================================================================================
+*/
+
+

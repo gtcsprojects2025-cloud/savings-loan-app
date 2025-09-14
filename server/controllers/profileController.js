@@ -20,15 +20,17 @@ export async function registerMember(req, res) {
     try {
         const emailExists = await Register.findOne({email: req.body.email})
         if(emailExists){
-            res.send({"message": "user with this email already exist try another email"})
+            
+            res.status(400).json({ message: 'user with this email already exist try another email' });
         }else{
          const memberRecords = new Register(newMember);
          await memberRecords.save();
-         res.send("Member register successfully!")
+         res.status(200).json({message: 'Member registration successfull'})
         }
 
     } catch (error) {
         console.log("An error occured when trying to regiter member", error)
+        res.status(501).json({message: 'server error try again later'})
     }
 }
 
@@ -43,7 +45,7 @@ export async function memberLogin(req, res){
                 console.log("Login successful:");
                 res.status(200).json({ message: 'Login was successful!' });
                 } else {
-                res.status(403).json({ message: 'Wrong login credentials!' });
+                res.status(405).json({ message: 'Wrong login credentials!' });
                 }
             }
 
@@ -101,7 +103,7 @@ console.log("otp :", otp)
   
     await transporter.sendMail(mailOptions);
     await newOTP.save();//sendMail(email, "Your OTP Code", otp)
-    res.status(200).json({ message: 'OTP sent successfully', otp }); // Don't send OTP in production!
+    res.status(200).json({ message: 'OTP sent successfully'}); // Don't send OTP in production!
     
   } catch (error) {
     res.status(500).json({ error: 'Failed to send OTP' });
@@ -118,7 +120,7 @@ export async function verifyOTP(req, res) {
                 console.log("OTP Verification successful:");
                 res.status(200).json({ message: 'OTP verification  was successful!' });
                 } else {
-                res.status(403).json({ message: 'Wrong OTP!' });
+                res.status(405).json({ message: 'Wrong OTP!' });
                 }
             }
     } catch (error) {
@@ -137,7 +139,7 @@ export async function updatePassword(req, res) {
      { email: req.body.email },           // Filter
      { $set: { password: req.body.password } } );
 
-    if (!updatedUser) return res.status(404).send('User not found');
+    if (!updatedUser) return res.status(404).json({message:'User not found'});
     res.status(200).json({ message: 'password updated successfully!' });
     } catch (error) {
         res.status(500).json({message: 'Error updating user'});
