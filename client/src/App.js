@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginForm from "../../client/src/Auth/login/LoginForm";
-// import ForgotPasswordPage from "../../client/src/Auth/login/ForgotPasswordPage";
+import ForgotPasswordPage from "../../client/src/Auth/login/ForgotPasswordPage";
 import Register from "./Auth/register";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,7 +20,7 @@ function App() {
         <Route path="/Auth/login" element={<LoginForm />} />
 
           {/* Forgot Password Page */}
-        {/* <Route path="/forgotpasswordpage" element={<ForgotPasswordPage />} /> */}
+        <Route path="/forgotpasswordpage" element={<ForgotPasswordPage />} />
 
         {/* Register Page */}
         <Route path="/Auth/register" element={<Register />} />
