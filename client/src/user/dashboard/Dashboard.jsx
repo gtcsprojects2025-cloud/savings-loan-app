@@ -41,7 +41,7 @@ const Dashboard = () => {
   useEffect(() => {
     console.log('Dashboard: isLoggedIn=', isLoggedIn, 'userData=', userData);
     if (!isLoggedIn) {
-      navigate('/');
+      navigate('/Auth/login');
     }
   }, [isLoggedIn, navigate]);
 

@@ -48,7 +48,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen w-screen  bg-gray-50 flex items-center justify-center">
       <div className="w-full max-w-lg bg-white border border-gray-200 shadow-2xl rounded-xl p-8 sm:p-10">
         <div className="flex justify-center mb-4">
           <img src="/logo.jpg" alt="Company Logo" className="h-12 sm:h-14" />

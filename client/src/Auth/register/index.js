@@ -202,7 +202,7 @@ function Register() {
   };
 
   return (
-    <div className="Register-container">
+    <div className="Register-container ">
       <div className="form-card">
         <img src={gtcslogo} alt="GTCS Logo" className="form-logo" />
         <h1 className="form-title text-brandBlue">
