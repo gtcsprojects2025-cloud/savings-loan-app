@@ -1,37 +1,3 @@
-// import React from 'react';
-// import WelcomeCard from './WelcomeCard';
-// import BalanceCards from './BalanceCards';
-// import SavingsChart from './SavingsChart';
-// import LoanChart from './LoanChart';
-// import TransactionTable from './TransactionTable';
-
-// const Account = ({
-//   user = { firstName: 'John', lastName: 'Doe' },
-//   balances = {},
-//   savingsData = [],
-//   loanData = [],
-//   transactions = [],
-// }) => {
-//   return (
-//     <div className="p-4 w-[100%]">
-//       <WelcomeCard user={user} />
-//       <BalanceCards balances={balances} />
-//       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-//         <SavingsChart data={savingsData} />
-//         <LoanChart data={loanData} />
-//       </div>
-//       <TransactionTable transactions={transactions} />
-//     </div>
-//   );
-// };
-
-// export default Account;
-
-
-
-
-
-
 import React, { useState } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import WelcomeCard from './WelcomeCard';
