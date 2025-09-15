@@ -1,11 +1,7 @@
- .App {
-  text-align: left;
-  align-items: center;
-  justify-content: center;
+.App {
+  
   min-height: 100vh;
-  display: flex;
   width: 100%;
-
 }
 /*
 .App-logo {

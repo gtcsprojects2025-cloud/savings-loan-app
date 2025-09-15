@@ -1,580 +1,54 @@
-// import React, { useState, useEffect } from 'react';
-// import { format } from 'date-fns';
-// import './register.css';
-// import gtcslogo from '../../assets/gtcslogo.png';
-// import check from '../../assets/check.png';
-
-// function Register() {
-//   const [formData, setFormData] = useState({
-//     title: '',
-//     lastName: '',
-//     firstName: '',
-//     otherName: '',
-//     dob: '',
-//     primaryPhoneCountry: '+234',
-//     primaryPhone: '',
-//     otherPhoneCountry: '+234',
-//     otherPhone: '',
-//     nin: '',
-//     bvn: '',
-//     residentialAddress: '',
-//     residentialState: '',
-//     officeAddress: '',
-//     email: '',
-//     password: '',
-//     confirmPassword: '',
-//     referenceName: '',
-//     referenceMobileCountry: '+234',
-//     referenceMobile: '',
-//     product: '',
-//     guarantor1: '',
-//     guarantor1MobileCountry: '+234',
-//     guarantor1Mobile: '',
-//     guarantor2: '',
-//     guarantor2MobileCountry: '+234',
-//     guarantor2Mobile: '',
-//   });
-
-//   const [errors, setErrors] = useState({});
-//   const [currentStep, setCurrentStep] = useState(1);
-//   const [showButtonWarning, setShowButtonWarning] = useState(false);
-//   const [showModal, setShowModal] = useState(false);
-
-//   const countryCodes = [
-//     { code: '+234', name: 'Nigeria (+234)' },
-//     { code: '+1', name: 'USA (+1)' },
-//     { code: '+44', name: 'UK (+44)' },
-//     { code: '+91', name: 'India (+91)' },
-//   ];
-
-//   useEffect(() => {
-//     if (showModal) {
-//       const timer = setTimeout(() => {
-//         console.log('Modal timer complete, showing success');
-//         setShowModal(false);
-//         // redirect to /#
-//         window.location.href = '/';
-//       }, 3000);
-//       return () => clearTimeout(timer);
-//     }
-//   }, [showModal]);
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     const cleanedValue = ['primaryPhone', 'otherPhone', 'referenceMobile', 'guarantor1Mobile', 'guarantor2Mobile'].includes(name)
-//       ? value.replace(/\D/g, '')
-//       : value;
-//     setFormData({ ...formData, [name]: cleanedValue });
-//     if (errors[name]) {
-//       setErrors({ ...errors, [name]: '' });
-//     }
-//   };
-
-//   const handleBlur = (e) => {
-//     const { name, value } = e.target;
-//     const newErrors = { ...errors };
-
-//     if (['nin', 'bvn'].includes(name) && value.trim()) {
-//       if (!/^\d{11}$/.test(value)) {
-//         newErrors[name] = 'Must be exactly 11 digits';
-//       }
-//     }
-//     if (name === 'email' && value.trim()) {
-//       if (!/^[^@]+@[^@]+\.[^@]+$/.test(value)) {
-//         newErrors.email = 'Invalid email format';
-//       }
-//     }
-//     if (['primaryPhone', 'guarantor1Mobile'].includes(name) && value.trim()) {
-//       if (!/^\d{10,15}$/.test(value)) {
-//         newErrors[name] = 'Must be 10–15 digits';
-//       }
-//     }
-//     if (['otherPhone', 'referenceMobile', 'guarantor2Mobile'].includes(name) && value.trim()) {
-//       if (!/^\d{10,15}$/.test(value)) {
-//         newErrors[name] = 'Must be 10–15 digits';
-//       }
-//     }
-//     if (name === 'password' && value.trim()) {
-//       if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/.test(value)) {
-//         newErrors.password = 'Password must be at least 8 characters, with uppercase, lowercase, number, and special character';
-//       }
-//     }
-//     if (name === 'confirmPassword' && value.trim()) {
-//       if (value !== formData.password) {
-//         newErrors.confirmPassword = 'Passwords do not match';
-//       }
-//     }
-
-//     setErrors(newErrors);
-//   };
-
-//   const validateStep = (step) => {
-//     const newErrors = {};
-//     const step1RequiredFields = [
-//       'title', 'lastName', 'firstName', 'dob', 'email', 'password', 'confirmPassword'
-//     ];
-//     const step2RequiredFields = ['primaryPhone', 'nin', 'bvn', 'residentialAddress', 'residentialState'];
-//     const step3RequiredFields = ['guarantor1', 'guarantor1Mobile'];
-
-//     const fieldsToValidate = step === 1 ? step1RequiredFields : (step === 2 ? step2RequiredFields : step3RequiredFields);
-
-//     fieldsToValidate.forEach((field) => {
-//       if (!formData[field].trim()) {
-//         newErrors[field] = 'Please fill this field';
-//       } else {
-//         if (field === 'nin' && !/^\d{11}$/.test(formData.nin)) {
-//           newErrors.nin = 'Must be exactly 11 digits';
-//         }
-//         if (field === 'bvn' && !/^\d{11}$/.test(formData.bvn)) {
-//           newErrors.bvn = 'Must be exactly 11 digits';
-//         }
-//         if (field === 'email' && !/^[^@]+@[^@]+\.[^@]+$/.test(formData.email)) {
-//           newErrors.email = 'Invalid email format';
-//         }
-//         if (field === 'primaryPhone' && !/^\d{10,15}$/.test(formData.primaryPhone)) {
-//           newErrors.primaryPhone = 'Must be 10–15 digits';
-//         }
-//         if (field === 'guarantor1Mobile' && !/^\d{10,15}$/.test(formData.guarantor1Mobile)) {
-//           newErrors.guarantor1Mobile = 'Must be 10–15 digits';
-//         }
-//         if (field === 'password' && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/.test(formData.password)) {
-//           newErrors.password = 'Password must be at least 8 characters, with uppercase, lowercase, number, and special character';
-//         }
-//         if (field === 'confirmPassword' && formData.confirmPassword !== formData.password) {
-//           newErrors.confirmPassword = 'Passwords do not match';
-//         }
-//       }
-//     });
-
-//     if (formData.otherPhone.trim() && !/^\d{10,15}$/.test(formData.otherPhone)) {
-//       newErrors.otherPhone = 'Must be 10–15 digits';
-//     }
-//     if (formData.referenceMobile.trim() && !/^\d{10,15}$/.test(formData.referenceMobile)) {
-//       newErrors.referenceMobile = 'Must be 10–15 digits';
-//     }
-//     if (formData.guarantor2Mobile.trim() && !/^\d{10,15}$/.test(formData.guarantor2Mobile)) {
-//       newErrors.guarantor2Mobile = 'Must be 10–15 digits';
-//     }
-
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
-
-//   const isStepValid = (step) => {
-//     const step1RequiredFields = [
-//     'title', 'lastName', 'firstName', 'dob', 'email', 'password', 'confirmPassword'
-//     ];
-//     const step2RequiredFields = ['primaryPhone', 'nin', 'bvn', 'residentialAddress', 'residentialState'];
-//     const step3RequiredFields = ['guarantor1', 'guarantor1Mobile'];
-
-//     const fields = step === 1 ? step1RequiredFields : (step === 2 ? step2RequiredFields : step3RequiredFields);
-//     const isValid = fields.every((field) => {
-//       if (!formData[field].trim()) {
-//         console.log(`Field ${field} is empty`);
-//         return false;
-//       }
-//       if (field === 'nin' && !/^\d{11}$/.test(formData.nin)) {
-//         console.log(`Field ${field} invalid: ${formData.nin}`);
-//         return false;
-//       }
-//       if (field === 'bvn' && !/^\d{11}$/.test(formData.bvn)) {
-//         console.log(`Field ${field} invalid: ${formData.bvn}`);
-//         return false;
-//       }
-//       if (field === 'email' && !/^[^@]+@[^@]+\.[^@]+$/.test(formData.email)) {
-//         console.log(`Field ${field} invalid: ${formData.email}`);
-//         return false;
-//       }
-//       if (field === 'primaryPhone' && !/^\d{10,15}$/.test(formData.primaryPhone)) {
-//         console.log(`Field ${field} invalid: ${formData.primaryPhone}`);
-//         return false;
-//       }
-//       if (field === 'guarantor1Mobile' && !/^\d{10,15}$/.test(formData.guarantor1Mobile)) {
-//         console.log(`Field ${field} invalid: ${formData.guarantor1Mobile}`);
-//         return false;
-//       }
-//       if (field === 'password' && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/.test(formData.password)) {
-//         console.log(`Field ${field} invalid: Password does not meet requirements`);
-//         return false;
-//       }
-//       if (field === 'confirmPassword' && formData.confirmPassword !== formData.password) {
-//         console.log(`Field ${field} invalid: Passwords do not match`);
-//         return false;
-//       }
-//       return true;
-//     });
-//     console.log(`isStepValid(${step}): ${isValid}, formData:`, formData);
-//     return isValid;
-//   };
-
-//   const handleButtonInteraction = (e, step) => {
-//     e.preventDefault();
-//     if (!isStepValid(step)) {
-//       setShowButtonWarning(true);
-//       validateStep(step);
-//     } else if (step === 1) {
-//       setCurrentStep(2);
-//       setShowButtonWarning(false);
-//     } else if (step === 2) {
-//       setCurrentStep(3);
-//       setShowButtonWarning(false);
-//     } else {
-//       const dateJoined = format(new Date(), 'yyyy-MM-dd');
-//       const submittedData = {
-//         ...formData,
-//         primaryPhone: `${formData.primaryPhoneCountry}${formData.primaryPhone}`,
-//         otherPhone: formData.otherPhone ? `${formData.otherPhoneCountry}${formData.otherPhone}` : '',
-//         referenceMobile: formData.referenceMobile ? `${formData.referenceMobileCountry}${formData.referenceMobile}` : '',
-//         guarantor1Mobile: `${formData.guarantor1MobileCountry}${formData.guarantor1Mobile}`,
-//         guarantor2Mobile: formData.guarantor2Mobile ? `${formData.guarantor2MobileCountry}${formData.guarantor2Mobile}` : '',
-//         dateJoined
-//       };
-//       console.log('Form submitted:', submittedData);
-//       setShowModal(true);
-//     }
-//   };
-
-
-
-//   return (
-//     <div className="Register-container">
-//       <div className="form-card">
-//         <img src={gtcslogo} alt="GTCS Logo" className="form-logo" />
-//         <h1 className="form-title">
-//           GTCS Registration Form - <span className='form-step'>(Step {currentStep})</span> 
-//         </h1>
-
-//         {currentStep === 1 && (
-//           <form onSubmit={(e) => handleButtonInteraction(e, 1)}>
-//             <div className="form-grid">
-//               <div className="form-group">
-//                 <label className="form-label">Title  <span className='form-step'>*</span></label>
-//                 <select name="title" value={formData.title} onChange={handleChange} required
-//                   className="form-select">
-//                   <option value="">Select Title</option>
-//                   <option value="Mr">Mr</option>
-//                   <option value="Mrs">Mrs</option>
-//                   <option value="Ms">Ms</option>
-//                   <option value="Dr">Dr</option>
-//                   <option value="Other">Other</option>
-//                 </select>
-//                 {(showButtonWarning || errors.title) && errors.title && <span className="form-error">{errors.title}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Last Name  <span className='form-step'>*</span></label>
-//                 <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.lastName) && errors.lastName && <span className="form-error">{errors.lastName}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">First Name  <span className='form-step'>*</span></label>
-//                 <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.firstName) && errors.firstName && <span className="form-error">{errors.firstName}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Other Name</label>
-//                 <input type="text" name="otherName" value={formData.otherName} onChange={handleChange} onBlur={handleBlur}
-//                   className="form-input" />
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Date of Birth  <span className='form-step'>*</span></label>
-//                 <input type="date" name="dob" value={formData.dob} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.dob) && errors.dob && <span className="form-error">{errors.dob}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Email Address  <span className='form-step'>*</span></label>
-//                 <input type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.email) && errors.email && <span className="form-error">{errors.email}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Password  <span className='form-step'>*</span></label>
-//                 <input type="password" name="password" value={formData.password} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.password) && errors.password && <span className="form-error">{errors.password}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Confirm Password  <span className='form-step'>*</span></label>
-//                 <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.confirmPassword) && errors.confirmPassword && <span className="form-error">{errors.confirmPassword}</span>}
-//               </div>
-//             </div>
-
-//             <button
-//               type="submit"
-//               disabled={!isStepValid(1)}
-//               className={`form-button full-width ${isStepValid(1) ? 'enabled' : 'disabled'}`}
-//               onClick={() => !isStepValid(1) && setShowButtonWarning(true)}
-//               onMouseLeave={() => setShowButtonWarning(false)}
-//             >
-//               Next
-//             </button>
-//           </form>
-//         )}
-
-//         {currentStep === 2 && (
-//           <form onSubmit={(e) => handleButtonInteraction(e, 2)}>
-//             <div className="form-grid">
-//               <div className="form-group">
-//                 <label className="form-label">Primary Phone Number  <span className='form-step'>*</span></label>
-//                 <div className="phone-group">
-//                   <select name="primaryPhoneCountry" value={formData.primaryPhoneCountry} onChange={handleChange}
-//                     className="form-select country-code">
-//                     {countryCodes.map((country) => (
-//                       <option key={country.code} value={country.code}>{country.name}</option>
-//                     ))}
-//                   </select>
-//                   <input type="tel" name="primaryPhone" value={formData.primaryPhone} onChange={handleChange} onBlur={handleBlur} required
-//                     className="form-input phone-input" />
-//                 </div>
-//                 {(showButtonWarning || errors.primaryPhone) && errors.primaryPhone && <span className="form-error">{errors.primaryPhone}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Other Phone</label>
-//                 <div className="phone-group">
-//                   <select name="otherPhoneCountry" value={formData.otherPhoneCountry} onChange={handleChange}
-//                     className="form-select country-code">
-//                     {countryCodes.map((country) => (
-//                       <option key={country.code} value={country.code}>{country.name}</option>
-//                     ))}
-//                   </select>
-//                   <input type="tel" name="otherPhone" value={formData.otherPhone} onChange={handleChange} onBlur={handleBlur}
-//                     className="form-input phone-input" />
-//                 </div>
-//                 {(showButtonWarning || errors.otherPhone) && errors.otherPhone && <span className="form-error">{errors.otherPhone}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">NIN  <span className='form-step'>*</span></label>
-//                 <input type="text" name="nin" value={formData.nin} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.nin) && errors.nin && <span className="form-error">{errors.nin}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">BVN  <span className='form-step'>*</span></label>
-//                 <input type="text" name="bvn" value={formData.bvn} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.bvn) && errors.bvn && <span className="form-error">{errors.bvn}</span>}
-//               </div>
-
-//               <div className="form-group full-width">
-//                 <label className="form-label">Residential Address  <span className='form-step'>*</span></label>
-//                 <textarea name="residentialAddress" value={formData.residentialAddress} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.residentialAddress) && errors.residentialAddress && <span className="form-error">{errors.residentialAddress}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Residential State  <span className='form-step'>*</span></label>
-//                 <input type="text" name="residentialState" value={formData.residentialState} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.residentialState) && errors.residentialState && <span className="form-error">{errors.residentialState}</span>}
-//               </div>
-
-//               <div className="form-group full-width">
-//                 <label className="form-label">Office Address</label>
-//                 <textarea name="officeAddress" value={formData.officeAddress} onChange={handleChange} onBlur={handleBlur}
-//                   className="form-input" />
-//               </div>
-//             </div>
-
-//             <div className="button-group">
-//               <button
-//                 type="button"
-//                 onClick={() => setCurrentStep(1)}
-//                 className="form-button enabled"
-//               >
-//                 Back
-//               </button>
-//               <button
-//                 type="submit"
-//                 disabled={!isStepValid(2)}
-//                 className={`form-button ${isStepValid(2) ? 'enabled' : 'disabled'}`}
-//                 onClick={() => !isStepValid(2) && setShowButtonWarning(true)}
-//                 onMouseLeave={() => setShowButtonWarning(false)}
-//               >
-//                 Next
-//               </button>
-//             </div>
-//           </form>
-//         )}
-
-//         {currentStep === 3 && (
-//           <form onSubmit={(e) => handleButtonInteraction(e, 3)}>
-//             <div className="form-grid">
-//               <div className="form-group">
-//                 <label className="form-label">Reference Name</label>
-//                 <input type="text" name="referenceName" value={formData.referenceName} onChange={handleChange} onBlur={handleBlur}
-//                   className="form-input" />
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Reference Mobile</label>
-//                 <div className="phone-group">
-//                   <select name="referenceMobileCountry" value={formData.referenceMobileCountry} onChange={handleChange}
-//                     className="form-select country-code">
-//                     {countryCodes.map((country) => (
-//                       <option key={country.code} value={country.code}>{country.name}</option>
-//                     ))}
-//                   </select>
-//                   <input type="tel" name="referenceMobile" value={formData.referenceMobile} onChange={handleChange} onBlur={handleBlur}
-//                     className="form-input phone-input" />
-//                 </div>
-//                 {(showButtonWarning || errors.referenceMobile) && errors.referenceMobile && <span className="form-error">{errors.referenceMobile}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Product</label>
-//                 <input type="text" name="product" value={formData.product} onChange={handleChange} onBlur={handleBlur}
-//                   className="form-input" />
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Loan Guarantor 1  <span className='form-step'>*</span></label>
-//                 <input type="text" name="guarantor1" value={formData.guarantor1} onChange={handleChange} onBlur={handleBlur} required
-//                   className="form-input" />
-//                 {(showButtonWarning || errors.guarantor1) && errors.guarantor1 && <span className="form-error">{errors.guarantor1}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Guarantor 1 Mobile  <span className='form-step'>*</span></label>
-//                 <div className="phone-group">
-//                   <select name="guarantor1MobileCountry" value={formData.guarantor1MobileCountry} onChange={handleChange}
-//                     className="form-select country-code">
-//                     {countryCodes.map((country) => (
-//                       <option key={country.code} value={country.code}>{country.name}</option>
-//                     ))}
-//                   </select>
-//                   <input type="tel" name="guarantor1Mobile" value={formData.guarantor1Mobile} onChange={handleChange} onBlur={handleBlur} required
-//                     className="form-input phone-input" />
-//                 </div>
-//                 {(showButtonWarning || errors.guarantor1Mobile) && errors.guarantor1Mobile && <span className="form-error">{errors.guarantor1Mobile}</span>}
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Loan Guarantor 2</label>
-//                 <input type="text" name="guarantor2" value={formData.guarantor2} onChange={handleChange} onBlur={handleBlur}
-//                   className="form-input" />
-//               </div>
-
-//               <div className="form-group">
-//                 <label className="form-label">Guarantor 2 Mobile</label>
-//                 <div className="phone-group">
-//                   <select name="guarantor2MobileCountry" value={formData.guarantor2MobileCountry} onChange={handleChange}
-//                     className="form-select country-code">
-//                     {countryCodes.map((country) => (
-//                       <option key={country.code} value={country.code}>{country.name}</option>
-//                     ))}
-//                   </select>
-//                   <input type="tel" name="guarantor2Mobile" value={formData.guarantor2Mobile} onChange={handleChange} onBlur={handleBlur}
-//                     className="form-input phone-input" />
-//                 </div>
-//                 {(showButtonWarning || errors.guarantor2Mobile) && errors.guarantor2Mobile && <span className="form-error">{errors.guarantor2Mobile}</span>}
-//               </div>
-//             </div>
-
-//             <div className="button-group">
-//               <button
-//                 type="button"
-//                 onClick={() => setCurrentStep(2)}
-//                 className="form-button enabled"
-//               >
-//                 Back
-//               </button>
-//               <button
-//                 type="submit"
-//                 disabled={!isStepValid(3)}
-//                 className={`form-button ${isStepValid(3) ? 'enabled' : 'disabled'}`}
-//                 onClick={() => !isStepValid(3) && setShowButtonWarning(true)}
-//                 onMouseLeave={() => setShowButtonWarning(false)}
-//               >
-//                 Submit
-//               </button>
-//             </div>
-//           </form>
-//         )}
-
-//         {showModal && (
-//           <div className="modal-overlay">
-//             <div className="modal">
-//               <div className="checkmark">
-//                 <img src={check} alt="Checkmark" className="checkmark" />
-//                 <svg viewBox="0 0 52 52" className="checkmark-circle">
-//                   <circle cx="26" cy="26" r="25" fill="none" />
-//                   <path fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-//                 </svg>
-//               </div>
-//               <p className="modal-message">Form submitted successfully!</p>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Register;
-
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
+import { toast } from 'react-toastify';
 import './register.css';
 import gtcslogo from '../../assets/gtcslogo.png';
 import check from '../../assets/check.png';
 
 function Register() {
-  const [formData, setFormData] = useState({
-    title: '',
-    lastName: '',
-    firstName: '',
-    otherName: '',
-    dob: '',
-    primaryPhoneCountry: '+234',
-    primaryPhone: '',
-    otherPhoneCountry: '+234',
-    otherPhone: '',
-    nin: '',
-    bvn: '',
-    residentialAddress: '',
-    residentialState: '',
-    officeAddress: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    referenceName: '',
-    referenceMobileCountry: '+234',
-    referenceMobile: '',
-    product: '',
-    guarantor1: '',
-    guarantor1MobileCountry: '+234',
-    guarantor1Mobile: '',
-    guarantor2: '',
-    guarantor2MobileCountry: '+234',
-    guarantor2Mobile: '',
+  const {
+    register,
+    handleSubmit,
+    formState: { errors: formErrors },
+    watch,
+    setValue,
+  } = useForm({
+    defaultValues: {
+      title: '',
+      lastName: '',
+      firstName: '',
+      otherName: '',
+      dob: '',
+      primaryPhoneCountry: '+234',
+      primaryPhone: '',
+      otherPhoneCountry: '+234',
+      otherPhone: '',
+      nin: '',
+      bvn: '',
+      residentialAddress: '',
+      residentialState: '',
+      officeAddress: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      referenceName: '',
+      referenceMobileCountry: '+234',
+      referenceMobile: '',
+      product: '',
+      guarantor1: '',
+      guarantor1MobileCountry: '+234',
+      guarantor1Mobile: '',
+      guarantor2: '',
+      guarantor2MobileCountry: '+234',
+      guarantor2Mobile: '',
+    },
   });
 
-  const [errors, setErrors] = useState({});
   const [currentStep, setCurrentStep] = useState(1);
   const [showButtonWarning, setShowButtonWarning] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
+  const [loading, setLoading] = useState(false);
 
   const countryCodes = [
     { code: '+234', name: 'Nigeria (+234)' },
@@ -587,166 +61,83 @@ function Register() {
     if (showModal) {
       const timer = setTimeout(() => {
         setShowModal(false);
-        window.location.href = '/';
-      }, 3000);
+         window.location.href = '/'; 
+      }, 3000); 
       return () => clearTimeout(timer);
     }
   }, [showModal]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    const cleanedValue = ['primaryPhone', 'otherPhone', 'referenceMobile', 'guarantor1Mobile', 'guarantor2Mobile'].includes(name)
-      ? value.replace(/\D/g, '')
-      : value;
-    setFormData({ ...formData, [name]: cleanedValue });
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
-    }
-    setErrorMessage(''); // Clear error message on change
+  const password = watch('password');
+
+  const handlePhoneChange = (e, fieldName) => {
+    const value = e.target.value.replace(/\D/g, '');
+    setValue(fieldName, value);
   };
 
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    const newErrors = { ...errors };
+  const validateStep = (data, step) => {
+    const step1RequiredFields = ['title', 'lastName', 'firstName', 'dob', 'email', 'password', 'confirmPassword'];
+    const step2RequiredFields = ['primaryPhone', 'nin', 'bvn', 'residentialAddress', 'residentialState'];
+    const step3RequiredFields = ['guarantor1', 'guarantor1Mobile'];
 
-    if (['nin', 'bvn'].includes(name) && value.trim()) {
-      if (!/^\d{11}$/.test(value)) {
-        newErrors[name] = 'Must be exactly 11 digits';
+    const fieldsToValidate = step === 1 ? step1RequiredFields : step === 2 ? step2RequiredFields : step3RequiredFields;
+    const newErrors = {};
+
+    fieldsToValidate.forEach((field) => {
+      if (!data[field]?.trim()) {
+        newErrors[field] = 'Please fill this field';
       }
-    }
-    if (name === 'email' && value.trim()) {
-      if (!/^[^@]+@[^@]+\.[^@]+$/.test(value)) {
+    });
+
+    if (step === 1) {
+      if (data.email && !/^[^@]+@[^@]+\.[^@]+$/.test(data.email)) {
         newErrors.email = 'Invalid email format';
       }
-    }
-    if (['primaryPhone', 'guarantor1Mobile'].includes(name) && value.trim()) {
-      if (!/^\d{10,15}$/.test(value)) {
-        newErrors[name] = 'Must be 10–15 digits';
-      }
-    }
-    if (['otherPhone', 'referenceMobile', 'guarantor2Mobile'].includes(name) && value.trim()) {
-      if (!/^\d{10,15}$/.test(value)) {
-        newErrors[name] = 'Must be 10–15 digits';
-      }
-    }
-    if (name === 'password' && value.trim()) {
-      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/.test(value)) {
+      if (data.password && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/.test(data.password)) {
         newErrors.password = 'Password must be at least 8 characters, with uppercase, lowercase, number, and special character';
       }
-    }
-    if (name === 'confirmPassword' && value.trim()) {
-      if (value !== formData.password) {
+      if (data.confirmPassword && data.confirmPassword !== data.password) {
         newErrors.confirmPassword = 'Passwords do not match';
       }
     }
-
-    setErrors(newErrors);
-  };
-
-  const validateStep = (step) => {
-    const newErrors = {};
-    const step1RequiredFields = [
-      'title', 'lastName', 'firstName', 'dob', 'email', 'password', 'confirmPassword'
-    ];
-    const step2RequiredFields = ['primaryPhone', 'nin', 'bvn', 'residentialAddress', 'residentialState'];
-    const step3RequiredFields = ['guarantor1', 'guarantor1Mobile'];
-
-    const fieldsToValidate = step === 1 ? step1RequiredFields : (step === 2 ? step2RequiredFields : step3RequiredFields);
-
-    fieldsToValidate.forEach((field) => {
-      if (!formData[field].trim()) {
-        newErrors[field] = 'Please fill this field';
-      } else {
-        if (field === 'nin' && !/^\d{11}$/.test(formData.nin)) {
-          newErrors.nin = 'Must be exactly 11 digits';
-        }
-        if (field === 'bvn' && !/^\d{11}$/.test(formData.bvn)) {
-          newErrors.bvn = 'Must be exactly 11 digits';
-        }
-        if (field === 'email' && !/^[^@]+@[^@]+\.[^@]+$/.test(formData.email)) {
-          newErrors.email = 'Invalid email format';
-        }
-        if (field === 'primaryPhone' && !/^\d{10,15}$/.test(formData.primaryPhone)) {
-          newErrors.primaryPhone = 'Must be 10–15 digits';
-        }
-        if (field === 'guarantor1Mobile' && !/^\d{10,15}$/.test(formData.guarantor1Mobile)) {
-          newErrors.guarantor1Mobile = 'Must be 10–15 digits';
-        }
-        if (field === 'password' && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/.test(formData.password)) {
-          newErrors.password = 'Password must be at least 8 characters, with uppercase, lowercase, number, and special character';
-        }
-        if (field === 'confirmPassword' && formData.confirmPassword !== formData.password) {
-          newErrors.confirmPassword = 'Passwords do not match';
-        }
+    if (step === 2) {
+      if (data.nin && !/^\d{11}$/.test(data.nin)) {
+        newErrors.nin = 'Must be exactly 11 digits';
       }
-    });
-
-    if (formData.otherPhone.trim() && !/^\d{10,15}$/.test(formData.otherPhone)) {
+      if (data.bvn && !/^\d{11}$/.test(data.bvn)) {
+        newErrors.bvn = 'Must be exactly 11 digits';
+      }
+      if (data.primaryPhone && !/^\d{10,15}$/.test(data.primaryPhone)) {
+        newErrors.primaryPhone = 'Must be 10–15 digits';
+      }
+    }
+    if (step === 3) {
+      if (data.guarantor1Mobile && !/^\d{10,15}$/.test(data.guarantor1Mobile)) {
+        newErrors.guarantor1Mobile = 'Must be 10–15 digits';
+      }
+    }
+    if (data.otherPhone?.trim() && !/^\d{10,15}$/.test(data.otherPhone)) {
       newErrors.otherPhone = 'Must be 10–15 digits';
     }
-    if (formData.referenceMobile.trim() && !/^\d{10,15}$/.test(formData.referenceMobile)) {
+    if (data.referenceMobile?.trim() && !/^\d{10,15}$/.test(data.referenceMobile)) {
       newErrors.referenceMobile = 'Must be 10–15 digits';
     }
-    if (formData.guarantor2Mobile.trim() && !/^\d{10,15}$/.test(formData.guarantor2Mobile)) {
+    if (data.guarantor2Mobile?.trim() && !/^\d{10,15}$/.test(data.guarantor2Mobile)) {
       newErrors.guarantor2Mobile = 'Must be 10–15 digits';
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return newErrors;
   };
 
-  const isStepValid = (step) => {
-    const step1RequiredFields = [
-      'title', 'lastName', 'firstName', 'dob', 'email', 'password', 'confirmPassword'
-    ];
-    const step2RequiredFields = ['primaryPhone', 'nin', 'bvn', 'residentialAddress', 'residentialState'];
-    const step3RequiredFields = ['guarantor1', 'guarantor1Mobile'];
-
-    const fields = step === 1 ? step1RequiredFields : (step === 2 ? step2RequiredFields : step3RequiredFields);
-    const isValid = fields.every((field) => {
-      if (!formData[field].trim()) {
-        console.log(`Field ${field} is empty`);
-        return false;
-      }
-      if (field === 'nin' && !/^\d{11}$/.test(formData.nin)) {
-        console.log(`Field ${field} invalid: ${formData.nin}`);
-        return false;
-      }
-      if (field === 'bvn' && !/^\d{11}$/.test(formData.bvn)) {
-        console.log(`Field ${field} invalid: ${formData.bvn}`);
-        return false;
-      }
-      if (field === 'email' && !/^[^@]+@[^@]+\.[^@]+$/.test(formData.email)) {
-        console.log(`Field ${field} invalid: ${formData.email}`);
-        return false;
-      }
-      if (field === 'primaryPhone' && !/^\d{10,15}$/.test(formData.primaryPhone)) {
-        console.log(`Field ${field} invalid: ${formData.primaryPhone}`);
-        return false;
-      }
-      if (field === 'guarantor1Mobile' && !/^\d{10,15}$/.test(formData.guarantor1Mobile)) {
-        console.log(`Field ${field} invalid: ${formData.guarantor1Mobile}`);
-        return false;
-      }
-      if (field === 'password' && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/.test(formData.password)) {
-        console.log(`Field ${field} invalid: Password does not meet requirements`);
-        return false;
-      }
-      if (field === 'confirmPassword' && formData.confirmPassword !== formData.password) {
-        console.log(`Field ${field} invalid: Passwords do not match`);
-        return false;
-      }
-      return true;
-    });
-    console.log(`isStepValid(${step}): ${isValid}, formData:`, formData);
-    return isValid;
+  const isStepValid = (data, step) => {
+    const errors = validateStep(data, step);
+    console.log(`isStepValid(${step}): ${Object.keys(errors).length === 0}, errors:`, errors, 'formData:', data);
+    return Object.keys(errors).length === 0;
   };
 
-  const handleButtonInteraction = async (e, step) => {
-    e.preventDefault();
-    if (!isStepValid(step)) {
+  const onSubmit = async (data, step) => {
+    const errors = validateStep(data, step);
+    if (Object.keys(errors).length > 0) {
       setShowButtonWarning(true);
-      validateStep(step);
       return;
     }
 
@@ -757,58 +148,55 @@ function Register() {
       setCurrentStep(3);
       setShowButtonWarning(false);
     } else {
-      setIsSubmitting(true); // Set submitting state
-      setErrorMessage(''); // Clear previous errors
-
-      const dateJoined = format(new Date(), 'yyyy-MM-dd');
-      const payload = {
-        title: formData.title,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        otherNames: formData.otherName,
-        DOB: formData.dob,
-        email: formData.email,
-        password: formData.password,
-        phoneNo: `${formData.primaryPhoneCountry}${formData.primaryPhone}`,
-        PhoneNo2: formData.otherPhone ? `${formData.otherPhoneCountry}${formData.otherPhone}` : '',
-        NIN: formData.nin,
-        BVN: formData.bvn,
-        residentialAddress: formData.residentialAddress,
-        residentialState: formData.residentialState,
-        officeAddress: formData.officeAddress,
-        referenceName: formData.referenceName,
-        referencePhoneNo: formData.referenceMobile ? `${formData.referenceMobileCountry}${formData.referenceMobile}` : '',
-        guarantorName: formData.guarantor1,
-        guarantorPhone: `${formData.guarantor1MobileCountry}${formData.guarantor1Mobile}`,
-        guarantorName2: formData.guarantor2,
-        guarantorPhone2: formData.guarantor2Mobile ? `${formData.guarantor2MobileCountry}${formData.guarantor2Mobile}` : '',
-      };
-
+      setLoading(true);
       try {
+        const formPayload = {
+          title: data.title,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          otherNames: data.otherName, 
+          DOB: data.dob, 
+          email: data.email,
+          password: data.password,
+          phoneNo: `${data.primaryPhoneCountry}${data.primaryPhone}`,
+          PhoneNo2: data.otherPhone ? `${data.otherPhoneCountry}${data.otherPhone}` : '',
+          NIN: data.nin, 
+          BVN: data.bvn, 
+          residentialAddress: data.residentialAddress,
+          residentialState: data.residentialState, 
+          officeAddress: data.officeAddress,
+          referenceName: data.referenceName,
+          referencePhoneNo: data.referenceMobile ? `${data.referenceMobileCountry}${data.referenceMobile}` : '',
+          guarantorName: data.guarantor1,
+          guarantorPhone: `${data.guarantor1MobileCountry}${data.guarantor1Mobile}`,
+          guarantorName2: data.guarantor2,
+          guarantorPhone2: data.guarantor2Mobile ? `${data.guarantor2MobileCountry}${data.guarantor2Mobile}` : '',
+        };
+        console.log('Submitting form data:', formPayload);
+
         const response = await fetch('https://savings-loan-app.vercel.app/api/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(formPayload),
         });
 
+        const result = await response.json();
+
         if (response.ok) {
+          toast.success('Registration successful!');
+          console.log('Registration response:', result);
           setShowModal(true);
-          setErrorMessage('');
         } else {
-          const errorData = await response.json();
-          setErrorMessage(errorData.message || 'Registration failed. Please try again.');
+          toast.error(result.message || 'Registration failed. Please try again.');
+          console.error('Registration failed:', result.message);
         }
       } catch (error) {
-        console.error('Error submitting form:', error);
-        if (error.message === 'Failed to fetch') {
-          setErrorMessage('Unable to connect to the server. This may be due to a CORS issue or the server being unavailable. Please contact support.');
-        } else {
-          setErrorMessage('An error occurred. Please try again later.');
-        }
+        console.error('Registration error:', error);
+        toast.error('Something went wrong. Please try again.');
       } finally {
-        setIsSubmitting(false); // Reset submitting state
+        setLoading(false);
       }
     }
   };
@@ -817,18 +205,22 @@ function Register() {
     <div className="Register-container">
       <div className="form-card">
         <img src={gtcslogo} alt="GTCS Logo" className="form-logo" />
-        <h1 className="form-title">
-          GTCS Registration Form - <span className='form-step'>(Step {currentStep})</span> 
+        <h1 className="form-title text-brandBlue">
+          GTCS Registration Form - <span className="form-step">(Step {currentStep})</span>
         </h1>
-        {errorMessage && <div className="form-error">{errorMessage}</div>}
+        {loading && <div className="form-info">Submitting form, please wait...</div>}
 
         {currentStep === 1 && (
-          <form onSubmit={(e) => handleButtonInteraction(e, 1)}>
+          <form onSubmit={handleSubmit((data) => onSubmit(data, 1))} className="space-y-5">
             <div className="form-grid">
               <div className="form-group">
-                <label className="form-label">Title  <span className='form-step'>*</span></label>
-                <select name="title" value={formData.title} onChange={handleChange} required
-                  className="form-select">
+                <label className="form-label">
+                  Title <span className="form-step">*</span>
+                </label>
+                <select
+                  {...register('title', { required: 'Please select a title' })}
+                  className="form-select"
+                >
                   <option value="">Select Title</option>
                   <option value="Mr">Mr</option>
                   <option value="Mrs">Mrs</option>
@@ -836,64 +228,118 @@ function Register() {
                   <option value="Dr">Dr</option>
                   <option value="Other">Other</option>
                 </select>
-                {(showButtonWarning || errors.title) && errors.title && <span className="form-error">{errors.title}</span>}
+                {(showButtonWarning || formErrors.title) && (
+                  <span className="form-error">{formErrors.title?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label">Last Name  <span className='form-step'>*</span></label>
-                <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.lastName) && errors.lastName && <span className="form-error">{errors.lastName}</span>}
+                <label className="form-label">
+                  Last Name <span className="form-step">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register('lastName', { required: 'Last name is required' })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.lastName) && (
+                  <span className="form-error">{formErrors.lastName?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label">First Name  <span className='form-step'>*</span></label>
-                <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.firstName) && errors.firstName && <span className="form-error">{errors.firstName}</span>}
+                <label className="form-label">
+                  First Name <span className="form-step">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register('firstName', { required: 'First name is required' })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.firstName) && (
+                  <span className="form-error">{formErrors.firstName?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
                 <label className="form-label">Other Name</label>
-                <input type="text" name="otherName" value={formData.otherName} onChange={handleChange} onBlur={handleBlur}
-                  className="form-input" />
+                <input type="text" {...register('otherName')} className="form-input" />
               </div>
 
               <div className="form-group">
-                <label className="form-label">Date of Birth  <span className='form-step'>*</span></label>
-                <input type="date" name="dob" value={formData.dob} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.dob) && errors.dob && <span className="form-error">{errors.dob}</span>}
+                <label className="form-label">
+                  Date of Birth <span className="form-step">*</span>
+                </label>
+                <input
+                  type="date"
+                  {...register('dob', { required: 'Date of birth is required' })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.dob) && (
+                  <span className="form-error">{formErrors.dob?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label">Email Address  <span className='form-step'>*</span></label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.email) && errors.email && <span className="form-error">{errors.email}</span>}
+                <label className="form-label">
+                  Email Address <span className="form-step">*</span>
+                </label>
+                <input
+                  type="email"
+                  {...register('email', {
+                    required: 'Email is required',
+                    pattern: { value: /^[^@]+@[^@]+\.[^@]+$/, message: 'Invalid email format' },
+                  })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.email) && (
+                  <span className="form-error">{formErrors.email?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label">Password  <span className='form-step'>*</span></label>
-                <input type="password" name="password" value={formData.password} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.password) && errors.password && <span className="form-error">{errors.password}</span>}
+                <label className="form-label">
+                  Password <span className="form-step">*</span>
+                </label>
+                <input
+                  type="password"
+                  {...register('password', {
+                    required: 'Password is required',
+                    pattern: {
+                      value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/,
+                      message:
+                        'Password must be at least 8 characters, with uppercase, lowercase, number, and special character',
+                    },
+                  })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.password) && (
+                  <span className="form-error">{formErrors.password?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label">Confirm Password  <span className='form-step'>*</span></label>
-                <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.confirmPassword) && errors.confirmPassword && <span className="form-error">{errors.confirmPassword}</span>}
+                <label className="form-label">
+                  Confirm Password <span className="form-step">*</span>
+                </label>
+                <input
+                  type="password"
+                  {...register('confirmPassword', {
+                    required: 'Confirm password is required',
+                    validate: (value) => value === password || 'Passwords do not match',
+                  })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.confirmPassword) && (
+                  <span className="form-error">{formErrors.confirmPassword?.message}</span>
+                )}
               </div>
             </div>
 
             <button
               type="submit"
-              disabled={!isStepValid(1)}
-              className={`form-button full-width ${isStepValid(1) ? 'enabled' : 'disabled'}`}
-              onClick={() => !isStepValid(1) && setShowButtonWarning(true)}
-              onMouseLeave={() => setShowButtonWarning(false)}
+              disabled={loading || !isStepValid(watch(), 1)}
+              className={`form-button full-width ${isStepValid(watch(), 1) && !loading ? 'enabled' : 'disabled'}`}
             >
               Next
             </button>
@@ -901,70 +347,129 @@ function Register() {
         )}
 
         {currentStep === 2 && (
-          <form onSubmit={(e) => handleButtonInteraction(e, 2)}>
+          <form onSubmit={handleSubmit((data) => onSubmit(data, 2))} className="space-y-5">
             <div className="form-grid">
               <div className="form-group">
-                <label className="form-label">Primary Phone Number  <span className='form-step'>*</span></label>
+                <label className="form-label">
+                  Primary Phone Number <span className="form-step">*</span>
+                </label>
                 <div className="phone-group">
-                  <select name="primaryPhoneCountry" value={formData.primaryPhoneCountry} onChange={handleChange}
-                    className="form-select country-code">
+                  <select
+                    {...register('primaryPhoneCountry')}
+                    className="form-select country-code"
+                  >
                     {countryCodes.map((country) => (
-                      <option key={country.code} value={country.code}>{country.name}</option>
+                      <option key={country.code} value={country.code}>
+                        {country.name}
+                      </option>
                     ))}
                   </select>
-                  <input type="tel" name="primaryPhone" value={formData.primaryPhone} onChange={handleChange} onBlur={handleBlur} required
-                    className="form-input phone-input" />
+                  <input
+                    type="tel"
+                    {...register('primaryPhone', {
+                      required: 'Primary phone is required',
+                      pattern: { value: /^\d{10,15}$/, message: 'Must be 10–15 digits' },
+                    })}
+                    onChange={(e) => handlePhoneChange(e, 'primaryPhone')}
+                    className="form-input phone-input"
+                  />
                 </div>
-                {(showButtonWarning || errors.primaryPhone) && errors.primaryPhone && <span className="form-error">{errors.primaryPhone}</span>}
+                {(showButtonWarning || formErrors.primaryPhone) && (
+                  <span className="form-error">{formErrors.primaryPhone?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
                 <label className="form-label">Other Phone</label>
                 <div className="phone-group">
-                  <select name="otherPhoneCountry" value={formData.otherPhoneCountry} onChange={handleChange}
-                    className="form-select country-code">
+                  <select
+                    {...register('otherPhoneCountry')}
+                    className="form-select country-code"
+                  >
                     {countryCodes.map((country) => (
-                      <option key={country.code} value={country.code}>{country.name}</option>
+                      <option key={country.code} value={country.code}>
+                        {country.name}
+                      </option>
                     ))}
                   </select>
-                  <input type="tel" name="otherPhone" value={formData.otherPhone} onChange={handleChange} onBlur={handleBlur}
-                    className="form-input phone-input" />
+                  <input
+                    type="tel"
+                    {...register('otherPhone', {
+                      pattern: { value: /^\d{10,15}$/, message: 'Must be 10–15 digits' },
+                    })}
+                    onChange={(e) => handlePhoneChange(e, 'otherPhone')}
+                    className="form-input phone-input"
+                  />
                 </div>
-                {(showButtonWarning || errors.otherPhone) && errors.otherPhone && <span className="form-error">{errors.otherPhone}</span>}
+                {(showButtonWarning || formErrors.otherPhone) && (
+                  <span className="form-error">{formErrors.otherPhone?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label">NIN  <span className='form-step'>*</span></label>
-                <input type="text" name="nin" value={formData.nin} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.nin) && errors.nin && <span className="form-error">{errors.nin}</span>}
+                <label className="form-label">
+                  NIN <span className="form-step">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register('nin', {
+                    required: 'NIN is required',
+                    pattern: { value: /^\d{11}$/, message: 'Must be exactly 11 digits' },
+                  })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.nin) && (
+                  <span className="form-error">{formErrors.nin?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label">BVN  <span className='form-step'>*</span></label>
-                <input type="text" name="bvn" value={formData.bvn} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.bvn) && errors.bvn && <span className="form-error">{errors.bvn}</span>}
+                <label className="form-label">
+                  BVN <span className="form-step">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register('bvn', {
+                    required: 'BVN is required',
+                    pattern: { value: /^\d{11}$/, message: 'Must be exactly 11 digits' },
+                  })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.bvn) && (
+                  <span className="form-error">{formErrors.bvn?.message}</span>
+                )}
               </div>
 
               <div className="form-group full-width">
-                <label className="form-label">Residential Address  <span className='form-step'>*</span></label>
-                <textarea name="residentialAddress" value={formData.residentialAddress} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.residentialAddress) && errors.residentialAddress && <span className="form-error">{errors.residentialAddress}</span>}
+                <label className="form-label">
+                  Residential Address <span className="form-step">*</span>
+                </label>
+                <textarea
+                  {...register('residentialAddress', { required: 'Residential address is required' })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.residentialAddress) && (
+                  <span className="form-error">{formErrors.residentialAddress?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label">Residential State  <span className='form-step'>*</span></label>
-                <input type="text" name="residentialState" value={formData.residentialState} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.residentialState) && errors.residentialState && <span className="form-error">{errors.residentialState}</span>}
+                <label className="form-label">
+                  Residential State <span className="form-step">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register('residentialState', { required: 'Residential state is required' })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.residentialState) && (
+                  <span className="form-error">{formErrors.residentialState?.message}</span>
+                )}
               </div>
 
               <div className="form-group full-width">
                 <label className="form-label">Office Address</label>
-                <textarea name="officeAddress" value={formData.officeAddress} onChange={handleChange} onBlur={handleBlur}
-                  className="form-input" />
+                <textarea {...register('officeAddress')} className="form-input" />
               </div>
             </div>
 
@@ -978,10 +483,8 @@ function Register() {
               </button>
               <button
                 type="submit"
-                disabled={!isStepValid(2)}
-                className={`form-button ${isStepValid(2) ? 'enabled' : 'disabled'}`}
-                onClick={() => !isStepValid(2) && setShowButtonWarning(true)}
-                onMouseLeave={() => setShowButtonWarning(false)}
+                disabled={loading || !isStepValid(watch(), 2)}
+                className={`form-button ${isStepValid(watch(), 2) && !loading ? 'enabled' : 'disabled'}`}
               >
                 Next
               </button>
@@ -990,76 +493,119 @@ function Register() {
         )}
 
         {currentStep === 3 && (
-          <form onSubmit={(e) => handleButtonInteraction(e, 3)}>
+          <form onSubmit={handleSubmit((data) => onSubmit(data, 3))} className="space-y-5">
             <div className="form-grid">
               <div className="form-group">
                 <label className="form-label">Reference Name</label>
-                <input type="text" name="referenceName" value={formData.referenceName} onChange={handleChange} onBlur={handleBlur}
-                  className="form-input" />
+                <input type="text" {...register('referenceName')} className="form-input" />
               </div>
 
               <div className="form-group">
                 <label className="form-label">Reference Mobile</label>
                 <div className="phone-group">
-                  <select name="referenceMobileCountry" value={formData.referenceMobileCountry} onChange={handleChange}
-                    className="form-select country-code">
+                  <select
+                    {...register('referenceMobileCountry')}
+                    className="form-select country-code"
+                  >
                     {countryCodes.map((country) => (
-                      <option key={country.code} value={country.code}>{country.name}</option>
+                      <option key={country.code} value={country.code}>
+                        {country.name}
+                      </option>
                     ))}
                   </select>
-                  <input type="tel" name="referenceMobile" value={formData.referenceMobile} onChange={handleChange} onBlur={handleBlur}
-                    className="form-input phone-input" />
+                  <input
+                    type="tel"
+                    {...register('referenceMobile', {
+                      pattern: { value: /^\d{10,15}$/, message: 'Must be 10–15 digits' },
+                    })}
+                    onChange={(e) => handlePhoneChange(e, 'referenceMobile')}
+                    className="form-input phone-input"
+                  />
                 </div>
-                {(showButtonWarning || errors.referenceMobile) && errors.referenceMobile && <span className="form-error">{errors.referenceMobile}</span>}
+                {(showButtonWarning || formErrors.referenceMobile) && (
+                  <span className="form-error">{formErrors.referenceMobile?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
                 <label className="form-label">Product</label>
-                <input type="text" name="product" value={formData.product} onChange={handleChange} onBlur={handleBlur}
-                  className="form-input" />
+                <input type="text" {...register('product')} className="form-input" />
               </div>
 
               <div className="form-group">
-                <label className="form-label">Loan Guarantor 1  <span className='form-step'>*</span></label>
-                <input type="text" name="guarantor1" value={formData.guarantor1} onChange={handleChange} onBlur={handleBlur} required
-                  className="form-input" />
-                {(showButtonWarning || errors.guarantor1) && errors.guarantor1 && <span className="form-error">{errors.guarantor1}</span>}
+                <label className="form-label">
+                  Loan Guarantor 1 <span className="form-step">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register('guarantor1', { required: 'Guarantor name is required' })}
+                  className="form-input"
+                />
+                {(showButtonWarning || formErrors.guarantor1) && (
+                  <span className="form-error">{formErrors.guarantor1?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label">Guarantor 1 Mobile  <span className='form-step'>*</span></label>
+                <label className="form-label">
+                  Guarantor 1 Mobile <span className="form-step">*</span>
+                </label>
                 <div className="phone-group">
-                  <select name="guarantor1MobileCountry" value={formData.guarantor1MobileCountry} onChange={handleChange}
-                    className="form-select country-code">
+                  <select
+                    {...register('guarantor1MobileCountry')}
+                    className="form-select country-code"
+                  >
                     {countryCodes.map((country) => (
-                      <option key={country.code} value={country.code}>{country.name}</option>
+                      <option key={country.code} value={country.code}>
+                        {country.name}
+                      </option>
                     ))}
                   </select>
-                  <input type="tel" name="guarantor1Mobile" value={formData.guarantor1Mobile} onChange={handleChange} onBlur={handleBlur} required
-                    className="form-input phone-input" />
+                  <input
+                    type="tel"
+                    {...register('guarantor1Mobile', {
+                      required: 'Guarantor mobile is required',
+                      pattern: { value: /^\d{10,15}$/, message: 'Must be 10–15 digits' },
+                    })}
+                    onChange={(e) => handlePhoneChange(e, 'guarantor1Mobile')}
+                    className="form-input phone-input"
+                  />
                 </div>
-                {(showButtonWarning || errors.guarantor1Mobile) && errors.guarantor1Mobile && <span className="form-error">{errors.guarantor1Mobile}</span>}
+                {(showButtonWarning || formErrors.guarantor1Mobile) && (
+                  <span className="form-error">{formErrors.guarantor1Mobile?.message}</span>
+                )}
               </div>
 
               <div className="form-group">
                 <label className="form-label">Loan Guarantor 2</label>
-                <input type="text" name="guarantor2" value={formData.guarantor2} onChange={handleChange} onBlur={handleBlur}
-                  className="form-input" />
+                <input type="text" {...register('guarantor2')} className="form-input" />
               </div>
 
               <div className="form-group">
                 <label className="form-label">Guarantor 2 Mobile</label>
                 <div className="phone-group">
-                  <select name="guarantor2MobileCountry" value={formData.guarantor2MobileCountry} onChange={handleChange}
-                    className="form-select country-code">
+                  <select
+                    {...register('guarantor2MobileCountry')}
+                    className="form-select country-code"
+                  >
                     {countryCodes.map((country) => (
-                      <option key={country.code} value={country.code}>{country.name}</option>
+                      <option key={country.code} value={country.code}>
+                        {country.name}
+                      </option>
                     ))}
                   </select>
-                  <input type="tel" name="guarantor2Mobile" value={formData.guarantor2Mobile} onChange={handleChange} onBlur={handleBlur}
-                    className="form-input phone-input" />
+                  <input
+                    type="tel"
+                    {...register('guarantor2Mobile', {
+                      pattern: { value: /^\d{10,15}$/, message: 'Must be 10–15 digits' },
+                    })}
+                    onChange={(e) => handlePhoneChange(e, 'guarantor2Mobile')}
+                    className="form-input phone-input"
+                  />
                 </div>
-                {(showButtonWarning || errors.guarantor2Mobile) && errors.guarantor2Mobile && <span className="form-error">{errors.guarantor2Mobile}</span>}
+                {(showButtonWarning || formErrors.guarantor2Mobile) && (
+                  <span className="form-error">{formErrors.guarantor2Mobile?.message}</span>
+                )}
               </div>
             </div>
 
@@ -1073,12 +619,36 @@ function Register() {
               </button>
               <button
                 type="submit"
-                disabled={!isStepValid(3) || isSubmitting}
-                className={`form-button ${isStepValid(3) && !isSubmitting ? 'enabled' : 'disabled'}`}
-                onClick={() => !isStepValid(3) && setShowButtonWarning(true)}
-                onMouseLeave={() => setShowButtonWarning(false)}
+                disabled={loading || !isStepValid(watch(), 3)}
+                className={`form-button ${isStepValid(watch(), 3) && !loading ? 'enabled' : 'disabled'}`}
               >
-                {isSubmitting ? 'Submitting...' : 'Submit'}
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 text-white mr-2"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 01-8 8z"
+                      ></path>
+                    </svg>
+                    Submitting...
+                  </>
+                ) : (
+                  'Submit'
+                )}
               </button>
             </div>
           </form>
