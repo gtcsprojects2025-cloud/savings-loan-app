@@ -73,8 +73,7 @@ End-point: "/api/generate-otp
 Method: ['POST']
 --------------------------
 Body:{
-    email,
-    otp
+    email
 }
 -----------------------------
 Responds:
@@ -127,6 +126,192 @@ Responds:
 Status Code: 200 { message: 'password updated successfully!' }
 Status Code 404:{message:'User not found'}
 Status Code 500: {message: 'Error updating user'}
+
+======================================================================================
+
+====================================================================================
+
+End-point: "/api/transaction"
+--------------------------
+Method: ['PUT']
+--------------------------
+Body:{
+    email,
+    BVN,
+    savingAmount,
+    loanAmount,
+    transactionType,
+    comment,
+}
+-----------------------------
+Responds:
+-----------------------------
+Deposit transaction
+-----------------------------
+Status Code: 200 { message: 'Deposit successfully!' }
+Status Code: 400 {message: "account not found"}
+Status Code: 404 {message:'User not found'}
+Status Code 500: {message: "Server Error pls try again"}
+
+-----------------------------
+Withdrawal transaction
+-----------------------------
+Status Code: 200 { message: 'Withdrawal successfully!' }
+Status Code: 400 {message: "account not found"}
+Status Code: 404 {message:'User not found'}
+Status Code 500: {message: "Server Error pls try again"}
+
+-----------------------------
+transfer transaction
+-----------------------------
+Body:{
+    senderBVN,
+    receiverBVN,
+    amount,
+    transactionType,
+    comment,
+}
+Status Code: 200 { message: "Transfer successful" }
+Status Code: 400 [{ error: "Invalid transfer details" }, { error: "Insufficient funds" }]
+Status Code: 404 { error: "One or both accounts not found" }
+Status Code 500: [{message: 'Error performing this transaction'}, { error: "Transfer failed" }]
+
+======================================================================================
+
+
+
+====================================================================================
+
+End-point: "/api/create-user-account"
+--------------------------
+Method: ['POST']
+--------------------------
+Body:{
+    email,
+    BVN,
+    savingAmount,
+    loanAmount,
+    transactionType,
+    comment,
+}
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 200 {message:"Account created successfully"}
+Status Code: 400 {message:"User account Already Exists"}
+Status Code 500: {message: "Server Error pls try again"}
+
+======================================================================================
+
+
+====================================================================================
+
+End-point: "/api/get-user-amount"
+--------------------------
+Method: ['GET']
+--------------------------
+Body:{
+    email
+}
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 200 {
+    "fetch_details": {
+        "_id": "68c93e1d6978ac95e8c5dd8f",
+        "email": "rolandmario2@gmail.com",
+        "BVN": 12345678901,
+        "savingAmount": 89000,
+        "loanAmount": 0,
+        "transactionType": "Deposit",
+        "comment": "First deposit",
+        "dateCreated": "2025-09-16T10:38:21.622Z",
+        "__v": 0
+    }
+}
+Status Code: 400 {error: "User with this email does not exists"}
+Status Code 500: {error:"Server error try again later"}
+
+======================================================================================
+
+
+
+====================================================================================
+
+End-point: "/api/get-transaction-history"
+--------------------------
+Method: ['GET']
+--------------------------
+Body:{
+    email
+}
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 200 {
+    "transaction_details": [
+        {
+            "_id": "68c93e1d6978ac95e8c5dd90",
+            "email": "rolandmario2@gmail.com",
+            "BVN": 12345678901,
+            "savingAmount": 50000,
+            "loanAmount": 0,
+            "transactionType": "Deposit",
+            "comment": "First deposit",
+            "dateCreated": "2025-09-16T10:38:21.622Z",
+            "__v": 0
+        },
+        {
+            "_id": "68c94297c692c6eee4ddda7b",
+            "email": "rolandmario2@gmail.com",
+            "BVN": 12345678901,
+            "savingAmount": 10000,
+            "loanAmount": 0,
+            "transactionType": "deposit",
+            "comment": "September donation",
+            "dateCreated": "2025-09-16T10:57:27.301Z",
+            "__v": 0
+        },
+        {
+            "_id": "68c944cf31a403acf3151f10",
+            "email": "rolandmario2@gmail.com",
+            "BVN": 12345678901,
+            "savingAmount": 5000,
+            "loanAmount": 0,
+            "transactionType": "deposit",
+            "comment": "September donation",
+            "dateCreated": "2025-09-16T11:06:55.218Z",
+            "__v": 0
+        },
+        {
+            "_id": "68c947008c87409e9d4bbb08",
+            "email": "rolandmario2@gmail.com",
+            "BVN": 12345678901,
+            "savingAmount": 50000,
+            "loanAmount": 0,
+            "transactionType": "deposit",
+            "comment": "September donation",
+            "dateCreated": "2025-09-16T11:16:15.956Z",
+            "__v": 0
+        },
+        {
+            "_id": "68c94913315d8630fd819d9b",
+            "email": "rolandmario2@gmail.com",
+            "BVN": 12345678901,
+            "savingAmount": 5000,
+            "loanAmount": 0,
+            "transactionType": "withdraw",
+            "comment": "September donation",
+            "dateCreated": "2025-09-16T11:25:07.496Z",
+            "__v": 0
+        }
+    ]
+}
+Status Code: 400 {error: "User with this email does not exists"}
+Status Code 500: {error:"Server error try again later"}
 
 ======================================================================================
 */

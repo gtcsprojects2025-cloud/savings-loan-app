@@ -19,7 +19,8 @@ export async function registerMember(req, res) {
 
     try {
         const emailExists = await Register.findOne({email: req.body.email})
-        if(emailExists){
+        console.log("Member Already exists", emailExists)
+        if(emailExists.email===req.body.email){
             
             res.status(400).json({ message: 'user with this email already exist try another email' });
         }else{

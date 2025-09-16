@@ -4,6 +4,7 @@ const { registerMember, memberLogin, generateOTP, verifyOTP, updatePassword } = 
 
 require('dotenv').config();
 const cors = require('cors');
+const { create_account, transaction, getUserAmount, getTransactionHistory } = require("./controllers/accountController.js");
 
 
 
@@ -52,6 +53,12 @@ app.post("/api/register", registerMember)
 app.post("/api/login", memberLogin)
 app.post('/api/generate-otp', generateOTP);
 app.post("/api/verify-otp", verifyOTP);
+app.post("/api/create-user-account", create_account)
+
+app.get("/api/get-user-amount", getUserAmount)
+app.get("/api/get-transaction-history", getTransactionHistory)
+
+app.put("/api/transaction", transaction)
 app.put("/api/update-password", updatePassword)
 
 connectDB().then(()=>{
