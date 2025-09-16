@@ -113,8 +113,30 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="min-h-screen w-[100%]  px-5 lg:px-0 bg-gray-50 flex items-center justify-center">
       <div className="w-full max-w-md bg-white border border-gray-200 shadow-xl rounded-xl p-8 sm:p-10">
+        {/* add a back arrow */}
+          {/* add a back route button */}
+        <div className="form-header">
+          <button onClick={() => (window.location.href = '/')} className="back-button">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-[#eb7425] "
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
+        </div>
+
+
               <div className="flex justify-center mb-4">
   <img src="/logo.jpg" alt="Company Logo" className="h-12 sm:h-14" />
 </div>
