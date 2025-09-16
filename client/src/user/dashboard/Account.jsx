@@ -6,7 +6,7 @@ import SavingsChart from './SavingsChart';
 import LoanChart from './LoanChart';
 
 const Account = ({
-  user = { firstName: 'John', lastName: 'Doe' },
+  user = { firstName: 'femi', lastName: 'Akinwunmi' },
   balances = { account: 5000, savings: 12000, loan: 3000 },
   savingsData = [],
   loanData = [],

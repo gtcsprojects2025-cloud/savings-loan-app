@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import SHA256 from 'crypto-js/sha256';
 import './register.css';
 import gtcslogo from '../../assets/gtcslogo.png';
 import check from '../../assets/check.png';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Register() {
   const {
@@ -49,6 +52,8 @@ function Register() {
   const [showButtonWarning, setShowButtonWarning] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const countryCodes = [
     { code: '+234', name: 'Nigeria (+234)' },
@@ -61,8 +66,8 @@ function Register() {
     if (showModal) {
       const timer = setTimeout(() => {
         setShowModal(false);
-         window.location.href = '/'; 
-      }, 3000); 
+        window.location.href = '/';
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [showModal]);
@@ -150,20 +155,23 @@ function Register() {
     } else {
       setLoading(true);
       try {
+        const hashedPassword = SHA256(data.password).toString();
+        console.log('Hashed password:', hashedPassword);
+
         const formPayload = {
           title: data.title,
           firstName: data.firstName,
           lastName: data.lastName,
-          otherNames: data.otherName, 
-          DOB: data.dob, 
+          otherNames: data.otherName,
+          DOB: data.dob,
           email: data.email,
-          password: data.password,
+          password: hashedPassword, // Send hashed password
           phoneNo: `${data.primaryPhoneCountry}${data.primaryPhone}`,
           PhoneNo2: data.otherPhone ? `${data.otherPhoneCountry}${data.otherPhone}` : '',
-          NIN: data.nin, 
-          BVN: data.bvn, 
+          NIN: data.nin,
+          BVN: data.bvn,
           residentialAddress: data.residentialAddress,
-          residentialState: data.residentialState, 
+          residentialState: data.residentialState,
           officeAddress: data.officeAddress,
           referenceName: data.referenceName,
           referencePhoneNo: data.referenceMobile ? `${data.referenceMobileCountry}${data.referenceMobile}` : '',
@@ -202,8 +210,26 @@ function Register() {
   };
 
   return (
-    <div className="Register-container ">
+    <div className="Register-container">
       <div className="form-card">
+        <div className="form-header">
+          <button onClick={() => (window.location.href = '/')} className="back-button">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-[#eb7425]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
+        </div>
         <img src={gtcslogo} alt="GTCS Logo" className="form-logo" />
         <h1 className="form-title text-brandBlue">
           GTCS Registration Form - <span className="form-step">(Step {currentStep})</span>
@@ -297,12 +323,12 @@ function Register() {
                 )}
               </div>
 
-              <div className="form-group">
+              <div className="form-group relative">
                 <label className="form-label">
                   Password <span className="form-step">*</span>
                 </label>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   {...register('password', {
                     required: 'Password is required',
                     pattern: {
@@ -311,25 +337,47 @@ function Register() {
                         'Password must be at least 8 characters, with uppercase, lowercase, number, and special character',
                     },
                   })}
-                  className="form-input"
+                  className="form-input pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-9 text-brandBlue hover:text-brandBlue/80"
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5" />
+                  )}
+                </button>
                 {(showButtonWarning || formErrors.password) && (
                   <span className="form-error">{formErrors.password?.message}</span>
                 )}
               </div>
 
-              <div className="form-group">
+              <div className="form-group relative">
                 <label className="form-label">
                   Confirm Password <span className="form-step">*</span>
                 </label>
                 <input
-                  type="password"
+                  type={showConfirmPassword ? 'text' : 'password'}
                   {...register('confirmPassword', {
                     required: 'Confirm password is required',
                     validate: (value) => value === password || 'Passwords do not match',
                   })}
-                  className="form-input"
+                  className="form-input pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-9 text-brandBlue hover:text-brandBlue/80"
+                >
+                  {showConfirmPassword ? (
+                    <EyeSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5" />
+                  )}
+                </button>
                 {(showButtonWarning || formErrors.confirmPassword) && (
                   <span className="form-error">{formErrors.confirmPassword?.message}</span>
                 )}
@@ -668,6 +716,14 @@ function Register() {
             </div>
           </div>
         )}
+        <div className="mt-6 text-sm text-center text-gray-600 space-y-2">
+          <p>
+            Already have an account?{' '}
+            <Link to="/Auth/login/" className="text-brandBlue font-medium hover:underline">
+              Log in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

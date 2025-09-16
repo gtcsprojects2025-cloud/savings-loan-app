@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useNavigate, Link } from 'react-router-dom';
-
-
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import SHA256 from 'crypto-js/sha256';
 
 const LoginForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showButtonWarning, setShowButtonWarning] = useState(false);
   const {
     register,
     handleSubmit,
@@ -17,6 +19,9 @@ const LoginForm = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
+      const hashedPassword = SHA256(data.password).toString();
+      console.log('Hashed password:', hashedPassword);
+
       const response = await fetch('https://savings-loan-app.vercel.app/api/login', {
         method: 'POST',
         headers: {
@@ -24,7 +29,7 @@ const LoginForm = () => {
         },
         body: JSON.stringify({
           email: data.email,
-          password: data.password,
+          password: hashedPassword,
         }),
       });
 
@@ -34,7 +39,7 @@ const LoginForm = () => {
         toast.success('Login successful!');
         console.log('Login response:', result);
         localStorage.setItem('userToken', 'demo-token');
-        localStorage.setItem('user', JSON.stringify({ firstName: 'John', lastName: 'Doe' }));
+        localStorage.setItem('user', JSON.stringify({ firstName: 'Femi', lastName: 'Akinwunmi' }));
         navigate('/');
       } else {
         toast.error(result.message || 'Login failed. Please check your credentials.');
@@ -48,7 +53,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen w-screen  bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen w-[100%] px-5 lg:px-0 bg-gray-50 flex items-center justify-center">
       <div className="w-full max-w-lg bg-white border border-gray-200 shadow-2xl rounded-xl p-8 sm:p-10">
         <div className="flex justify-center mb-4">
           <img src="/logo.jpg" alt="Company Logo" className="h-12 sm:h-14" />
@@ -73,22 +78,32 @@ const LoginForm = () => {
               <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
             )}
           </div>
-
-          <div>
+          <div className="relative">
             <label className="block text-sm font-semibold text-gray-700">Password</label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               {...register('password', {
                 required: 'Password is required',
                 minLength: { value: 6, message: 'Minimum 6 characters' },
               })}
               className={`mt-2 block w-full px-4 py-2 sm:py-3 border ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandOrange`}
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandOrange pr-10`}
               placeholder="••••••••"
             />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-brandBlue hover:text-brandBlue/80"
+            >
+              {showPassword ? (
+                <EyeSlashIcon className="h-5 w-5" />
+              ) : (
+                <EyeIcon className="h-5 w-5" />
+              )}
+            </button>
+            {(showButtonWarning || errors.password) && (
+              <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>
             )}
           </div>
 

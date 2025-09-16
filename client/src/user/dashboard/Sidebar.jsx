@@ -16,7 +16,7 @@ const Sidebar = ({ activeTab, setActiveTab, toggleSidebar }) => {
     <div className="h-full bg-white shadow-lg w-full">
       <div className="py-4">
         <div className=" border-b-2 border-[#f97316] flex justify-center items-center pb-4 mb-1">
-            <img src="/logo.jpg" alt="Company Logo" className="h-15 mb-4" />
+            <img src="/logo.jpg" alt="Company Logo" className="h-72 mb-4" />
 </div>
         <nav className="space-y-2 bg-gray-100 h-screen mx-1  rounded-lg">
           {tabs.map((tab) => (
