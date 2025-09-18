@@ -57,7 +57,7 @@ app.post("/api/create-user-account", create_account)
 
 app.get("/api/get-user-amount", getUserAmount)
 app.get("/api/get-transaction-history", getTransactionHistory)
-app.get("/api/get-user", getUser)
+app.get("/api/get-user/", getUser)
 app.get("/api/get-all-users", getAllUsers)
 
 app.put("/api/transaction", transaction)

@@ -4,6 +4,7 @@ import Register from "../models/register.js";
 import otpGenerator from "otp-generator";
 import nodemailer from "nodemailer"
 import OTP from "../models/otp.js";
+//import { SHA256 } from "crypto-js";
 
 
 export async function registerMember(req, res) {
@@ -43,7 +44,7 @@ export async function memberLogin(req, res){
                 res.status(403).json({ message: 'User NOT found!' });
             }else{
               console.log("password", user.password, req.body.password)
-                if (user.password === String(req.body.password)) {
+                if (user.password=== String(req.body.password)) {
                 console.log("Login successful:");
                 res.status(200).json({ message: 'Login was successful!' });
                 } else {
@@ -151,7 +152,8 @@ export async function updatePassword(req, res) {
 
 export async function getUser(req, res) {
   try {
-    const {email} = req.body
+    const email = req.query.email;
+    console.log("params:", email)
     const userExist = await Register.findOne({email: email});
     if(!userExist) res.status(400).json({error: "User does not exist"});
     res.status(200).json({userExist})
