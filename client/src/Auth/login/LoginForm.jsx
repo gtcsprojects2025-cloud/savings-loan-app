@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -23,7 +19,10 @@ const LoginForm = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const hashedPassword = SHA256(data.password).toString() ;
+      // const hashedPassword = SHA256(data.password).toString();
+      const hashedPassword = data.password
+      console.log('Hashed password:', hashedPassword);
+
       const response = await fetch('https://savings-loan-app.vercel.app/api/login', {
         method: 'POST',
         headers: {
@@ -31,7 +30,7 @@ const LoginForm = () => {
         },
         body: JSON.stringify({
           email: data.email,
-          password: data.password,
+          password: hashedPassword,
         }),
       });
 
@@ -39,9 +38,10 @@ const LoginForm = () => {
 
       if (response.ok) {
         toast.success('Login successful!');
+        console.log('Login response:', result);
         localStorage.setItem('userToken', 'demo-token');
         localStorage.setItem('user', JSON.stringify({ firstName: 'Femi', lastName: 'Akinwunmi' }));
-        localStorage.setItem('email', data.email);
+        localStorage.setItem('email', data.email); // Store email
         navigate('/');
       } else {
         toast.error(result.message || 'Login failed. Please check your credentials.');
@@ -60,9 +60,11 @@ const LoginForm = () => {
         <div className="flex justify-center mb-4">
           <img src="/logo.jpg" alt="Company Logo" className="h-12 sm:h-14" />
         </div>
+
         <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-brandBlue mb-6 tracking-tight">
           Welcome Back
         </h2>
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
             <label className="block text-sm font-semibold text-gray-700">Email Address</label>
@@ -106,6 +108,7 @@ const LoginForm = () => {
               <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>
             )}
           </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -138,6 +141,7 @@ const LoginForm = () => {
             {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
+
         <div className="mt-6 text-sm text-center text-gray-600 space-y-2">
           <p>
             Don’t have an account?{' '}
