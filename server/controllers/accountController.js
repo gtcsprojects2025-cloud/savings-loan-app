@@ -162,7 +162,7 @@ export async function getUserAmount(req, res) {
 
 export async function getTransactionHistory(req, res) {
     try {
-        const {email} = req.body
+        const email = req.query.email
         const transaction_details = await TRANSACTION.find({email:email});
         if(!transaction_details) res.status(400).json({error: "User with this email does not exists"});
         res.status(200).json({transaction_details});        
