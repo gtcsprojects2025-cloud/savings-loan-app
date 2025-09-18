@@ -147,7 +147,7 @@ export async function transaction(req, res) {
 
 export async function getUserAmount(req, res) {
     try {
-        const {email} = req.body
+        const email = req.query.email
         const fetch_details = await ACCOUNT.findOne({email:email});
         if(!fetch_details) res.status(400).json({error: "User with this email does not exists"});
         res.status(200).json({fetch_details});
