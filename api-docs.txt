@@ -314,6 +314,48 @@ Status Code: 400 {error: "User with this email does not exists"}
 Status Code 500: {error:"Server error try again later"}
 
 ======================================================================================
+
+
+
+
+====================================================================================
+
+End-point: "/api/get-user"
+--------------------------
+Method: ['GET']
+--------------------------
+Body:{
+    email
+}
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 200 returns user data of the specified email
+Status Code: 400 {error: "User with this email does not exists"}
+Status Code 500: {error:"Server error try again later"}
+
+======================================================================================
+
+
+
+====================================================================================
+
+End-point: "/api/get-all-users"
+--------------------------
+Method: ['GET']
+--------------------------
+
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 200 returns array of all users data 
+Status Code: 400 {message: "User member found on the database"}
+Status Code 500: {error:"Server error try again later"}
+
+======================================================================================
+
 */
 
 

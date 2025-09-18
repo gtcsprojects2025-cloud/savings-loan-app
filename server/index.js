@@ -1,6 +1,6 @@
 const express = require("express")
 const { connectDB } = require("./db");
-const { registerMember, memberLogin, generateOTP, verifyOTP, updatePassword } = require("./controllers/profileController.js");
+const { registerMember, memberLogin, generateOTP, verifyOTP, updatePassword, getUser, getAllUsers } = require("./controllers/profileController.js");
 
 require('dotenv').config();
 const cors = require('cors');
@@ -57,6 +57,8 @@ app.post("/api/create-user-account", create_account)
 
 app.get("/api/get-user-amount", getUserAmount)
 app.get("/api/get-transaction-history", getTransactionHistory)
+app.get("/api/get-user", getUser)
+app.get("/api/get-all-users", getAllUsers)
 
 app.put("/api/transaction", transaction)
 app.put("/api/update-password", updatePassword)

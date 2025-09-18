@@ -42,7 +42,8 @@ export async function memberLogin(req, res){
             if(!user){
                 res.status(403).json({ message: 'User NOT found!' });
             }else{
-                if (user.password === req.body.password) {
+              console.log("password", user.password, req.body.password)
+                if (user.password === String(req.body.password)) {
                 console.log("Login successful:");
                 res.status(200).json({ message: 'Login was successful!' });
                 } else {
@@ -145,4 +146,27 @@ export async function updatePassword(req, res) {
     } catch (error) {
         res.status(500).json({message: 'Error updating user'});
     }
+}
+
+
+export async function getUser(req, res) {
+  try {
+    const {email} = req.body
+    const userExist = await Register.findOne({email: email});
+    if(!userExist) res.status(400).json({error: "User does not exist"});
+    res.status(200).json({userExist})
+  } catch (error) {
+    res.status(500).json({error: "Server issue try again"})
+    console.log("server error: ", error)
+  }
+}
+
+export async function getAllUsers(req, res) {
+  try {
+    const allUsers = await Register.find({})
+    if(!allUsers) res.status(400).json({message: "User member found on the database"})
+    res.status(200).json(allUsers)
+  } catch (error) {
+    res.status(500).json({error: "server error try again or contact admin"})
+  }
 }
