@@ -6,27 +6,21 @@ import Register from "./Auth/register";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
+import AdminDashboard from "./adminpages/AdminDashboard";
 import Dashboard from "./user/dashboard/Dashboard";
-
-
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Admin page */}
-        <Route path="/" element={<Dashboard />} />
-        {/* Login Page */}
-        <Route path="/Auth/login" element={<LoginForm />} />
-
-          {/* Forgot Password Page */}
+      <Route path="/adminpages/admindashboard" element={<AdminDashboard />} />
+        <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<LoginForm />} />
         <Route path="/forgotpasswordpage" element={<ForgotPasswordPage />} />
-
-        {/* Register Page */}
         <Route path="/Auth/register" element={<Register />} />
       </Routes>
 
-      {/* Toast Notifications */}
       <ToastContainer position="top-right" autoClose={3000} />
     </Router>
   );
