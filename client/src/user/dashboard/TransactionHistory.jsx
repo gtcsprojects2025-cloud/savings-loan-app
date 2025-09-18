@@ -1,42 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { format } from 'date-fns';
+
+const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      return response;
+    } catch (err) {
+      if (i < retries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, delay * Math.pow(2, i)));
+        console.warn(`Retry ${i + 1} for ${url}`);
+      } else {
+        throw err;
+      }
+    }
+  }
+};
 
 const TransactionHistory = () => {
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [modalItem, setModalItem] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const itemsPerPage = 10;
+  const email = localStorage.getItem('email') || 'rolandmario2@gmail.com';
+  const userToken = localStorage.getItem('userToken') || 'demo-token';
 
-  // Demo transaction data (20 records, varied types)
-  const transactions = [
-    { id: 1, date: '2025-09-01', type: 'withdraw', amount: 500, party: 'John Doe', status: 'Completed', method: 'Bank Transfer', notes: 'Emergency fund withdrawal' },
-    { id: 2, date: '2025-08-15', type: 'deposit', amount: 1000, party: 'Jane Smith', status: 'Completed', method: 'Mobile Money', notes: 'Salary deposit' },
-    { id: 3, date: '2025-08-10', type: 'transfer_to', amount: 200, party: 'Bank ABC', status: 'Pending', method: 'Bank Transfer', notes: 'Bill payment' },
-    { id: 4, date: '2025-07-20', type: 'withdraw', amount: 400, party: 'Mary Johnson', status: 'Completed', method: 'Cash', notes: 'Personal expense' },
-    { id: 5, date: '2025-07-01', type: 'loan_payment', amount: 600, party: 'Loan Dept', status: 'Failed', method: 'Bank Transfer', notes: 'Loan repayment attempt' },
-    { id: 6, date: '2025-06-25', type: 'deposit', amount: 800, party: 'Peter Brown', status: 'Completed', method: 'Mobile Money', notes: 'Business income' },
-    { id: 7, date: '2025-06-10', type: 'transfer_from', amount: 300, party: 'Bank XYZ', status: 'Completed', method: 'Bank Transfer', notes: 'Refund' },
-    { id: 8, date: '2025-05-30', type: 'withdraw', amount: 150, party: 'Sarah Wilson', status: 'Pending', method: 'Cash', notes: 'Shopping' },
-    { id: 9, date: '2025-05-15', type: 'deposit', amount: 1200, party: 'David Lee', status: 'Completed', method: 'Bank Transfer', notes: 'Freelance payment' },
-    { id: 10, date: '2025-05-01', type: 'transfer_to', amount: 700, party: 'Bank ABC', status: 'Completed', method: 'Bank Transfer', notes: 'Utility bill' },
-    { id: 11, date: '2025-04-20', type: 'withdraw', amount: 450, party: 'Emma Davis', status: 'Completed', method: 'Cash', notes: 'Medical expense' },
-    { id: 12, date: '2025-04-10', type: 'loan_payment', amount: 900, party: 'Bank XYZ', status: 'Pending', method: 'Bank Transfer', notes: 'Car loan repayment' },
-    { id: 13, date: '2025-03-25', type: 'deposit', amount: 2000, party: 'Michael Chen', status: 'Completed', method: 'Mobile Money', notes: 'Investment return' },
-    { id: 14, date: '2025-03-15', type: 'withdraw', amount: 550, party: 'Lisa Brown', status: 'Completed', method: 'Bank Transfer', notes: 'Home improvement' },
-    { id: 15, date: '2025-03-01', type: 'transfer_from', amount: 300, party: 'Bank ABC', status: 'Completed', method: 'Bank Transfer', notes: 'Gift received' },
-    { id: 16, date: '2025-02-20', type: 'withdraw', amount: 400, party: 'James Wilson', status: 'Completed', method: 'Cash', notes: 'Event expense' },
-    { id: 17, date: '2025-02-10', type: 'loan_payment', amount: 650, party: 'Bank XYZ', status: 'Completed', method: 'Bank Transfer', notes: 'Loan repayment' },
-    { id: 18, date: '2025-01-30', type: 'deposit', amount: 1500, party: 'Anna Taylor', status: 'Pending', method: 'Mobile Money', notes: 'Bonus deposit' },
-    { id: 19, date: '2025-01-15', type: 'transfer_to', amount: 500, party: 'Bank ABC', status: 'Completed', method: 'Bank Transfer', notes: 'Rent payment' },
-    { id: 20, date: '2025-01-01', type: 'withdraw', amount: 300, party: 'Tom Harris', status: 'Completed', method: 'Cash', notes: 'Miscellaneous' },
-  ];
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetchWithRetry(
+          `https://savings-loan-app.vercel.app/api/get-transaction-history?email=${email}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              // 'Authorization': `Bearer ${userToken}`, // Uncomment if required
+            },
+          }
+        );
+        const result = await response.json();
+        console.log('Transaction API response:', JSON.stringify(result, null, 2));
+        if (response.ok && result.transaction_details) {
+          const transformedTransactions = result.transaction_details.map((tx, index) => ({
+            id: tx._id || `tx-${index + 1}`,
+            date: format(new Date(tx.dateCreated), 'yyyy-MM-dd'),
+            type: tx.transactionType?.toLowerCase() || 'unknown',
+            amount: tx.savingAmount || tx.loanAmount || 0,
+            party: tx.comment || 'N/A',
+            status: tx.status || 'Completed',
+            notes: tx.comment || 'No notes',
+          }));
+          setTransactions(transformedTransactions);
+        } else {
+          console.warn('No transaction data found:', result.message);
+          setTransactions([]); // Set empty array for no transactions
+        }
+      } catch (err) {
+        console.error('Transaction fetch error:', err.message);
+        setError(`Failed to load transactions: ${err.message}`);
+        setTransactions([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, [email]);
 
   // Filter transactions based on search
   const filteredTransactions = transactions.filter(
     (item) =>
       item.party.toLowerCase().includes(search.toLowerCase()) ||
       item.status.toLowerCase().includes(search.toLowerCase()) ||
-      item.method.toLowerCase().includes(search.toLowerCase()) ||
       item.type.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -57,6 +98,22 @@ const TransactionHistory = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="p-4 w-full min-h-screen bg-white flex items-center justify-center">
+        <div className="text-lg text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 w-full min-h-screen bg-white flex items-center justify-center">
+        <div className="text-red-500 text-lg">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 w-full min-h-screen bg-white">
       <div className="bg-white border border-gray-200 shadow-2xl rounded-xl p-6">
@@ -65,7 +122,7 @@ const TransactionHistory = () => {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search by party, type, status, or method..."
+              placeholder="Search by party, type, or status..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue pl-10"
@@ -83,7 +140,6 @@ const TransactionHistory = () => {
                 <th className="p-3 font-semibold">Amount</th>
                 <th className="p-3 font-semibold">Party</th>
                 <th className="p-3 font-semibold">Status</th>
-                <th className="p-3 font-semibold">Method</th>
               </tr>
             </thead>
             <tbody>
@@ -97,7 +153,7 @@ const TransactionHistory = () => {
                   <td className="p-3">{item.id}</td>
                   <td className="p-3">{item.date}</td>
                   <td className="p-3 capitalize">{item.type.replace('_', ' ')}</td>
-                  <td className="p-3">${item.amount.toLocaleString()}</td>
+                  <td className="p-3">₦{item.amount.toLocaleString()}</td>
                   <td className="p-3">{item.party}</td>
                   <td
                     className={`p-3 ${

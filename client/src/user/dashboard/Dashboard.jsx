@@ -67,110 +67,138 @@ const Dashboard = () => {
       return;
     }
 
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // Fetch user details
-        const userResponse = await fetchWithRetry(
-          `https://savings-loan-app.vercel.app/api/get-user?email=${email}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${userToken}`,
-            },
-          }
-        );
-        const userResult = await userResponse.json();
-        if (userResponse.ok && userResult.user) {
-          setUserData({
-            firstName: userResult.user.firstName || 'John',
-            lastName: userResult.user.lastName || 'Doe',
-          });
-        } else {
-          throw new Error(
-            userResult.message || `Failed to fetch user data (Status: ${userResponse.status})`
-          );
-        }
+const fetchData = async () => {
+  setLoading(true);
+  setError(null);
+  try {
+    // Fetch user details
+  // Fetch user details
+const userResponse = await fetchWithRetry(
+  `https://savings-loan-app.vercel.app/api/get-user?email=${email}`,
+  {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      // 'Authorization': `Bearer ${userToken}`, // Uncomment if needed after testing
+    },
+  }
+);
+const userResult = await userResponse.json();
+console.log('User API response:', JSON.stringify(userResult, null, 2)); // Keep for verification
+if (userResponse.ok) {
+  if (userResult.userExist) { // Handle the actual structure
+    setUserData({
+      firstName: userResult.userExist.firstName || 'John',
+      lastName: userResult.userExist.lastName || 'Doe',
+    });
+  } else if (userResult.user) {
+    setUserData({
+      firstName: userResult.user.firstName || 'John',
+      lastName: userResult.user.lastName || 'Doe',
+    });
+  } else if (userResult.data) {
+    setUserData({
+      firstName: userResult.data.firstName || 'John',
+      lastName: userResult.data.lastName || 'Doe',
+    });
+  } else if (userResult.profile) {
+    setUserData({
+      firstName: userResult.profile.firstName || 'John',
+      lastName: userResult.profile.lastName || 'Doe',
+    });
+  } else if (userResult.userData) {
+    setUserData({
+      firstName: userResult.userData.firstName || 'John',
+      lastName: userResult.userData.lastName || 'Doe',
+    });
+  } else if (userResult.firstName) {
+    setUserData({
+      firstName: userResult.firstName || 'John',
+      lastName: userResult.lastName || 'Doe',
+    });
+  } else {
+    throw new Error(
+      `Invalid response structure: Expected 'userExist' or similar. Got: ${JSON.stringify(Object.keys(userResult))}`
+    );
+  }
+} else {
+  throw new Error(
+    userResult.message || `Failed to fetch user data (Status: ${userResponse.status})`
+  );
+}
 
-        // Fetch user amounts
-        const amountResponse = await fetchWithRetry(
-          `https://savings-loan-app.vercel.app/api/get-user-amount?email=${email}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${userToken}`,
-            },
-          }
-        );
-        const amountResult = await amountResponse.json();
-        if (amountResponse.ok && amountResult.fetch_details) {
-          setBalances({
-            savings: amountResult.fetch_details.savingAmount || 0,
-            loan: amountResult.fetch_details.loanAmount || 0,
-          });
-        } else {
-          throw new Error(
-            amountResult.message || `Failed to fetch amounts (Status: ${amountResponse.status})`
-          );
-        }
-
-        // Fetch transaction history
-        const transactionResponse = await fetchWithRetry(
-          `https://savings-loan-app.vercel.app/api/get-transaction-history?email=${email}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${userToken}`,
-            },
-          }
-        );
-        const transactionResult = await transactionResponse.json();
-        if (transactionResponse.ok && transactionResult.transaction_details) {
-          const transformedTransactions = transactionResult.transaction_details.map((tx, index) => ({
-            id: tx._id || `tx-${index + 1}`,
-            date: format(new Date(tx.dateCreated), 'yyyy-MM-dd'),
-            type: tx.transactionType?.toLowerCase() || 'unknown',
-            amount: tx.savingAmount || tx.loanAmount || 0,
-            party: tx.comment || 'N/A',
-            status: tx.status || 'Completed',
-            notes: tx.comment || 'No notes',
-          }));
-          setTransactions(transformedTransactions);
-        } else {
-          throw new Error(
-            transactionResult.message || `Failed to fetch transactions (Status: ${transactionResponse.status})`
-          );
-        }
-      } catch (error) {
-        console.error('Dashboard fetch error:', {
-          message: error.message,
-          status: error.status,
-          endpoint: 'https://savings-loan-app.vercel.app/api/get-user',
-          email,
-          token: userToken,
-        });
-        setError(`Failed to load data: ${error.message}. Using demo data.`);
-        setUserData({ firstName: 'John', lastName: 'Doe' });
-        setBalances({ savings: 89000, loan: 0 });
-        setTransactions([
-          {
-            id: '68c93e1d6978ac95e8c5dd90',
-            date: '2025-09-16',
-            type: 'deposit',
-            amount: 50000,
-            party: 'First deposit',
-            status: 'Completed',
-            notes: 'First deposit',
-          },
-        ]);
-      } finally {
-        setLoading(false);
+  // Fetch user amounts
+    const amountResponse = await fetchWithRetry(
+      `https://savings-loan-app.vercel.app/api/get-user-amount?email=${email}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': `Bearer ${userToken}`,
+        },
       }
-    };
+    );
+    const amountResult = await amountResponse.json();
+    console.log('Amount API response:', JSON.stringify(amountResult, null, 2));
+    if (amountResponse.ok && amountResult.fetch_details) {
+      setBalances({
+        savings: amountResult.fetch_details.savingAmount || 0,
+        loan: amountResult.fetch_details.loanAmount || 0,
+      });
+    } else {
+      // Handle "no data" case (including error responses like 404)
+      console.warn('No amount data found, setting defaults:', amountResult.message);
+      setBalances({
+        savings: 0,
+        loan: 0,
+      });
+    }
+
+    // Fetch transaction history
+    const transactionResponse = await fetchWithRetry(
+      `https://savings-loan-app.vercel.app/api/get-transaction-history?email=${email}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': `Bearer ${userToken}`,
+        },
+      }
+    );
+    const transactionResult = await transactionResponse.json();
+    console.log('Transaction API response:', JSON.stringify(transactionResult, null, 2));
+    if (transactionResponse.ok && transactionResult.transaction_details) {
+      const transformedTransactions = transactionResult.transaction_details.map((tx, index) => ({
+        id: tx._id || `tx-${index + 1}`,
+        date: format(new Date(tx.dateCreated), 'yyyy-MM-dd'),
+        type: tx.transactionType?.toLowerCase() || 'unknown',
+        amount: tx.savingAmount || tx.loanAmount || 0,
+        party: tx.comment || 'N/A',
+        status: tx.status || 'Completed',
+        notes: tx.comment || 'No notes',
+      }));
+      setTransactions(transformedTransactions);
+    } else {
+      // Handle "no data" case
+      console.warn('No transaction data found, setting empty:', transactionResult.message);
+      setTransactions([]);
+    }
+  } catch (error) {
+    console.error('Dashboard fetch error:', {
+      message: error.message,
+      status: error.status,
+      endpoint: 'https://savings-loan-app.vercel.app/api/*',
+      email,
+      token: userToken,
+    });
+    setError(`Failed to load data: ${error.message}`);
+    // Ensure defaults to avoid UI crashes
+    setBalances({ savings: 0, loan: 0 });
+    setTransactions([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
     fetchData();
   }, [isLoggedIn, email, userToken, navigate]);
