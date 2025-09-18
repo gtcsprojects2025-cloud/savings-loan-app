@@ -31,7 +31,7 @@ const LoginForm = () => {
         },
         body: JSON.stringify({
           email: data.email,
-          password: hashedPassword,
+          password: data.password,
         }),
       });
 
