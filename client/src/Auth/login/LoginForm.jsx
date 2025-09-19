@@ -19,8 +19,8 @@ const LoginForm = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      // const hashedPassword = SHA256(data.password).toString();
-      const hashedPassword = data.password
+       const hashedPassword = SHA256(data.password).toString();
+     // const hashedPassword = data.password
       console.log('Hashed password:', hashedPassword);
 
       const response = await fetch('https://savings-loan-app.vercel.app/api/login', {
