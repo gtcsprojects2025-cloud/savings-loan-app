@@ -21,7 +21,7 @@ export async function registerMember(req, res) {
     try {
         const emailExists = await Register.findOne({email: req.body.email})
         console.log("Member Already exists", emailExists)
-        if(emailExists.email===req.body.email){
+        if(emailExists){
             
             res.status(400).json({ message: 'user with this email already exist try another email' });
         }else{
@@ -171,4 +171,36 @@ export async function getAllUsers(req, res) {
   } catch (error) {
     res.status(500).json({error: "server error try again or contact admin"})
   }
+}
+
+
+export async function updateUserRecords(req, res) {
+      try {
+   
+    const updatedUser = await Register.updateOne(
+     { email: req.body.email },           // Filter
+     { $set: { title: req.body.title } },
+      { $set: { firstName: req.body.firstName } },
+      { $set: { lastName: req.body.lastName } },
+      { $set: { otherNames: req.body.otherNames } },
+      { $set: { DOB: req.body.DOB } },
+      { $set: { phoneNo: req.body.phoneNo } },
+      { $set: { phoneNo2: req.body.phoneNo2 } },
+      { $set: { BVN: req.body.BVN } },
+      { $set: { NIN: req.body.NIN } },
+      { $set: { residentialAddress: req.body.residentialAddress } },
+      { $set: { residentialState: req.body.residentialState } },
+      { $set: { officeAddress: req.body.officeAddress } },
+      { $set: { referenceName: req.body.referenceName } },
+      { $set: { referencePhoneNo: req.body.referencePhoneNo } },
+      { $set: { guarantorName: req.body.guarantorName } },
+      { $set: { guarantorPhone: req.body.guarantorPhone } },
+      { $set: { guarantorName2: req.body.guarantorName2 } },
+      { $set: { guarantorPhone2: req.body.guarantorPhone2 } }, );
+
+    if (!updatedUser) return res.status(404).json({message:'User not found'});
+    res.status(200).json({ message: 'User records updated successfully!' });
+    } catch (error) {
+        res.status(500).json({message: 'Error updating user'});
+    }
 }
