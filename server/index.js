@@ -1,6 +1,6 @@
 const express = require("express")
 const { connectDB } = require("./db");
-const { registerMember, memberLogin, generateOTP, verifyOTP, updatePassword, getUser, getAllUsers } = require("./controllers/profileController.js");
+const { registerMember, memberLogin, generateOTP, verifyOTP, updatePassword, getUser, getAllUsers, updateUserRecords } = require("./controllers/profileController.js");
 
 require('dotenv').config();
 const cors = require('cors');
@@ -62,6 +62,7 @@ app.get("/api/get-all-users", getAllUsers)
 
 app.put("/api/transaction", transaction)
 app.put("/api/update-password", updatePassword)
+app.put("/api/update-user-records", updateUserRecords)
 
 connectDB().then(()=>{
     app.listen(PORT, console.log(`Server is running on port ${PORT}`));
