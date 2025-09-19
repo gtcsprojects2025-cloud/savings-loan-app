@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
 const Transactions = () => {
-  const [activeTab, setActiveTab] = useState('Deposit');
+  const [activeTab, setActiveTab] = useState('deposit');
   const [formData, setFormData] = useState({
     email: '',
     BVN: '',
@@ -21,14 +21,15 @@ const Transactions = () => {
 
   const handleSubmit = async (type) => {
     setLoading(true);
+    const normalizedType = type.toLowerCase();
 
     let payload = {};
-    if (type === 'Transfer') {
+    if (normalizedType === 'transfer') {
       payload = {
         senderBVN: formData.senderBVN,
         receiverBVN: formData.receiverBVN,
         amount: formData.amount,
-        transactionType: 'Transfer',
+        transactionType: normalizedType,
         comment: formData.comment,
       };
     } else {
@@ -37,7 +38,7 @@ const Transactions = () => {
         BVN: formData.BVN,
         savingAmount: formData.savingAmount,
         loanAmount: formData.loanAmount,
-        transactionType: type,
+        transactionType: normalizedType,
         comment: formData.comment,
       };
     }
@@ -64,7 +65,7 @@ const Transactions = () => {
   };
 
   const renderForm = () => {
-    if (activeTab === 'Transfer') {
+    if (activeTab === 'transfer') {
       return (
         <form onSubmit={(e) => e.preventDefault()} className="bg-white p-6 rounded-lg shadow-md">
           <table className="table-auto w-full border-separate border-spacing-y-4">
@@ -123,7 +124,7 @@ const Transactions = () => {
           </table>
           <button
             type="button"
-            onClick={() => handleSubmit('Transfer')}
+            onClick={() => handleSubmit('transfer')}
             className="mt-6 bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition w-full"
             disabled={loading}
           >
@@ -206,7 +207,7 @@ const Transactions = () => {
           className="mt-6 bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition w-full"
           disabled={loading}
         >
-          {loading ? 'Processing...' : activeTab}
+          {loading ? 'Processing...' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
         </button>
       </form>
     );
@@ -218,7 +219,7 @@ const Transactions = () => {
 
       {/* Tabs on Top */}
       <div className="flex gap-4 mb-6">
-        {['Deposit', 'Withdraw', 'Transfer'].map((tab) => (
+        {['deposit', 'withdrawal', 'transfer'].map((tab) => (
           <button
             key={tab}
             onClick={() => {
@@ -229,7 +230,7 @@ const Transactions = () => {
               activeTab === tab ? 'bg-orange-500 text-white' : 'bg-gray-200'
             }`}
           >
-            {tab}
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
