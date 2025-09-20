@@ -115,7 +115,7 @@ console.log("otp :", otp)
 
 export async function verifyOTP(req, res) {
     try {
-               const user = await OTP.findOne({email: req.body.email?.trim()});
+               const user = await OTP.findOne({email: req.body.email?.trim(), otp:req.body.otp});
             if(!user){
                 res.status(403).json({ message: 'User has NOT requested OTP!' });
             }else{
