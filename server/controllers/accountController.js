@@ -171,3 +171,13 @@ export async function getTransactionHistory(req, res) {
         console.log("server error: ", error);        
     }
 }
+
+export async function getAllMembersTransactions(req, res) {
+    try {
+    const allMembersTx = await TRANSACTION.find({})
+    if(!allMembersTx) res.status(400).json({message: "No member transaction found on the database"})
+    res.status(200).json(allMembersTx)
+  } catch (error) {
+    res.status(500).json({error: "server error try again or contact admin"})
+  }
+}
