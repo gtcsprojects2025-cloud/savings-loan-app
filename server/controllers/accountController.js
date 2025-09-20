@@ -181,3 +181,14 @@ export async function getAllMembersTransactions(req, res) {
     res.status(500).json({error: "server error try again or contact admin"})
   }
 }
+
+
+export async function getUserAccountRecords(req, res) {
+    try {
+    const allAccountRecords = await ACCOUNT.find({})
+    if(!allAccountRecords) res.status(400).json({message: "Account Not found on the database"})
+    res.status(200).json(allAccountRecords)
+  } catch (error) {
+    res.status(500).json({error: "server error try again or contact admin"})
+  }
+}
