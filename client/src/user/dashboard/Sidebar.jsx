@@ -4,7 +4,7 @@ import { HomeIcon, ChartBarIcon, CurrencyDollarIcon, ArrowRightOnRectangleIcon, 
 const Sidebar = ({ activeTab, setActiveTab, toggleSidebar }) => {
   const tabs = [
     { name: 'Account', icon: HomeIcon },
-    { name: 'Start Saving', icon: CurrencyDollarIcon },
+    // { name: 'Start Saving', icon: CurrencyDollarIcon },
     { name: 'Transaction History', icon: ChartBarIcon },
     { name: 'Loan App', icon: BanknotesIcon },
     { name: 'Profile', icon: UserIcon },
