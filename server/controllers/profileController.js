@@ -15,8 +15,7 @@ export async function registerMember(req, res) {
            NIN:req.body.NIN, BVN:req.body.BVN, residentialAddress:req.body.residentialAddress,
            residentialState:req.body.residentialState, officeAddress:req.body.officeAddress,
            referenceName:req.body.referenceName, referencePhoneNo:req.body.referencePhoneNo,
-           guarantorName:req.body.guarantorName, guarantorPhone:req.body.guarantorPhone,
-           guarantorName2:req.body.guarantorName2, guarantorPhone2:req.body.guarantorPhone2}
+           nextOfKin:req.body.nextOfKin, nextOfKinPhone:req.body.nextOfKinPhone}
 
     try {
         const emailExists = await Register.findOne({email: req.body.email})
