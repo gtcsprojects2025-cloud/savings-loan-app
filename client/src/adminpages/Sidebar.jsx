@@ -10,14 +10,14 @@ const Sidebar = ({ activeTab, setActiveTab, toggleSidebar }) => {
   const tabs = [
     { name: 'Dashboard', icon: HomeIcon },
     { name: 'View Members', icon: UserGroupIcon },
-    { name: 'CreateAccount', icon: BanknotesIcon },
+    { name: 'Create Account', icon: BanknotesIcon },
     { name: 'Transactions', icon: BanknotesIcon },
     { name: 'TransactionHistory', icon: BanknotesIcon },
     { name: 'Logout', icon: ArrowRightOnRectangleIcon },
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 shadow-md">
+    <aside className="sticky top-0 h-screen w-64 flex flex-col bg-gray-100 shadow-md z-50">
       {/* Header */}
       <div className="border-b border-orange-500 p-6 flex flex-col items-center justify-center bg-white">
         <img src="/logo.jpg" alt="Company Logo" className="h-12 mb-2" />
@@ -47,9 +47,9 @@ const Sidebar = ({ activeTab, setActiveTab, toggleSidebar }) => {
 
       {/* Footer */}
       <footer className="p-4 text-xs text-center text-gray-500 border-t bg-white">
-        &copy; {new Date().getFullYear()} EDICHA Bank Admin
+        &copy; {new Date().getFullYear()} GTCS Corporative Admin
       </footer>
-    </div>
+    </aside>
   );
 };
 

@@ -47,9 +47,21 @@ const CreateAccount = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto relative">
       <h1 className="text-2xl font-bold mb-6">Create New Account</h1>
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
+
+      {loading && (
+        <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10">
+          <div className="text-orange-600 font-medium text-lg animate-pulse">
+            Creating account, please wait…
+          </div>
+        </div>
+      )}
+
+      <form
+        onSubmit={handleSubmit}
+        className={`bg-white p-6 rounded-lg shadow-md ${loading ? 'opacity-50 pointer-events-none' : ''}`}
+      >
         <table className="table-auto w-full border-separate border-spacing-y-4">
           <tbody>
             <tr>
