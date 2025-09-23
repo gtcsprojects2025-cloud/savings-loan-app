@@ -48,6 +48,7 @@ const LoginForm = () => {
 
           console.log('Navigating to /adminpages/admindashboard');
           localStorage.setItem('adminEmail', data.email);
+           localStorage.setItem('isAdminAuthenticated', 'true');
           navigate('/adminpages/admindashboard');
        
         } else {
