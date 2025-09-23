@@ -127,7 +127,7 @@ const LoginForm = () => {
               type={showPassword ? 'text' : 'password'}
               {...register('password', {
                 required: 'Password is required',
-                minLength: { value: 6, message: 'Minimum 6 characters' },
+                minLength: { value: 8, message: 'Minimum 8 characters' },
               })}
               className={`mt-2 block w-full px-4 py-2 sm:py-3 border ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
