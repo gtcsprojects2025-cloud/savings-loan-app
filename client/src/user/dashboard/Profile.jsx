@@ -326,8 +326,8 @@ const Profile = () => {
       BVN: '',
       residentialAddress: '',
       residentialState: '',
-      guarantorName: '',
-      guarantorPhone: '',
+      nextOfKin: '',
+      nextOfKinPhone: '',
     },
   });
 
@@ -361,8 +361,8 @@ const Profile = () => {
             BVN: result.userExist.BVN || '',
             residentialAddress: result.userExist.residentialAddress || '',
             residentialState: result.userExist.residentialState || '',
-            guarantorName: result.userExist.guarantorName || '',
-            guarantorPhone: result.userExist.guarantorPhone || '',
+            nextOfKin: result.userExist.nextOfKin || '',
+            nextOfKinPhone: result.userExist.nextOfKinPhone || '',
           };
           reset(userData); // Update form with fetched data
           localStorage.setItem('user', JSON.stringify(userData)); // Sync localStorage
@@ -406,8 +406,8 @@ const Profile = () => {
     BVN: '',
     residentialAddress: '',
     residentialState: '',
-    guarantorName: '',
-    guarantorPhone: '',
+    nextOfKin: '',
+    nextOfKinPhone: '',
   };
 
   if (loading) {
@@ -586,29 +586,29 @@ const Profile = () => {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700">Guarantor Name</label>
+                <label className="block text-sm font-semibold text-gray-700">Next of Kin Name</label>
                 <input
                   type="text"
-                  {...register('guarantorName', { required: 'Guarantor name is required' })}
+                  {...register('nextOfKin', { required: 'Next of Kin name is required' })}
                   className={`mt-2 block w-full px-4 py-2 border ${
-                    errors.guarantorName ? 'border-red-500' : 'border-gray-300'
+                    errors.nextOfKin ? 'border-red-500' : 'border-gray-300'
                   } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
                 />
-                {errors.guarantorName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.guarantorName.message}</p>
-                )}
+                {errors.nextOfKin && (
+                    <p className="text-red-500 text-sm mt-1">{errors.nextOfKin.message}</p>
+                  )}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700">Guarantor Phone</label>
+                <label className="block text-sm font-semibold text-gray-700">Next of Kin Phone</label>
                 <input
                   type="text"
-                  {...register('guarantorPhone', { required: 'Guarantor phone is required' })}
+                  {...register('nextOfKinPhone', { required: 'Next of Kin phone is required' })}
                   className={`mt-2 block w-full px-4 py-2 border ${
-                    errors.guarantorPhone ? 'border-red-500' : 'border-gray-300'
+                    errors.nextOfKinPhone ? 'border-red-500' : 'border-gray-300'
                   } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
                 />
-                {errors.guarantorPhone && (
-                  <p className="text-red-500 text-sm mt-1">{errors.guarantorPhone.message}</p>
+                {errors.nextOfKinPhone && (
+                  <p className="text-red-500 text-sm mt-1">{errors.nextOfKinPhone.message}</p>
                 )}
               </div>
             </div>
@@ -669,12 +669,12 @@ const Profile = () => {
                 {user.residentialState || 'N/A'}
               </p>
               <p>
-                <strong>Guarantor Name:</strong> <br />
-                {user.guarantorName || 'N/A'}
+                <strong>Next of Kin Name:</strong> <br />
+                {user.nextOfKin || 'N/A'}
               </p>
               <p>
-                <strong>Guarantor Phone:</strong> <br />
-                {user.guarantorPhone || 'N/A'}
+                <strong>Next of Kin Phone:</strong> <br />
+                {user.nextOfKinPhone || 'N/A'}
               </p>
             </div>
           </div>

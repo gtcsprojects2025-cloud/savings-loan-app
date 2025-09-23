@@ -39,12 +39,9 @@ function Register() {
       referenceMobileCountry: '+234',
       referenceMobile: '',
       product: '',
-      guarantor1: '',
-      guarantor1MobileCountry: '+234',
-      guarantor1Mobile: '',
-      guarantor2: '',
-      guarantor2MobileCountry: '+234',
-      guarantor2Mobile: '',
+      nextOfKin: '',
+      nextOfKinMobileCountry: '+234',
+      nextOfKinMobile: '',
     },
   });
 
@@ -82,7 +79,7 @@ function Register() {
   const validateStep = (data, step) => {
     const step1RequiredFields = ['title', 'lastName', 'firstName', 'dob', 'email', 'password', 'confirmPassword'];
     const step2RequiredFields = ['primaryPhone', 'nin', 'bvn', 'residentialAddress', 'residentialState'];
-    const step3RequiredFields = ['guarantor1', 'guarantor1Mobile'];
+    const step3RequiredFields = ['nextOfKin', 'nextOfKinMobile'];
 
     const fieldsToValidate = step === 1 ? step1RequiredFields : step === 2 ? step2RequiredFields : step3RequiredFields;
     const newErrors = {};
@@ -116,8 +113,8 @@ function Register() {
       }
     }
     if (step === 3) {
-      if (data.guarantor1Mobile && !/^\d{10,15}$/.test(data.guarantor1Mobile)) {
-        newErrors.guarantor1Mobile = 'Must be 10–15 digits';
+      if (data.nextOfKinMobile && !/^\d{10,15}$/.test(data.nextOfKinMobile)) {
+        newErrors.nextOfKinMobile = 'Must be 10–15 digits';
       }
     }
     if (data.otherPhone?.trim() && !/^\d{10,15}$/.test(data.otherPhone)) {
@@ -125,9 +122,6 @@ function Register() {
     }
     if (data.referenceMobile?.trim() && !/^\d{10,15}$/.test(data.referenceMobile)) {
       newErrors.referenceMobile = 'Must be 10–15 digits';
-    }
-    if (data.guarantor2Mobile?.trim() && !/^\d{10,15}$/.test(data.guarantor2Mobile)) {
-      newErrors.guarantor2Mobile = 'Must be 10–15 digits';
     }
 
     return newErrors;
@@ -165,7 +159,7 @@ function Register() {
           otherNames: data.otherName,
           DOB: data.dob,
           email: data.email,
-          password: hashedPassword, // Send hashed password
+          password: hashedPassword,
           phoneNo: `${data.primaryPhoneCountry}${data.primaryPhone}`,
           PhoneNo2: data.otherPhone ? `${data.otherPhoneCountry}${data.otherPhone}` : '',
           NIN: data.nin,
@@ -175,10 +169,9 @@ function Register() {
           officeAddress: data.officeAddress,
           referenceName: data.referenceName,
           referencePhoneNo: data.referenceMobile ? `${data.referenceMobileCountry}${data.referenceMobile}` : '',
-          guarantorName: data.guarantor1,
-          guarantorPhone: `${data.guarantor1MobileCountry}${data.guarantor1Mobile}`,
-          guarantorName2: data.guarantor2,
-          guarantorPhone2: data.guarantor2Mobile ? `${data.guarantor2MobileCountry}${data.guarantor2Mobile}` : '',
+          nextOfKin: data.nextOfKin,
+          nextOfKinPhone: `${data.nextOfKinMobileCountry}${data.nextOfKinMobile}`,
+          product: data.product,
         };
         console.log('Submitting form data:', formPayload);
 
@@ -582,25 +575,25 @@ function Register() {
 
               <div className="form-group">
                 <label className="form-label">
-                  Loan Guarantor 1 <span className="form-step">*</span>
+                  Next of Kin Name <span className="form-step">*</span>
                 </label>
                 <input
                   type="text"
-                  {...register('guarantor1', { required: 'Guarantor name is required' })}
+                  {...register('nextOfKin', { required: 'Next of kin name is required' })}
                   className="form-input"
                 />
-                {(showButtonWarning || formErrors.guarantor1) && (
-                  <span className="form-error">{formErrors.guarantor1?.message}</span>
+                {(showButtonWarning || formErrors.nextOfKin) && (
+                  <span className="form-error">{formErrors.nextOfKin?.message}</span>
                 )}
               </div>
 
               <div className="form-group">
                 <label className="form-label">
-                  Guarantor 1 Mobile <span className="form-step">*</span>
+                  Next of Kin Mobile <span className="form-step">*</span>
                 </label>
                 <div className="phone-group">
                   <select
-                    {...register('guarantor1MobileCountry')}
+                    {...register('nextOfKinMobileCountry')}
                     className="form-select country-code"
                   >
                     {countryCodes.map((country) => (
@@ -611,48 +604,16 @@ function Register() {
                   </select>
                   <input
                     type="tel"
-                    {...register('guarantor1Mobile', {
-                      required: 'Guarantor mobile is required',
+                    {...register('nextOfKinMobile', {
+                      required: 'Next of kin mobile is required',
                       pattern: { value: /^\d{10,15}$/, message: 'Must be 10–15 digits' },
                     })}
-                    onChange={(e) => handlePhoneChange(e, 'guarantor1Mobile')}
+                    onChange={(e) => handlePhoneChange(e, 'nextOfKinMobile')}
                     className="form-input phone-input"
                   />
                 </div>
-                {(showButtonWarning || formErrors.guarantor1Mobile) && (
-                  <span className="form-error">{formErrors.guarantor1Mobile?.message}</span>
-                )}
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Loan Guarantor 2</label>
-                <input type="text" {...register('guarantor2')} className="form-input" />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Guarantor 2 Mobile</label>
-                <div className="phone-group">
-                  <select
-                    {...register('guarantor2MobileCountry')}
-                    className="form-select country-code"
-                  >
-                    {countryCodes.map((country) => (
-                      <option key={country.code} value={country.code}>
-                        {country.name}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="tel"
-                    {...register('guarantor2Mobile', {
-                      pattern: { value: /^\d{10,15}$/, message: 'Must be 10–15 digits' },
-                    })}
-                    onChange={(e) => handlePhoneChange(e, 'guarantor2Mobile')}
-                    className="form-input phone-input"
-                  />
-                </div>
-                {(showButtonWarning || formErrors.guarantor2Mobile) && (
-                  <span className="form-error">{formErrors.guarantor2Mobile?.message}</span>
+                {(showButtonWarning || formErrors.nextOfKinMobile) && (
+                  <span className="form-error">{formErrors.nextOfKinMobile?.message}</span>
                 )}
               </div>
             </div>

@@ -1,7 +1,9 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import loan from '../../assets/loan.png'
+import emailjs from '@emailjs/browser';
+import loan from '../../assets/loan.png';
+
 const Loan = () => {
   const {
     register,
@@ -10,19 +12,44 @@ const Loan = () => {
     reset,
   } = useForm();
 
-  const onSubmit = (data) => {
-    // Demo submit action
-    console.log('Loan application data:', data);
-    toast.success('Loan application submitted!');
-    reset();
+  const onSubmit = async (data) => {
+    try {
+      const templateParams = {
+        loanType: data.loanType,
+        amount: data.amount,
+        purpose: data.purpose,
+        employmentStatus: data.employmentStatus,
+        income: data.income,
+        referenceName: data.referenceName,
+        referencePhone: data.referencePhone,
+        accountHolderName: data.accountHolderName,
+        bankName: data.bankName,
+        accountNumber: data.accountNumber,
+        to_email: 'feezyakinwunmi001@gmail.com',
+      };
+
+      await emailjs.send(
+        'YOUR_SERVICE_ID', // Replace with your EmailJS Service ID
+        'YOUR_TEMPLATE_ID', // Replace with your EmailJS Template ID
+        templateParams,
+        'YOUR_USER_ID' // Replace with your EmailJS User ID
+      );
+
+      console.log('Loan application data:', data);
+      toast.success('Loan application submitted and email sent!');
+      reset();
+    } catch (error) {
+      console.error('Error sending email:', error);
+      toast.error('Failed to send loan application. Please try again.');
+    }
   };
 
   return (
     <div className="p-4 w-full min-h-screen bg-white">
       {/* Introduction Section */}
-      <div className=" rounded-xl p-6 mb-6">
+      <div className="rounded-xl p-6 mb-6">
         <div className="flex flex-col lg:flex-row gap-6">
-           <div className="lg:w-1/2">
+          <div className="lg:w-1/2">
             <img
               src={loan}
               alt="Loan Illustration"
@@ -38,7 +65,6 @@ const Loan = () => {
               <strong>Why borrow from us?</strong> We prioritize your financial well-being with quick approvals, personalized support, and repayment plans tailored to your budget. Join thousands of satisfied customers who trust us to fuel their aspirations.
             </p>
           </div>
-         
         </div>
       </div>
 
@@ -71,6 +97,23 @@ const Loan = () => {
       <div className="bg-white border border-gray-200 shadow-2xl rounded-xl p-6">
         <h3 className="text-lg font-semibold text-gray-700 mb-4">Apply for a Loan</h3>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Loan Type</label>
+            <select
+              {...register('loanType', { required: 'Loan type is required' })}
+              className={`mt-2 block w-full px-4 py-2 border ${
+                errors.loanType ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+            >
+              <option value="">Select loan type</option>
+              <option value="regular">Regular - 8% one-time interest</option>
+              <option value="soft">Soft - 3% monthly</option>
+            </select>
+            {errors.loanType && (
+              <p className="text-red-500 text-sm mt-1">{errors.loanType.message}</p>
+            )}
+          </div>
+
           <div>
             <label className="block text-sm font-semibold text-gray-700">Loan Amount</label>
             <input
@@ -111,26 +154,6 @@ const Loan = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700">Loan Term</label>
-            <select
-              {...register('term', { required: 'Loan term is required' })}
-              className={`mt-2 block w-full px-4 py-2 border ${
-                errors.term ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
-            >
-              <option value="">Select term</option>
-              <option value="6">6 Months</option>
-              <option value="12">12 Months</option>
-              <option value="24">24 Months</option>
-              <option value="36">36 Months</option>
-              <option value="60">60 Months</option>
-            </select>
-            {errors.term && (
-              <p className="text-red-500 text-sm mt-1">{errors.term.message}</p>
-            )}
-          </div>
-
-          <div>
             <label className="block text-sm font-semibold text-gray-700">Employment Status</label>
             <select
               {...register('employmentStatus', { required: 'Employment status is required' })}
@@ -166,6 +189,109 @@ const Loan = () => {
             )}
           </div>
 
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Reference Name</label>
+            <input
+              type="text"
+              {...register('referenceName', {
+                required: 'Reference name is required',
+                pattern: {
+                  value: /^[A-Za-z\s]+$/,
+                  message: 'Reference name must contain only letters and spaces',
+                },
+              })}
+              className={`mt-2 block w-full px-4 py-2 border ${
+                errors.referenceName ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+              placeholder="Enter reference name"
+            />
+            {errors.referenceName && (
+              <p className="text-red-500 text-sm mt-1">{errors.referenceName.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Reference Phone Number</label>
+            <input
+              type="tel"
+              {...register('referencePhone', {
+                required: 'Reference phone number is required',
+                pattern: {
+                  value: /^\+?[1-9]\d{1,14}$/,
+                  message: 'Enter a valid phone number (e.g., +1234567890)',
+                },
+              })}
+              className={`mt-2 block w-full px-4 py-2 border ${
+                errors.referencePhone ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+              placeholder="Enter reference phone number"
+            />
+            {errors.referencePhone && (
+              <p className="text-red-500 text-sm mt-1">{errors.referencePhone.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Account Holder Name</label>
+            <input
+              type="text"
+              {...register('accountHolderName', {
+                required: 'Account holder name is required',
+                pattern: {
+                  value: /^[A-Za-z\s]+$/,
+                  message: 'Account holder name must contain only letters and spaces',
+                },
+              })}
+              className={`mt-2 block w-full px-4 py-2 border ${
+                errors.accountHolderName ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+              placeholder="Enter account holder name"
+            />
+            {errors.accountHolderName && (
+              <p className="text-red-500 text-sm mt-1">{errors.accountHolderName.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Bank Name</label>
+            <input
+              type="text"
+              {...register('bankName', {
+                required: 'Bank name is required',
+              })}
+              className={`mt-2 block w-full px-4 py-2 border ${
+                errors.bankName ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+              placeholder="Enter bank name"
+            />
+            {errors.bankName && (
+              <p className="text-red-500 text-sm mt-1">{errors.bankName.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Account Number</label>
+            <input
+              type="text"
+              {...register('accountNumber', {
+                required: 'Account number is required',
+                pattern: {
+                  value: /^\d{10,20}$/,
+                  message: 'Account number must be between 10 and 20 digits',
+                },
+              })}
+              className={`mt-2 block w-full px-4 py-2 border ${
+                errors.accountNumber ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+              placeholder="Enter account number"
+            />
+            {errors.accountNumber && (
+              <p className="text-red-500 text-sm mt-1">{errors.accountNumber.message}</p>
+            )}
+          </div>
+
+       
+
           <button
             type="submit"
             className="w-full bg-brandOrange text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition"
@@ -177,6 +303,8 @@ const Loan = () => {
     </div>
   );
 };
+
+emailjs.init('YOUR_USER_ID'); // Replace with your EmailJS User ID
 
 export default Loan;
 
