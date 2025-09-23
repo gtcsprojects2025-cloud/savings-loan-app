@@ -4,6 +4,7 @@ import Register from "../models/register.js";
 import otpGenerator from "otp-generator";
 import nodemailer from "nodemailer"
 import OTP from "../models/otp.js";
+import AdminLogin from "../models/adminLogin.js";
 //import { SHA256 } from "crypto-js";
 
 
@@ -204,6 +205,28 @@ export async function updateUserRecords(req, res) {
     }
 }
 
+export async function adminLogin(req, res){
+    try {
+       
+       const user = await AdminLogin.findOne({email: req.body.email?.trim()});
+            if(!user){
+                res.status(403).json({ message: 'User NOT found!' });
+            }else{
+              console.log("password", user.password, req.body.password)
+                if (user.password=== String(req.body.password)) {
+                console.log("Login successful:");
+                res.status(200).json({ message: 'Login was successful!' });
+                } else {
+                res.status(405).json({ message: 'Wrong login credentials!' });
+                }
+            }
 
+
+    } catch (error) {
+        res.status(503).json({ message: 'Server Error. Contact Admin' });
+        console.log("Server issues: ", error)
+    }
+
+}
 
 

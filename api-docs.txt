@@ -360,35 +360,7 @@ Status Code 500: {error:"Server error try again later"}
 
 
 /* 
-// AuthContext.js
-import { createContext, useState } from 'react';
 
-export const AuthContext = createContext();
-
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-
-  return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-
-// Login.js
-import { useContext } from 'react';
-import { AuthContext } from './AuthContext';
-
-const Login = () => {
-  const { setUser } = useContext(AuthContext);
-
-  const handleLogin = () => {
-    setUser({ name: 'Jane Doe' });
-  };
-
-  return <button onClick={handleLogin}>Log In</button>;
-};
 
 
 */
