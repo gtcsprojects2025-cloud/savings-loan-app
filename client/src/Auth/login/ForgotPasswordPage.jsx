@@ -29,7 +29,6 @@ const ForgotPasswordPage = () => {
     }, 1000);
   };
 
-  // STEP 1 & RESEND: Generate OTP
   const handleEmailSubmit = async (data) => {
     const userEmail = (data.email || email).trim();
     setLoading(true);
@@ -59,7 +58,6 @@ const ForgotPasswordPage = () => {
     setLoading(false);
   };
 
-  // STEP 2: Verify OTP
   const handleOtpSubmit = async (data) => {
     setLoading(true);
 
@@ -86,7 +84,6 @@ const ForgotPasswordPage = () => {
     setLoading(false);
   };
 
-  // STEP 3: Update Password
   const handlePasswordReset = async (data) => {
     setLoading(true);
 
@@ -113,33 +110,19 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-[100%]  px-5 lg:px-0 bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen w-full px-5 lg:px-0 bg-gray-50 flex items-center justify-center">
       <div className="w-full max-w-md bg-white border border-gray-200 shadow-xl rounded-xl p-8 sm:p-10">
-        {/* add a back arrow */}
-          {/* add a back route button */}
         <div className="form-header">
           <button onClick={() => (window.location.href = '/')} className="back-button">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-[#eb7425] "
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#eb7425]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
         </div>
 
-
-              <div className="flex justify-center mb-4">
-  <img src="/logo.jpg" alt="Company Logo" className="h-12 sm:h-14" />
-</div>
+        <div className="flex justify-center mb-4">
+          <img src="/logo.jpg" alt="Company Logo" className="h-12 sm:h-14" />
+        </div>
 
         <h2 className="text-2xl font-bold text-center text-brandBlue mb-6">Forgot Password</h2>
 
@@ -150,27 +133,17 @@ const ForgotPasswordPage = () => {
               <input
                 type="email"
                 {...register('email', { required: 'Email is required' })}
-                className={`mt-2 block w-full px-4 py-2 border ${
-                  errors.email ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+                className={`mt-2 block w-full px-4 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
                 placeholder="you@example.com"
               />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
             </div>
             <button
               type="submit"
               disabled={loading || !canResend}
-              className={`w-full bg-brandOrange text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition ${
-                !canResend ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`w-full bg-brandOrange text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition ${!canResend ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {loading
-                ? 'Sending OTP...'
-                : !canResend
-                ? `Wait ${countdown}s`
-                : 'Send OTP'}
+              {loading ? 'Sending OTP...' : !canResend ? `Wait ${countdown}s` : 'Send OTP'}
             </button>
             {!canResend && (
               <p className="text-sm text-center text-gray-500 mt-2">
@@ -187,14 +160,10 @@ const ForgotPasswordPage = () => {
               <input
                 type="text"
                 {...register('otp', { required: 'OTP is required' })}
-                className={`mt-2 block w-full px-4 py-2 border ${
-                  errors.otp ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandOrange`}
+                className={`mt-2 block w-full px-4 py-2 border ${errors.otp ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-brandOrange`}
                 placeholder="123456"
               />
-              {errors.otp && (
-                <p className="text-red-500 text-sm mt-1">{errors.otp.message}</p>
-              )}
+              {errors.otp && <p className="text-red-500 text-sm mt-1">{errors.otp.message}</p>}
             </div>
             <button
               type="submit"
@@ -228,23 +197,23 @@ const ForgotPasswordPage = () => {
                 type="password"
                 {...register('newPassword', {
                   required: 'New password is required',
-                  minLength: { value: 6, message: 'Minimum 6 characters' },
+                  minLength: { value: 8, message: 'Minimum 8 characters' },
+                  pattern: {
+                    value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+                    message: 'Password must include letters, numbers, and special characters',
+                  },
                 })}
-                className={`mt-2 block w-full px-4 py-2 border ${
-                  errors.newPassword ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+                className={`mt-2 block w-full px-4 py-2 border ${errors.newPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
                 placeholder="••••••••"
               />
-              {errors.newPassword && (
-                <p className="text-red-500 text-sm mt-1">{errors.newPassword.message}</p>
-              )}
+              {errors.newPassword && <p className="text-red-500 text-sm mt-1">{errors.newPassword.message}</p>}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
               <input
                 type="password"
-                {...register('confirmPassword', {
+                               {...register('confirmPassword', {
                   required: 'Please confirm your password',
                   validate: (value) =>
                     value === watch('newPassword') || 'Passwords do not match',
