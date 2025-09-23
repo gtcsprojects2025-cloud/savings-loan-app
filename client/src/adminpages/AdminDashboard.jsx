@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import DashboardHome from './Dashboard';
-import Members from './Members';
-import Transactions from './Transactions';
-import CreateAccount from './CreateAccount';
-import TransactionHistory from './TransactionHistory';
+import Members from './Members'; // uses /api/get-all-users and /api/update-user-records
+import Transactions from './Transactions'; // assumed to handle new transactions
+import CreateAccount from './CreateAccount'; // assumed to create new users
+import TransactionHistory from './TransactionHistory'; // uses /api/get-transaction-history
 import Logout from './Logout';
 
 const AdminDashboard = () => {
@@ -16,13 +16,13 @@ const AdminDashboard = () => {
       case 'Dashboard':
         return <DashboardHome />;
       case 'View Members':
-        return <Members />;
-      case 'CreateAccount':
-        return <CreateAccount />;
+        return <Members />; // shows all users and allows updates
+      case 'Create Account':
+        return <CreateAccount />; // creates new user accounts
       case 'Transactions':
-        return <Transactions />;
+        return <Transactions />; // handles deposits/loans
       case 'TransactionHistory':
-        return <TransactionHistory />;
+        return <TransactionHistory />; // shows transaction records
       case 'Logout':
         return <Logout />;
       default:

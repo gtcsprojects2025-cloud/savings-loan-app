@@ -68,22 +68,15 @@ const { Schema } = mongoose;
         type: Number,
         required: false
     },
-     guarantorName:{
+     nextOfKin:{
         type: String,
         required: true
     },
-    guarantorPhone:{
+    nextOfKinPhone:{
         type: String,
         required: true
     },
-    guarantorName2:{
-        type: String,
-        required: false
-    },
-    guarantorPhone2:{
-        type: String,
-        required: false
-    },
+  
 
  });
 

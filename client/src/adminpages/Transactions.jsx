@@ -12,6 +12,7 @@ const Transactions = () => {
     senderBVN: '',
     receiverBVN: '',
     amount: '',
+    transactionType: 'deposit',
   });
   const [loading, setLoading] = useState(false);
 
@@ -65,50 +66,117 @@ const Transactions = () => {
   };
 
   const renderForm = () => {
-    if (activeTab === 'transfer') {
-      return (
-        <form onSubmit={(e) => e.preventDefault()} className="bg-white p-6 rounded-lg shadow-md">
+    const isTransfer = activeTab === 'transfer';
+
+    return (
+      <div className="relative">
+        {loading && (
+          <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10">
+            <div className="text-orange-600 font-medium text-lg animate-pulse">
+              Processing transaction…
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={(e) => e.preventDefault()} className={`bg-white p-6 rounded-lg shadow-md ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
           <table className="table-auto w-full border-separate border-spacing-y-4">
             <tbody>
-              <tr>
-                <td className="w-1/4 font-medium text-sm">Sender BVN</td>
-                <td>
-                  <input
-                    type="text"
-                    name="senderBVN"
-                    placeholder="Enter sender BVN"
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    required
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td className="font-medium text-sm">Receiver BVN</td>
-                <td>
-                  <input
-                    type="text"
-                    name="receiverBVN"
-                    placeholder="Enter receiver BVN"
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    required
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td className="font-medium text-sm">Amount</td>
-                <td>
-                  <input
-                    type="number"
-                    name="amount"
-                    placeholder="Enter amount"
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    required
-                  />
-                </td>
-              </tr>
+              {isTransfer ? (
+                <>
+                  <tr>
+                    <td className="w-1/4 font-medium text-sm">Sender BVN</td>
+                    <td>
+                      <input
+                        type="text"
+                        name="senderBVN"
+                        placeholder="Enter sender BVN"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        required
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="font-medium text-sm">Receiver BVN</td>
+                    <td>
+                      <input
+                        type="text"
+                        name="receiverBVN"
+                        placeholder="Enter receiver BVN"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        required
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="font-medium text-sm">Amount</td>
+                    <td>
+                      <input
+                        type="number"
+                        name="amount"
+                        placeholder="Enter amount"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        required
+                      />
+                    </td>
+                  </tr>
+                </>
+              ) : (
+                <>
+                  <tr>
+                    <td className="w-1/4 font-medium text-sm">Email</td>
+                    <td>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter email"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        required
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="font-medium text-sm">BVN</td>
+                    <td>
+                      <input
+                        type="text"
+                        name="BVN"
+                        placeholder="Enter BVN"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        required
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="font-medium text-sm">Saving Amount</td>
+                    <td>
+                      <input
+                        type="number"
+                        name="savingAmount"
+                        placeholder="Enter saving amount"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="font-medium text-sm">Loan Amount</td>
+                    <td>
+                      <input
+                        type="number"
+                        name="loanAmount"
+                        placeholder="Enter loan amount"
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      />
+                    </td>
+                  </tr>
+                </>
+              )}
               <tr>
                 <td className="font-medium text-sm">Comment</td>
                 <td>
@@ -124,92 +192,14 @@ const Transactions = () => {
           </table>
           <button
             type="button"
-            onClick={() => handleSubmit('transfer')}
+            onClick={() => handleSubmit(activeTab)}
             className="mt-6 bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition w-full"
             disabled={loading}
           >
-            {loading ? 'Processing...' : 'Transfer'}
+            {loading ? 'Processing...' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
           </button>
         </form>
-      );
-    }
-
-    return (
-      <form onSubmit={(e) => e.preventDefault()} className="bg-white p-6 rounded-lg shadow-md">
-        <table className="table-auto w-full border-separate border-spacing-y-4">
-          <tbody>
-            <tr>
-              <td className="w-1/4 font-medium text-sm">Email</td>
-              <td>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Enter email"
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  required
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className="font-medium text-sm">BVN</td>
-              <td>
-                <input
-                  type="text"
-                  name="BVN"
-                  placeholder="Enter BVN"
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  required
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className="font-medium text-sm">Saving Amount</td>
-              <td>
-                <input
-                  type="number"
-                  name="savingAmount"
-                  placeholder="Enter saving amount"
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className="font-medium text-sm">Loan Amount</td>
-              <td>
-                <input
-                  type="number"
-                  name="loanAmount"
-                  placeholder="Enter loan amount"
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className="font-medium text-sm">Comment</td>
-              <td>
-                <textarea
-                  name="comment"
-                  placeholder="Optional comment"
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <button
-          type="button"
-          onClick={() => handleSubmit(activeTab)}
-          className="mt-6 bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition w-full"
-          disabled={loading}
-        >
-          {loading ? 'Processing...' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-        </button>
-      </form>
+      </div>
     );
   };
 
@@ -217,14 +207,13 @@ const Transactions = () => {
     <div className="w-full max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Transactions</h1>
 
-      {/* Tabs on Top */}
       <div className="flex gap-4 mb-6">
-        {['deposit', 'withdrawal', 'transfer'].map((tab) => (
+        {['deposit', 'withdraw', 'transfer'].map((tab) => (
           <button
             key={tab}
             onClick={() => {
               setActiveTab(tab);
-              setFormData((prev) => ({ ...prev, transactionType: tab }));
+              setFormData((prev) => ({ ...prev, transactionType: tab.toLowerCase() }));
             }}
             className={`px-4 py-2 rounded ${
               activeTab === tab ? 'bg-orange-500 text-white' : 'bg-gray-200'
@@ -235,7 +224,6 @@ const Transactions = () => {
         ))}
       </div>
 
-      {/* Form */}
       {renderForm()}
     </div>
   );

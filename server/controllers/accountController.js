@@ -1,6 +1,26 @@
 import ACCOUNT from "../models/account.js"
 import TRANSACTION from "../models/transactions.js";
 import mongoose from "mongoose";
+import nodemailer from "nodemailer"
+
+
+ // Send OTP via email (or SMS)
+  const transporter = nodemailer.createTransport({
+    secure:false,
+    host: 'smtp.gmail.com',
+    port:587,
+    requireTLS:true,
+    logger: true,
+    debug:true,
+    auth: {
+      user: 'rolandmario2@gmail.com',
+      pass: 'nnlykezsxuhyibbp',
+    },
+
+
+  });
+
+
 export async function create_account(req, res) {
     try {
         const account_details = {
@@ -12,6 +32,13 @@ export async function create_account(req, res) {
             comment: req.body.comment,
             dateCreated:new Date()
         }
+
+            const mailOptions = {
+                from: "rolandmario2@gmail.com",
+                to: req.body.email,
+                subject: 'GTCS Account Creation',
+                text: `Your GTCS Account has been created succesfully with the initial saving deposit of ${req.body.savingAmount}`,
+            };
         
         const acountExists = await ACCOUNT.findOne({BVN: req.body.BVN});
         console.log("accountInfo: ", acountExists)
@@ -22,7 +49,9 @@ export async function create_account(req, res) {
         const transaction_details = new TRANSACTION(account_details);
         await details.save();
         await transaction_details.save();
+        await transporter.sendMail(mailOptions);
         res.status(200).json({message:"Account created successfully"}) 
+        
         }
 
     } catch (error) {
@@ -44,6 +73,13 @@ export async function transaction(req, res) {
             comment: req.body.comment,
             dateCreated:new Date()
         }
+
+    const mailOptions = {
+        from: "rolandmario2@gmail.com",
+        to: req.body.email,
+        subject: 'GTCS Account Creation',
+        text: `A successfull transaction has been completed on your GTCS account`,
+    };
         if(req.body.transactionType==="deposit"){
         //find account records
         console.log("validating records")
@@ -63,6 +99,7 @@ export async function transaction(req, res) {
             res.status(200).json({ message: 'Deposit successfully!' });
             const transaction_details = new TRANSACTION(account_details);
             await transaction_details.save();
+            await transporter.sendMail(mailOptions);
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
@@ -83,6 +120,7 @@ export async function transaction(req, res) {
             res.status(200).json({ message: 'Withdrawal successfully!' });
             const transaction_details = new TRANSACTION(account_details);
             await transaction_details.save();
+            await transporter.sendMail(mailOptions);
         }
         }else{
             // transfer logic
@@ -170,4 +208,25 @@ export async function getTransactionHistory(req, res) {
         res.status(500).json({error:"Server error try again later"});
         console.log("server error: ", error);        
     }
+}
+
+export async function getAllMembersTransactions(req, res) {
+    try {
+    const allMembersTx = await TRANSACTION.find({})
+    if(!allMembersTx) res.status(400).json({message: "No member transaction found on the database"})
+    res.status(200).json(allMembersTx)
+  } catch (error) {
+    res.status(500).json({error: "server error try again or contact admin"})
+  }
+}
+
+
+export async function getUserAccountRecords(req, res) {
+    try {
+    const allAccountRecords = await ACCOUNT.find({})
+    if(!allAccountRecords) res.status(400).json({message: "Account Not found on the database"})
+    res.status(200).json(allAccountRecords)
+  } catch (error) {
+    res.status(500).json({error: "server error try again or contact admin"})
+  }
 }
