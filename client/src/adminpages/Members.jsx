@@ -50,7 +50,9 @@ const Members = () => {
     setSelectedUser(null);
     try {
       const res = await fetch('https://savings-loan-app.vercel.app/api/get-all-users');
+      
       const data = await res.json();
+      console.log(data);
       if (res.status === 200 && Array.isArray(data)) {
         const fullUser = data.find(u => u.email?.toLowerCase() === email?.toLowerCase());
         if (fullUser) {
@@ -75,11 +77,16 @@ const Members = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedUser),
       });
-
+    
+ 
       const data = await res.json();
+      console.log(data);
       if (res.status === 200) {
         toast.success(data.message || 'User updated successfully!');
         setEditMode(false);
+        console.log(data);
+        
+
 
         setTimeout(async () => {
           const refetch = await fetch('https://savings-loan-app.vercel.app/api/get-all-users');

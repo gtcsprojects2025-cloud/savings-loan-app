@@ -18,38 +18,78 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
+    console.log('Form submitted:', data);
+
     try {
-       const hashedPassword = SHA256(data.password).toString();
-     // const hashedPassword = data.password
+      const hashedPassword = SHA256(data.password).toString();
       console.log('Hashed password:', hashedPassword);
+      console.log('Selected role:', data.role);
+
+      if (data.role === 'admin') {
+        console.log('Admin login attempt...');
+        const adminPayload = {
+          email: data.email,
+          password: data.password,
+        };
+        console.log('Admin API request payload:', adminPayload);
+
+        const adminResponse = await fetch('https://savings-loan-app.vercel.app/api/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: data.email, password: data.password }),
+        });
+
+        const adminResult = await adminResponse.json();
+        console.log('Admin API response:', adminResult);
+
+        if (adminResponse.ok ) {
+          toast.success('Admin verified!');
+
+          console.log('Navigating to /adminpages/admindashboard');
+          localStorage.setItem('adminEmail', data.email);
+          navigate('/adminpages/admindashboard');
+       
+        } else {
+          console.warn('Admin verification failed:', adminResult);
+          toast.error(adminResult.message || 'Admin verification failed.');
+          return;
+        }
+      } else {
+
+ console.log('User login attempt...');
+      const userPayload = {
+        email: data.email,
+        password: data.password,
+      };
+      console.log('User API request payload:', userPayload);
 
       const response = await fetch('https://savings-loan-app.vercel.app/api/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: hashedPassword,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: data.email, password: data.password }),
       });
 
       const result = await response.json();
+      console.log('User API response:', result);
 
       if (response.ok) {
         toast.success('Login successful!');
-        console.log('Login response:', result);
+        console.log('Navigating to home page');
         localStorage.setItem('userToken', 'demo-token');
         localStorage.setItem('user', JSON.stringify({ firstName: 'Femi', lastName: 'Akinwunmi' }));
-        localStorage.setItem('email', data.email); // Store email
+        localStorage.setItem('email', data.email);
         navigate('/');
       } else {
+        console.warn('User login failed:', result);
         toast.error(result.message || 'Login failed. Please check your credentials.');
       }
+
+      }  
     } catch (error) {
       console.error('Login error:', error);
       toast.error('Something went wrong. Please try again.');
     } finally {
+      console.log('Login process complete. Loading state reset.');
       setLoading(false);
     }
   };
@@ -80,6 +120,7 @@ const LoginForm = () => {
               <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
             )}
           </div>
+
           <div className="relative">
             <label className="block text-sm font-semibold text-gray-700">Password</label>
             <input
@@ -106,6 +147,23 @@ const LoginForm = () => {
             </button>
             {(showButtonWarning || errors.password) && (
               <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Role</label>
+            <select
+              {...register('role', { required: 'Role is required' })}
+              className={`mt-2 block w-full px-4 py-2 sm:py-3 border ${
+                errors.role ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+            >
+              <option value="">Select role</option>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+            {errors.role && (
+              <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
             )}
           </div>
 
