@@ -15,9 +15,75 @@ const Transactions = () => {
     transactionType: 'deposit',
   });
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSearch = async () => {
+    const name = searchTerm.trim().toLowerCase();
+    if (!name) return;
+
+    console.log('Searching for user by name:', name);
+
+    try {
+      const res = await fetch('https://savings-loan-app.vercel.app/api/get-all-users');
+      const data = await res.json();
+
+      console.log('Fetched all users:', data);
+
+      if (res.status === 200 && Array.isArray(data)) {
+        const matches = data.filter((user) =>
+          user.firstName?.toLowerCase().includes(name) ||
+          user.lastName?.toLowerCase().includes(name) ||
+          user.otherNames?.toLowerCase().includes(name)
+        );
+        console.log('Filtered matches:', matches);
+        setSearchResults(matches);
+        toast.success('Search complete');
+      } else {
+        toast.error('Unexpected response format');
+        setSearchResults([]);
+      }
+    } catch (err) {
+      console.error('Search error:', err);
+      toast.error('Server error during search');
+    }
+  };
+
+  const handleSelectUser = async (user) => {
+    console.log('Selected user:', user);
+
+    try {
+      const res = await fetch('https://savings-loan-app.vercel.app/api/get-user-account-records');
+      const data = await res.json();
+
+      console.log('Fetched account records:', data);
+
+      if (res.status === 200 && Array.isArray(data)) {
+        const match = data.find((u) => u.email?.toLowerCase() === user.email?.toLowerCase());
+        if (match) {
+          setFormData((prev) => ({
+            ...prev,
+            email: match.email || '',
+            BVN: match.BVN || '',
+          }));
+          toast.success('User account loaded');
+        } else {
+          toast.error('No account record found for selected user');
+        }
+      } else {
+        toast.error('Unexpected response format');
+      }
+    } catch (err) {
+      console.error('Account fetch error:', err);
+      toast.error('Error loading user account');
+    }
+
+    setSearchResults([]);
+    setSearchTerm('');
   };
 
   const handleSubmit = async (type) => {
@@ -44,6 +110,8 @@ const Transactions = () => {
       };
     }
 
+    console.log('Submitting transaction:', payload);
+
     try {
       const res = await fetch('https://savings-loan-app.vercel.app/api/transaction', {
         method: 'PUT',
@@ -52,6 +120,7 @@ const Transactions = () => {
       });
 
       const data = await res.json();
+      console.log('Transaction response:', data);
 
       if (res.status === 200) {
         toast.success(data.message || 'Transaction successful!');
@@ -59,6 +128,7 @@ const Transactions = () => {
         toast.error(data.message || data.error || 'Transaction failed.');
       }
     } catch (err) {
+      console.error('Transaction error:', err);
       toast.error('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -70,11 +140,38 @@ const Transactions = () => {
 
     return (
       <div className="relative">
-        {loading && (
-          <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10">
-            <div className="text-orange-600 font-medium text-lg animate-pulse">
-              Processing transaction…
+        {!isTransfer && (
+          <div className="mb-4">
+            <label className="block font-medium mb-1">Search by Name</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Enter name"
+                className="flex-1 px-4 py-2 border rounded-md"
+              />
+              <button
+                type="button"
+                onClick={handleSearch}
+                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+              >
+                Search
+              </button>
             </div>
+            {searchResults.length > 0 && (
+              <ul className="mt-2 border rounded-md bg-white shadow-sm max-h-40 overflow-y-auto">
+                {searchResults.map((user, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleSelectUser(user)}
+                    className="px-4 py-2 hover:bg-orange-100 cursor-pointer text-sm"
+                  >
+                    {user.firstName} {user.lastName} — {user.email}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
@@ -89,9 +186,10 @@ const Transactions = () => {
                       <input
                         type="text"
                         name="senderBVN"
-                        placeholder="Enter sender BVN"
+                        value={formData.senderBVN || ''}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Enter sender BVN"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
                         required
                       />
                     </td>
@@ -102,9 +200,10 @@ const Transactions = () => {
                       <input
                         type="text"
                         name="receiverBVN"
-                        placeholder="Enter receiver BVN"
+                        value={formData.receiverBVN || ''}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Enter receiver BVN"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
                         required
                       />
                     </td>
@@ -115,9 +214,10 @@ const Transactions = () => {
                       <input
                         type="number"
                         name="amount"
-                        placeholder="Enter amount"
+                        value={formData.amount || ''}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Enter amount"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
                         required
                       />
                     </td>
@@ -131,9 +231,10 @@ const Transactions = () => {
                       <input
                         type="email"
                         name="email"
-                        placeholder="Enter email"
+                        value={formData.email || ''}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Enter email"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
                         required
                       />
                     </td>
@@ -144,9 +245,10 @@ const Transactions = () => {
                       <input
                         type="text"
                         name="BVN"
-                        placeholder="Enter BVN"
+                        value={formData.BVN || ''}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Enter BVN"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
                         required
                       />
                     </td>
@@ -157,9 +259,10 @@ const Transactions = () => {
                       <input
                         type="number"
                         name="savingAmount"
-                        placeholder="Enter saving amount"
+                        value={formData.savingAmount || ''}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Enter saving amount"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
                       />
                     </td>
                   </tr>
@@ -169,9 +272,10 @@ const Transactions = () => {
                       <input
                         type="number"
                         name="loanAmount"
-                        placeholder="Enter loan amount"
+                        value={formData.loanAmount || ''}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                               placeholder="Enter loan amount"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
                       />
                     </td>
                   </tr>
@@ -182,9 +286,10 @@ const Transactions = () => {
                 <td>
                   <textarea
                     name="comment"
-                    placeholder="Optional comment"
+                    value={formData.comment || ''}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="Optional comment"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
                   />
                 </td>
               </tr>
@@ -212,8 +317,11 @@ const Transactions = () => {
           <button
             key={tab}
             onClick={() => {
+              console.log('Switched to tab:', tab);
               setActiveTab(tab);
               setFormData((prev) => ({ ...prev, transactionType: tab.toLowerCase() }));
+              setSearchResults([]);
+              setSearchTerm('');
             }}
             className={`px-4 py-2 rounded ${
               activeTab === tab ? 'bg-orange-500 text-white' : 'bg-gray-200'

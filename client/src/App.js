@@ -6,16 +6,22 @@ import Register from "./Auth/register";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-
 import AdminDashboard from "./adminpages/AdminDashboard";
 import Dashboard from "./user/dashboard/Dashboard";
+import AdminProtectedRoute from "./components/AdminProtectedRoute"; // ✅ NEW
 
 function App() {
   return (
     <Router>
       <Routes>
-      <Route path="/adminpages/admindashboard" element={<AdminDashboard />} />
+        <Route
+          path="/adminpages/admindashboard"
+          element={
+            <AdminProtectedRoute>
+              <AdminDashboard />
+            </AdminProtectedRoute>
+          }
+        />
         <Route path="/" element={<Dashboard />} />
         <Route path="/Auth/login" element={<LoginForm />} />
         <Route path="/forgotpasswordpage" element={<ForgotPasswordPage />} />
