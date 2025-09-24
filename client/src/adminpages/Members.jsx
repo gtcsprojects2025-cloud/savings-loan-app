@@ -208,10 +208,10 @@ const Members = () => {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 {[
-                  'title', 'firstName', 'lastName', 'otherNames', 'DOB',
-                  'phone', 'residentialAddress', 'residentialState', 'officeAddress',
-                  'referenceName', 'referencePhoneNo',
-                  'guarantorName', 'guarantorPhone', 'guarantorName2', 'guarantorPhone2',
+                  'title', 'firstName', 'lastName', 'otherNames', 'DOB', 'NIN', 'BVN',
+                  'phone','product', 'residentialAddress', 'residentialState', 'officeAddress',
+                  'referenceName', 'referenceMobileCountry',
+                  'referenceMobile', 'nextOfkin', 'nextOfKinMobile', 'referenceMobileCountry',
                 ].map((field) => (
                   <div key={field}>
                     <label className="block font-medium capitalize mb-1">{field}</label>
