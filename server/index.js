@@ -1,10 +1,13 @@
 const express = require("express")
+const multer = require('multer')
 const { connectDB } = require("./db");
 const { registerMember, memberLogin, generateOTP, verifyOTP, updatePassword, getUser, getAllUsers, updateUserRecords, adminLogin } = require("./controllers/profileController.js");
-
+//const upload = require('./upload');
+//const upload = require('../server/documents/upload.js')
 require('dotenv').config();
 const cors = require('cors');
 const { create_account, transaction, getUserAmount, getTransactionHistory, getAllMembersTransactions, getUserAccountRecords } = require("./controllers/accountController.js");
+const { uploadDocument } = require("./controllers/documentController.js");
 
 
 
@@ -36,6 +39,19 @@ const corsOptions = {
   credentials: false // If you're using cookies or auth headers
 };
 
+//var jsonParser = bodyParser.json()
+
+const storage = multer.diskStorage({
+  destination: function(req, file, cb){
+    cb(null, './upload/');
+  },
+  filename: function(req, file, cb){
+    const now = new Date().toISOString();
+    const date = now.replace(/:/g,'_')
+    cb(null, date + file.originalname);
+  }
+})
+const upload = multer({storage: storage})
 
 app.use(cors(corsOptions));
 
@@ -48,13 +64,14 @@ app.get("/api/register", (req, res)=>{
 // middleware
 app.use(express.urlencoded({ extended: true })); // 👈 Parses URL-encoded bodies
 app.use(express.json())
-
+app.use('/upload', express.static('upload'))
 app.post("/api/register", registerMember)
 app.post("/api/login", memberLogin)
 app.post('/api/generate-otp', generateOTP);
 app.post("/api/verify-otp", verifyOTP);
 app.post("/api/create-user-account", create_account);
 app.post("/api/admin-login", adminLogin)
+app.post('/api/upload-loan-application-doc', upload.single('file'), uploadDocument)
 
 app.get("/api/get-user-amount", getUserAmount)
 app.get("/api/get-transaction-history", getTransactionHistory)
