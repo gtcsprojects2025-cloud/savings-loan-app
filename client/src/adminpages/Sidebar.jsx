@@ -4,20 +4,22 @@ import {
   UserGroupIcon,
   BanknotesIcon,
   ArrowRightOnRectangleIcon,
+  UserPlusIcon,
+  ClipboardDocumentListIcon,
 } from '@heroicons/react/24/outline';
 
 const Sidebar = ({ activeTab, setActiveTab, toggleSidebar }) => {
   const tabs = [
     { name: 'Dashboard', icon: HomeIcon },
     { name: 'View Members', icon: UserGroupIcon },
-    { name: 'Create Account', icon: BanknotesIcon },
+    { name: 'Create Account', icon: UserPlusIcon },
     { name: 'Transactions', icon: BanknotesIcon },
-    { name: 'TransactionHistory', icon: BanknotesIcon },
+    { name: 'TransactionHistory', icon: ClipboardDocumentListIcon },
     { name: 'Logout', icon: ArrowRightOnRectangleIcon },
   ];
 
   return (
-    <aside className="sticky top-0 h-screen w-64 flex flex-col bg-gray-100 shadow-md z-50">
+    <aside className="fixed top-0 left-0 h-screen w-64 flex flex-col bg-gray-100 shadow-md z-50">
       {/* Header */}
       <div className="border-b border-orange-500 p-6 flex flex-col items-center justify-center bg-white">
         <img src="/logo.jpg" alt="Company Logo" className="h-12 mb-2" />

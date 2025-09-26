@@ -8,7 +8,7 @@ const TransactionHistory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const TRANSACTIONS_PER_PAGE = 15;
-  const hasFetched = useRef(false); // ✅ Prevent double fetch
+  const hasFetched = useRef(false); // Prevent double fetch
 
   useEffect(() => {
     if (!hasFetched.current) {
@@ -26,8 +26,6 @@ const TransactionHistory = () => {
       });
 
       const data = await res.json();
-      console.log('Fetched transactions:', data);
-
       const transactions = Array.isArray(data) ? data : data.transaction_details || [];
 
       if (Array.isArray(transactions)) {
@@ -69,20 +67,20 @@ const TransactionHistory = () => {
   const totalPages = Math.ceil(filteredTransactions.length / TRANSACTIONS_PER_PAGE);
 
   return (
-    <div className="w-full max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Transaction History</h1>
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Transaction History</h1>
 
-      <div className="flex flex-col lg:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <input
           type="email"
           placeholder="Search by email"
           value={emailSearch}
           onChange={(e) => setEmailSearch(e.target.value)}
-          className="flex-1 px-4 py-2 border rounded-md"
+          className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
         />
         <button
           onClick={handleSearch}
-          className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600"
+          className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition"
         >
           Filter
         </button>
@@ -94,7 +92,7 @@ const TransactionHistory = () => {
         </div>
       ) : (
         <div className="bg-white p-4 rounded shadow overflow-x-auto">
-          <table className="min-w-full table-auto border">
+          <table className="min-w-full table-auto border border-gray-200">
             <thead className="bg-gray-100">
               <tr>
                 <th className="px-4 py-2 border">Email</th>
@@ -133,21 +131,27 @@ const TransactionHistory = () => {
         </div>
       )}
 
-      <div className="flex justify-center items-center gap-2 mt-6">
+      <div className="flex justify-between items-center mt-6">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className={`px-4 py-2 rounded-md text-white ${
+            currentPage === 1 ? 'bg-orange-200 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'
+          } transition`}
         >
           Prev
         </button>
-        <span className="text-sm font-medium">
+
+        <span className="text-sm font-medium text-gray-700">
           Page {currentPage} of {totalPages}
         </span>
+
         <button
           onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className={`px-4 py-2 rounded-md text-white ${
+            currentPage === totalPages ? 'bg-orange-200 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'
+          } transition`}
         >
           Next
         </button>

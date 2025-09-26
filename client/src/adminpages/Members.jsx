@@ -9,7 +9,7 @@ const Members = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingUser, setLoadingUser] = useState(false);
-  const [loading, setLoading] = useState(true); // ✅ Added loading state
+  const [loading, setLoading] = useState(true);
   const USERS_PER_PAGE = 15;
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const Members = () => {
   }, []);
 
   const fetchAccountRecords = async () => {
-    setLoading(true); // ✅ Start loading
+    setLoading(true);
     try {
       const res = await fetch('https://savings-loan-app.vercel.app/api/get-user-account-records');
       const data = await res.json();
@@ -30,7 +30,7 @@ const Members = () => {
     } catch (err) {
       toast.error('Network error. Please try again.');
     } finally {
-      setLoading(false); // ✅ Stop loading
+      setLoading(false);
     }
   };
 
@@ -50,9 +50,7 @@ const Members = () => {
     setSelectedUser(null);
     try {
       const res = await fetch('https://savings-loan-app.vercel.app/api/get-all-users');
-      
       const data = await res.json();
-      console.log(data);
       if (res.status === 200 && Array.isArray(data)) {
         const fullUser = data.find(u => u.email?.toLowerCase() === email?.toLowerCase());
         if (fullUser) {
@@ -77,16 +75,10 @@ const Members = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedUser),
       });
-    
- 
       const data = await res.json();
-      console.log(data);
       if (res.status === 200) {
         toast.success(data.message || 'User updated successfully!');
         setEditMode(false);
-        console.log(data);
-        
-
 
         setTimeout(async () => {
           const refetch = await fetch('https://savings-loan-app.vercel.app/api/get-all-users');
@@ -177,21 +169,32 @@ const Members = () => {
         </div>
       )}
 
-      <div className="flex justify-center items-center gap-2 mt-6">
+      {/* Pagination */}
+      <div className="flex justify-between items-center mt-6">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className={`px-4 py-2 rounded-md text-white ${
+            currentPage === 1
+              ? 'bg-orange-200 cursor-not-allowed'
+              : 'bg-orange-500 hover:bg-orange-600'
+          } transition`}
         >
           Prev
         </button>
-        <span className="text-sm font-medium">
+
+        <span className="text-sm font-medium text-gray-700">
           Page {currentPage} of {totalPages}
         </span>
+
         <button
           onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className={`px-4 py-2 rounded-md text-white ${
+            currentPage === totalPages
+              ? 'bg-orange-200 cursor-not-allowed'
+              : 'bg-orange-500 hover:bg-orange-600'
+          } transition`}
         >
           Next
         </button>
@@ -210,8 +213,8 @@ const Members = () => {
                 {[
                   'title', 'firstName', 'lastName', 'otherNames', 'DOB', 'NIN', 'BVN',
                   'phone','product', 'residentialAddress', 'residentialState', 'officeAddress',
-                  'referenceName', 'referenceMobileCountry',
-                  'referenceMobile', 'nextOfkin', 'nextOfKinMobile', 'referenceMobileCountry',
+                  'referenceName', 'referenceMobileCountry', 'referenceMobile',
+                  'nextOfkin', 'nextOfKinMobile', 'referenceMobileCountry',
                 ].map((field) => (
                   <div key={field}>
                     <label className="block font-medium capitalize mb-1">{field}</label>
@@ -226,7 +229,7 @@ const Members = () => {
                             [field]: e.target.value,
                           }))
                         }
-                                                className="w-full px-4 py-2 border rounded-md"
+                        className="w-full px-4 py-2 border rounded-md"
                       />
                     ) : (
                       <p className="px-4 py-2 border rounded-md bg-gray-50">
@@ -271,4 +274,3 @@ const Members = () => {
 };
 
 export default Members;
-
