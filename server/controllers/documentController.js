@@ -49,3 +49,17 @@ export async function fetchAllLoanApplicationDetails(req, res) {
         console.log("server error: ", error);     
   }
 }
+
+export async function personalLoanApplication(req, res) {
+  const applicationDetails ={
+    email: req.body.email,
+    BVN: req.body.BVN,
+    loanAmount: req.body.loanAmount,
+    loanType: req.body.loanType,
+    employmentStatus: req.body.employmentStatus,
+    loanPurpose: req.body.loanPurpose,
+    monthlyIncome: req.body.monthlyIncome,
+    bankName: req.body.bankName,
+    
+  }
+}
