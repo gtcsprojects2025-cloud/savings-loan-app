@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import emailjs from '@emailjs/browser';
@@ -11,8 +11,15 @@ const Loan = () => {
     formState: { errors },
     reset,
   } = useForm();
+  const {
+    register: registerUpload,
+    handleSubmit: handleSubmitUpload,
+    formState: { errors: uploadErrors },
+    reset: resetUpload,
+  } = useForm();
+  const [isUploaded, setIsUploaded] = useState(false);
 
-  const onSubmit = async (data) => {
+  const onSubmitSelfLoan = async (data) => {
     try {
       const templateParams = {
         loanType: data.loanType,
@@ -20,8 +27,6 @@ const Loan = () => {
         purpose: data.purpose,
         employmentStatus: data.employmentStatus,
         income: data.income,
-        referenceName: data.referenceName,
-        referencePhone: data.referencePhone,
         accountHolderName: data.accountHolderName,
         bankName: data.bankName,
         accountNumber: data.accountNumber,
@@ -35,13 +40,52 @@ const Loan = () => {
         'YOUR_USER_ID' // Replace with your EmailJS User ID
       );
 
-      console.log('Loan application data:', data);
-      toast.success('Loan application submitted and email sent!');
+      console.log('Self-loan application data:', data);
+      toast.success('Self-loan application submitted and email sent!');
       reset();
     } catch (error) {
       console.error('Error sending email:', error);
-      toast.error('Failed to send loan application. Please try again.');
+      toast.error('Failed to send self-loan application. Please try again.');
     }
+  };
+
+  const onSubmitUpload = async (data) => {
+    const file = data.file[0];
+    if (file && file.type === 'application/pdf') {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('email', data.email);
+        formData.append('firstName', data.firstName);
+        formData.append('surName', data.surName);
+        formData.append('BVN', data.BVN);
+
+        const response = await fetch('/api/upload-loan-application-doc', {
+          method: 'POST',
+          body: formData,
+        });
+        const result = await response.json();
+        if (response.ok) {
+          toast.success('Loan form uploaded successfully!');
+          setIsUploaded(true);
+          resetUpload();
+        } else {
+          toast.error(result.message || 'Failed to upload loan form.');
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        toast.error('Failed to upload loan form. Please try again.');
+      }
+    } else {
+      toast.error('Please upload a valid PDF file.');
+    }
+  };
+
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = '/loan-application-form.pdf'; // Ensure the PDF is hosted or bundled in your public folder
+    link.download = 'loan-application-form.pdf';
+    link.click();
   };
 
   return (
@@ -93,10 +137,13 @@ const Loan = () => {
         </div>
       </div>
 
-      {/* Loan Application Form */}
-      <div className="bg-white border border-gray-200 shadow-2xl rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Apply for a Loan</h3>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      {/* Self-Loan Application Form */}
+      <div className="bg-white border border-gray-200 shadow-2xl rounded-xl p-6 mb-6">
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">Self-Loan Application</h3>
+        <p className="text-gray-600 mb-4">
+          Apply for a self-loan directly through our online form for quick processing and approval.
+        </p>
+        <form onSubmit={handleSubmit(onSubmitSelfLoan)} className="space-y-5">
           <div>
             <label className="block text-sm font-semibold text-gray-700">Loan Type</label>
             <select
@@ -190,48 +237,6 @@ const Loan = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700">Reference Name</label>
-            <input
-              type="text"
-              {...register('referenceName', {
-                required: 'Reference name is required',
-                pattern: {
-                  value: /^[A-Za-z\s]+$/,
-                  message: 'Reference name must contain only letters and spaces',
-                },
-              })}
-              className={`mt-2 block w-full px-4 py-2 border ${
-                errors.referenceName ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
-              placeholder="Enter reference name"
-            />
-            {errors.referenceName && (
-              <p className="text-red-500 text-sm mt-1">{errors.referenceName.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700">Reference Phone Number</label>
-            <input
-              type="tel"
-              {...register('referencePhone', {
-                required: 'Reference phone number is required',
-                pattern: {
-                  value: /^\+?[1-9]\d{1,14}$/,
-                  message: 'Enter a valid phone number (e.g., +1234567890)',
-                },
-              })}
-              className={`mt-2 block w-full px-4 py-2 border ${
-                errors.referencePhone ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
-              placeholder="Enter reference phone number"
-            />
-            {errors.referencePhone && (
-              <p className="text-red-500 text-sm mt-1">{errors.referencePhone.message}</p>
-            )}
-          </div>
-
-          <div>
             <label className="block text-sm font-semibold text-gray-700">Account Holder Name</label>
             <input
               type="text"
@@ -290,14 +295,134 @@ const Loan = () => {
             )}
           </div>
 
-       
-
           <button
             type="submit"
             className="w-full bg-brandOrange text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition"
           >
-            Submit Loan Application
+            Submit Self-Loan Application
           </button>
+        </form>
+      </div>
+
+      {/* Normal Loan Section */}
+      <div className="bg-white border border-gray-200 shadow-2xl rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">Normal Loan Application</h3>
+        <p className="text-gray-600 mb-4">
+          For a normal loan, please download the loan application form, fill it out, and upload the completed form below along with your details.
+        </p>
+        <form onSubmit={handleSubmitUpload(onSubmitUpload)} className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Email Address</label>
+            <input
+              type="email"
+              {...registerUpload('email', {
+                required: 'Email is required',
+                pattern: { value: /^[^@]+@[^@]+\.[^@]+$/, message: 'Invalid email format' },
+              })}
+              className={`mt-2 block w-full px-4 py-2 border ${
+                uploadErrors.email ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+              placeholder="Enter email address"
+            />
+            {uploadErrors.email && (
+              <p className="text-red-500 text-sm mt-1">{uploadErrors.email.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">First Name</label>
+            <input
+              type="text"
+              {...registerUpload('firstName', {
+                required: 'First name is required',
+                pattern: {
+                  value: /^[A-Za-z\s]+$/,
+                  message: 'First name must contain only letters and spaces',
+                },
+              })}
+              className={`mt-2 block w-full px-4 py-2 border ${
+                uploadErrors.firstName ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+              placeholder="Enter first name"
+            />
+            {uploadErrors.firstName && (
+              <p className="text-red-500 text-sm mt-1">{uploadErrors.firstName.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">Surname</label>
+            <input
+              type="text"
+              {...registerUpload('surName', {
+                required: 'Surname is required',
+                pattern: {
+                  value: /^[A-Za-z\s]+$/,
+                  message: 'Surname must contain only letters and spaces',
+                },
+              })}
+              className={`mt-2 block w-full px-4 py-2 border ${
+                uploadErrors.surName ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+              placeholder="Enter surname"
+            />
+            {uploadErrors.surName && (
+              <p className="text-red-500 text-sm mt-1">{uploadErrors.surName.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">BVN</label>
+            <input
+              type="text"
+              {...registerUpload('BVN', {
+                required: 'BVN is required',
+                pattern: { value: /^\d{11}$/, message: 'BVN must be exactly 11 digits' },
+              })}
+              className={`mt-2 block w-full px-4 py-2 border ${
+                uploadErrors.BVN ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+              placeholder="Enter BVN"
+            />
+            {uploadErrors.BVN && (
+              <p className="text-red-500 text-sm mt-1">{uploadErrors.BVN.message}</p>
+            )}
+          </div>
+
+          {isUploaded ? (
+            <button
+              type="button"
+              onClick={handleDownload}
+              className="w-full bg-brandBlue text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition mb-4"
+            >
+              Download Another Loan Form
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={handleDownload}
+                className="w-full bg-brandBlue text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition mb-4"
+              >
+                Download Loan Form
+              </button>
+              <input
+                type="file"
+                accept="application/pdf"
+                {...registerUpload('file', { required: 'Please upload a PDF file' })}
+                className="w-full border border-gray-300 rounded-lg p-2"
+              />
+              {uploadErrors.file && (
+                <p className="text-red-500 text-sm mt-1">{uploadErrors.file.message}</p>
+              )}
+              <button
+                type="submit"
+                className="w-full bg-brandOrange text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition"
+              >
+                Upload Loan Form
+              </button>
+            </>
+          )}
         </form>
       </div>
     </div>
@@ -307,9 +432,6 @@ const Loan = () => {
 emailjs.init('YOUR_USER_ID'); // Replace with your EmailJS User ID
 
 export default Loan;
-
-
-
 
 
 
