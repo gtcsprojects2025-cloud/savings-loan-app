@@ -6,9 +6,9 @@ import Saving from './Saving';
 import TransactionHistory from './TransactionHistory';
 import Loan from './Loan';
 import Profile from './Profile';
-import BankDetails from './BankDetails';
 import Logout from './Logout';
 import { format } from 'date-fns';
+import Obligations from './LoanList';
 
 class ErrorBoundary extends React.Component {
   state = { hasError: false, error: null };
@@ -238,8 +238,8 @@ if (userResponse.ok) {
         return <Loan />;
       case 'Profile':
         return <Profile />;
-      case 'Bank Details':
-        return <BankDetails />;
+      case 'Loan List':
+        return <Obligations/>;
       case 'Logout':
         return <Logout />;
       default:
