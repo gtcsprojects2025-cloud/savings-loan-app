@@ -356,6 +356,118 @@ Status Code 500: {error:"Server error try again later"}
 
 ======================================================================================
 
+
+
+
+
+
+====================================================================================
+
+End-point: '/api/upload-loan-application-doc'
+--------------------------
+Method: ['POST']
+--------------------------
+Body{
+    file,
+    email,
+    firstName,
+    surName,
+    BVN
+}
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 200 returns { message: 'File metadata saved successfully'}
+
+Status Code 500: {error:"Server error try again later"}
+
+======================================================================================
+
+
+====================================================================================
+
+End-point: '/api/fetch-all-user-loan-data'
+--------------------------
+Method: ['GET']
+--------------------------
+
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 400 returns {error: "No loan application found"}
+Status Code: 200 returns all laon data e.g
+{
+    "all_loan_details": [
+        {
+            "_id": "68d6b9c9fee7aee57b30f374",
+            "filename": "2025-09-26T16_05_29.841ZLO Group Land Application Form.pdf",
+            "originalName": "LO Group Land Application Form.pdf",
+            "mimeType": "application/pdf",
+            "size": 162336,
+            "path": "upload\\2025-09-26T16_05_29.841ZLO Group Land Application Form.pdf",
+            "uploadDate": "2025-09-26T16:05:29.862Z",
+            "__v": 0
+        },
+        {
+            "_id": "68d6beb57b22826e529aeb80",
+            "filename": "2025-09-26T16_26_29.134ZLO Group Land Application Form.pdf",
+            "originalName": "LO Group Land Application Form.pdf",
+            "mimeType": "application/pdf",
+            "size": 162336,
+            "path": "upload\\2025-09-26T16_26_29.134ZLO Group Land Application Form.pdf",
+            "firstName": "Roland",
+            "surName": "Ayuk",
+            "BVN": 12345678901,
+            "email": "rolandmario2@gmail.com",
+            "uploadDate": "2025-09-26T16:26:29.156Z",
+            "__v": 0
+        }
+    ]
+}
+Status Code 500: {error:"Server error try again later"}
+
+======================================================================================
+
+
+
+====================================================================================
+
+End-point: "/api/fetch-user-loan-details"
+--------------------------
+Method: ['GET']
+--------------------------
+params{email}
+-----------------------------
+Responds:
+-----------------------------
+
+Status Code: 400 returns {error: "user with this email does not exists"}
+Status Code: 200 returns single user laon data e.g
+
+{
+    "loan_details": [
+        {
+            "_id": "68d6beb57b22826e529aeb80",
+            "filename": "2025-09-26T16_26_29.134ZLO Group Land Application Form.pdf",
+            "originalName": "LO Group Land Application Form.pdf",
+            "mimeType": "application/pdf",
+            "size": 162336,
+            "path": "upload\\2025-09-26T16_26_29.134ZLO Group Land Application Form.pdf",
+            "firstName": "Roland",
+            "surName": "Ayuk",
+            "BVN": 12345678901,
+            "email": "rolandmario2@gmail.com",
+            "uploadDate": "2025-09-26T16:26:29.156Z",
+            "__v": 0
+        }
+    ]
+}
+Status Code 500: {error:"Server error try again later"}
+
+======================================================================================
+
 */
 
 
