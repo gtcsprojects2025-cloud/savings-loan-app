@@ -24,3 +24,28 @@ export async function uploadDocument(req, res) {
     res.status(500).json({ error: 'Upload failed', details: err.message });
   }
 }
+
+
+export async function fetchUserLoanApplicationDetails(req, res) {
+  try {
+        const email = req.query.email
+        const loan_details = await LoanDocument.find({email:email});
+        if(!loan_details) res.status(400).json({error: "User with this email does not exists"});
+        res.status(200).json({loan_details}); 
+  } catch (error) {
+        res.status(500).json({error:"Server error try again later"});
+        console.log("server error: ", error);     
+  }
+}
+
+export async function fetchAllLoanApplicationDetails(req, res) {
+    try {
+        
+        const all_loan_details = await LoanDocument.find({});
+        if(!all_loan_details) res.status(400).json({error: "No loan application found"});
+        res.status(200).json({all_loan_details}); 
+  } catch (error) {
+        res.status(500).json({error:"Server error try again later"});
+        console.log("server error: ", error);     
+  }
+}
