@@ -1,6 +1,7 @@
 const express = require("express")
 const multer = require('multer')
 const { connectDB } = require("./db");
+var bodyParser = require('body-parser')
 const { registerMember, memberLogin, generateOTP, verifyOTP, updatePassword, getUser, getAllUsers, updateUserRecords, adminLogin } = require("./controllers/profileController.js");
 //const upload = require('./upload');
 //const upload = require('../server/documents/upload.js')
@@ -39,7 +40,7 @@ const corsOptions = {
   credentials: false // If you're using cookies or auth headers
 };
 
-//var jsonParser = bodyParser.json()
+var jsonParser = bodyParser.json()
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb){
@@ -71,7 +72,7 @@ app.post('/api/generate-otp', generateOTP);
 app.post("/api/verify-otp", verifyOTP);
 app.post("/api/create-user-account", create_account);
 app.post("/api/admin-login", adminLogin)
-app.post('/api/upload-loan-application-doc', upload.single('file'), uploadDocument)
+app.post('/api/upload-loan-application-doc', upload.single('file'), jsonParser, uploadDocument)
 
 app.get("/api/get-user-amount", getUserAmount)
 app.get("/api/get-transaction-history", getTransactionHistory)
