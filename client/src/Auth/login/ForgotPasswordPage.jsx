@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import SHA256 from 'crypto-js/sha256';
 
 const ForgotPasswordPage = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -88,10 +89,11 @@ const ForgotPasswordPage = () => {
     setLoading(true);
 
     try {
+      const hashedPassword = SHA256(data.newPassword).toString();
       const response = await fetch('https://savings-loan-app.vercel.app/api/update-password', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: data.newPassword }),
+        body: JSON.stringify({ email, password: hashedPassword }),
       });
 
       const result = await response.json();

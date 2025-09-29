@@ -61,7 +61,7 @@ const LoginForm = () => {
  console.log('User login attempt...');
       const userPayload = {
         email: data.email,
-        password: data.password,
+        password: hashedPassword,
       };
       console.log('User API request payload:', userPayload);
 

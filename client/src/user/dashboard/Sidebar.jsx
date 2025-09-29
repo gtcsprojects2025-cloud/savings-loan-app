@@ -8,7 +8,7 @@ const Sidebar = ({ activeTab, setActiveTab, toggleSidebar }) => {
     { name: 'Transaction History', icon: ChartBarIcon },
     { name: 'Loan App', icon: BanknotesIcon },
     { name: 'Profile', icon: UserIcon },
-    // { name: 'Bank Details', icon: BanknotesIcon },
+    { name: 'Loan List', icon: BanknotesIcon },
     { name: 'Logout', icon: ArrowRightOnRectangleIcon },
   ];
 
