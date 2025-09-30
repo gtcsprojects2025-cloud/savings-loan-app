@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import SHA256 from 'crypto-js/sha256';
 
-const LoginForm = () => {
+const AdminLoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -20,7 +20,7 @@ const LoginForm = () => {
     try {
       const hashedPassword = SHA256(data.password).toString();
 
-      const response = await fetch('https://savings-loan-app.vercel.app/api/login', {
+      const response = await fetch('https://savings-loan-app.vercel.app/api/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -32,16 +32,16 @@ const LoginForm = () => {
       const result = await response.json();
 
       if (response.status === 200) {
-        toast.success(result.message || 'Login was successful!');
-        localStorage.setItem('userToken', 'demo-token');
-        localStorage.setItem('email', data.email);
-        navigate('/');
+        toast.success(result.message || 'Admin verified!');
+        localStorage.setItem('adminEmail', data.email);
+        localStorage.setItem('isAdminAuthenticated', 'true');
+        navigate('/adminpages/admindashboard');
       } else if (response.status === 403) {
-        toast.error('User NOT found!');
+        toast.error('Admin NOT found!');
       } else if (response.status === 405) {
         toast.error('Wrong login credentials!');
       } else if (response.status === 503) {
-        toast.error('Server Error. Contact Admin');
+        toast.error('Server Error. Contact Support');
       } else {
         toast.error(result.message || 'Login failed.');
       }
@@ -60,7 +60,7 @@ const LoginForm = () => {
         </div>
 
         <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-brandBlue mb-6 tracking-tight">
-          Welcome Back
+          Admin Login
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -72,7 +72,7 @@ const LoginForm = () => {
               className={`mt-2 block w-full px-4 py-2 sm:py-3 border ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
-              placeholder="you@example.com"
+              placeholder="admin@example.com"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
@@ -114,23 +114,9 @@ const LoginForm = () => {
             {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
-
-        <div className="mt-6 text-sm text-center text-gray-600 space-y-2">
-          <p>
-            Don’t have an account?{' '}
-            <Link to="/Auth/register/" className="text-brandBlue font-medium hover:underline">
-              Register
-            </Link>
-          </p>
-          <p>
-            <Link to="/forgotpasswordpage" className="text-brandOrange font-medium hover:underline">
-              Forgot password?
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default AdminLoginForm;
