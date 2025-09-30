@@ -2,10 +2,7 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
  const loanDocumentSchema = new Schema({
-  filename: String,
-  originalName: String,
-  mimeType: String,
-  size: Number,
+
   path: String,
   firstName: String,
   surName: String,

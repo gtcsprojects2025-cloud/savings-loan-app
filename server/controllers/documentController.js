@@ -1,5 +1,6 @@
 import LoanDocument from "../models/loanDocument.js";
-
+//import { v2 as cloudinary } from 'cloudinary'; // ✅ Correct
+import cloudinary from '../cloudinary/cloudinaryConfig.js'
 export async function uploadDocument(req, res) {
     console.log("running uploaddoc fn...")
     try {
@@ -61,5 +62,22 @@ export async function personalLoanApplication(req, res) {
     monthlyIncome: req.body.monthlyIncome,
     bankName: req.body.bankName,
     
+  }
+}
+
+
+
+
+export async function uploadFileToCloudinary(req, res) {
+    try {
+    const result = await cloudinary.uploader.upload_stream(
+      { resource_type: 'auto' },
+      (error, result) => {
+        if (error) return res.status(500).send(error);
+        res.status(200).json({ url: result.secure_url });
+      }
+    ).end(req.file.buffer);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 }
