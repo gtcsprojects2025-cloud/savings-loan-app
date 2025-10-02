@@ -51,7 +51,7 @@ const Loan = () => {
 
   const onSubmitUpload = async (data) => {
     const file = data.file[0];
-    if (file && file.type === 'application/pdf') {
+    if (file) {
       try {
         const formData = new FormData();
         formData.append('file', file);
@@ -62,15 +62,15 @@ const Loan = () => {
 
         const response = await fetch('https://savings-loan-app.vercel.app/api/upload-loan-application-doc', {
           method: 'POST',
-          body: formData,
+          body: formData, // No Content-Type header needed, FormData sets multipart/form-data automatically
         });
-        const result = await response.json();
+
         if (response.ok) {
           toast.success('Loan form uploaded successfully!');
           setIsUploaded(true);
           resetUpload();
         } else {
-          toast.error(result.message || 'Failed to upload loan form.');
+          toast.error('Failed to upload loan form. Server responded with an error.');
         }
       } catch (error) {
         console.error('Error uploading file:', error);
@@ -432,10 +432,3 @@ const Loan = () => {
 emailjs.init('YOUR_USER_ID'); // Replace with your EmailJS User ID
 
 export default Loan;
-
-
-
-
-
-
-
