@@ -123,9 +123,10 @@ export async function transaction(req, res) {
         }else{
             console.log("proccessing records")
             const withdrawalAmount = Number(req.body.savingAmount);
+            const loanDepositAmount = Number(req.body.loanAmount);
             const withdrawAccount = await ACCOUNT.updateOne(
              { BVN: req.body.BVN },           // Filter
-             { $inc: { savingAmount: -withdrawalAmount} } );
+             { $inc: { savingAmount: -withdrawalAmount, loanAmount: -loanDepositAmount} } );
              console.log("Account updated")
             if (!withdrawAccount) return res.status(404).json({message:'User not found'});
             res.status(200).json({ message: 'Withdrawal successfully!' });
