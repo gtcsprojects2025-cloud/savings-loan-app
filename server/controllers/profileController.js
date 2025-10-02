@@ -207,7 +207,7 @@ export async function updateUserRecords(req, res) {
 
 export async function adminLogin(req, res){
     try {
-       
+       console.log({email: req.body.email, password:req.body.password})
        const user = await AdminLogin.findOne({email: req.body.email?.trim()});
             if(!user){
                 res.status(403).json({ message: 'User NOT found!' });

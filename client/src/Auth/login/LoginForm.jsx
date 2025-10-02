@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -8,7 +7,6 @@ import SHA256 from 'crypto-js/sha256';
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [showButtonWarning, setShowButtonWarning] = useState(false);
   const {
     register,
     handleSubmit,
@@ -19,85 +17,43 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-    console.log('Form submitted:', data);
-
     try {
       const hashedPassword = SHA256(data.password).toString();
-      console.log('Hashed password:', hashedPassword);
-      console.log('Selected role:', data.role);
-
-      if (data.role === 'admin') {
-        console.log('Admin login attempt...');
-        const adminPayload = {
-          email: data.email,
-          password: data.password,
-        };
-        console.log('Admin API request payload:', adminPayload);
-
-        const adminResponse = await fetch('https://savings-loan-app.vercel.app/api/admin-login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: data.email, password: data.password }),
-        });
-
-        const adminResult = await adminResponse.json();
-        console.log('Admin API response:', adminResult);
-
-        if (adminResponse.ok ) {
-          toast.success('Admin verified!');
-
-          console.log('Navigating to /adminpages/admindashboard');
-          localStorage.setItem('adminEmail', data.email);
-           localStorage.setItem('isAdminAuthenticated', 'true');
-          navigate('/adminpages/admindashboard');
-       
-        } else {
-          console.warn('Admin verification failed:', adminResult);
-          toast.error(adminResult.message || 'Admin verification failed.');
-          return;
-        }
-      } else {
-
- console.log('User login attempt...');
-      const userPayload = {
-        email: data.email,
-        password: hashedPassword,
-      };
-      console.log('User API request payload:', userPayload);
 
       const response = await fetch('https://savings-loan-app.vercel.app/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: data.email, password: data.password }),
+        body: JSON.stringify({
+          email: data.email,
+          password: hashedPassword,
+        }),
       });
 
       const result = await response.json();
-      console.log('User API response:', result);
 
-      if (response.ok) {
-        toast.success('Login successful!');
-        console.log('Navigating to home page');
+      if (response.status === 200) {
+        toast.success(result.message || 'Login was successful!');
         localStorage.setItem('userToken', 'demo-token');
-        localStorage.setItem('user', JSON.stringify({ firstName: 'Femi', lastName: 'Akinwunmi' }));
         localStorage.setItem('email', data.email);
         navigate('/');
+      } else if (response.status === 403) {
+        toast.error('User NOT found!');
+      } else if (response.status === 405) {
+        toast.error('Wrong login credentials!');
+      } else if (response.status === 503) {
+        toast.error('Server Error. Contact Admin');
       } else {
-        console.warn('User login failed:', result);
-        toast.error(result.message || 'Login failed. Please check your credentials.');
+        toast.error(result.message || 'Login failed.');
       }
-
-      }  
     } catch (error) {
-      console.error('Login error:', error);
       toast.error('Something went wrong. Please try again.');
     } finally {
-      console.log('Login process complete. Loading state reset.');
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen w-[100%] px-5 lg:px-0 bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen w-full px-5 lg:px-0 bg-gray-50 flex items-center justify-center">
       <div className="w-full max-w-lg bg-white border border-gray-200 shadow-2xl rounded-xl p-8 sm:p-10">
         <div className="flex justify-center mb-4">
           <img src="/logo.jpg" alt="Company Logo" className="h-12 sm:h-14" />
@@ -141,31 +97,10 @@ const LoginForm = () => {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-9 text-brandBlue hover:text-brandBlue/80"
             >
-              {showPassword ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
+              {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
             </button>
-            {(showButtonWarning || errors.password) && (
-              <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700">Role</label>
-            <select
-              {...register('role', { required: 'Role is required' })}
-              className={`mt-2 block w-full px-4 py-2 sm:py-3 border ${
-                errors.role ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
-            >
-              <option value="">Select role</option>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-            {errors.role && (
-              <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
             )}
           </div>
 
@@ -176,28 +111,6 @@ const LoginForm = () => {
               loading ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
-            {loading && (
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 01-8 8z"
-                ></path>
-              </svg>
-            )}
             {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>

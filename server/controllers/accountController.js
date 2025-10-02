@@ -71,6 +71,10 @@ export async function transaction(req, res) {
             loanAmount:req.body.loanAmount,
             transactionType:req.body.transactionType,
             comment: req.body.comment,
+            status: req.body.status,
+            dueDate: req.body.dueDate,
+            interest:req.body.interest,
+            guarantor:req.body.guarantor,
             dateCreated:new Date()
         }
 
@@ -91,9 +95,16 @@ export async function transaction(req, res) {
         }else{
             console.log("proccessing records")
             const depositAmount = Number(req.body.savingAmount);
+            const loanDepositAmount = Number(req.body.loanAmount);
             const depositAccount = await ACCOUNT.updateOne(
-             { BVN: req.body.BVN },           // Filter
-             { $inc: { savingAmount: depositAmount} } );
+            { BVN: req.body.BVN }, // Filter
+            {
+                $inc: {
+                savingAmount: depositAmount,
+                loanAmount: loanDepositAmount
+                }
+            }
+            );
              console.log("Account updated")
             if (!depositAccount) return res.status(404).json({message:'User not found'});
             res.status(200).json({ message: 'Deposit successfully!' });
@@ -112,9 +123,10 @@ export async function transaction(req, res) {
         }else{
             console.log("proccessing records")
             const withdrawalAmount = Number(req.body.savingAmount);
+            const loanDepositAmount = Number(req.body.loanAmount);
             const withdrawAccount = await ACCOUNT.updateOne(
              { BVN: req.body.BVN },           // Filter
-             { $inc: { savingAmount: -withdrawalAmount} } );
+             { $inc: { savingAmount: -withdrawalAmount, loanAmount: -loanDepositAmount} } );
              console.log("Account updated")
             if (!withdrawAccount) return res.status(404).json({message:'User not found'});
             res.status(200).json({ message: 'Withdrawal successfully!' });
