@@ -1,52 +1,51 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { Link, useNavigate } from 'react-router-dom';
 import SHA256 from 'crypto-js/sha256';
+import { toast } from 'react-toastify';
 
 const AdminLoginForm = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
-  const onSubmit = async (data) => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setLoading(true);
+    setError('');
+
     try {
-      const hashedPassword = SHA256(data.password).toString();
+      const hashedPassword = SHA256(password).toString();
+      const payload = { email, password: password };
+
+      console.log('Sending payload:', payload);
 
       const response = await fetch('https://savings-loan-app.vercel.app/api/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: data.email,
-          password: hashedPassword,
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const result = await response.json();
+      const data = await response.json();
+      console.log('Server response:', data);
 
-      if (response.status === 200) {
-        toast.success(result.message || 'Admin verified!');
-        localStorage.setItem('adminEmail', data.email);
-        localStorage.setItem('isAdminAuthenticated', 'true');
-        navigate('/adminpages/admindashboard');
-      } else if (response.status === 403) {
-        toast.error('Admin NOT found!');
-      } else if (response.status === 405) {
-        toast.error('Wrong login credentials!');
-      } else if (response.status === 503) {
-        toast.error('Server Error. Contact Support');
-      } else {
-        toast.error(result.message || 'Login failed.');
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
       }
-    } catch (error) {
-      toast.error('Something went wrong. Please try again.');
+
+      toast.success('Login successful!');
+      localStorage.setItem('adminEmail', email);
+      localStorage.setItem('isAdminAuthenticated', 'true');
+
+      // Updated navigation: go to admin dashboard
+      navigate('/adminpages/admindashboard', { replace: true });
+
+    } catch (err) {
+      setError(err.message);
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
@@ -58,51 +57,54 @@ const AdminLoginForm = () => {
         <div className="flex justify-center mb-4">
           <img src="/logo.jpg" alt="Company Logo" className="h-12 sm:h-14" />
         </div>
-
         <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-brandBlue mb-6 tracking-tight">
           Admin Login
         </h2>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={handleLogin} className="space-y-5">
+          {/* Email Input */}
           <div>
             <label className="block text-sm font-semibold text-gray-700">Email Address</label>
             <input
               type="email"
-              {...register('email', { required: 'Email is required' })}
-              className={`mt-2 block w-full px-4 py-2 sm:py-3 border ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue`}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@example.com"
+              className="mt-2 block w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue"
+              required
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-            )}
           </div>
 
+          {/* Password Input */}
           <div className="relative">
             <label className="block text-sm font-semibold text-gray-700">Password</label>
             <input
               type={showPassword ? 'text' : 'password'}
-              {...register('password', {
-                required: 'Password is required',
-                minLength: { value: 8, message: 'Minimum 8 characters' },
-              })}
-              className={`mt-2 block w-full px-4 py-2 sm:py-3 border ${
-                errors.password ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-brandOrange pr-10`}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
+              className="mt-2 block w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandOrange pr-10"
+              required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-9 text-brandBlue hover:text-brandBlue/80"
             >
-              {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+              {showPassword ? 'Hide' : 'Show'}
             </button>
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-            )}
           </div>
+
+          <div className="flex items-center justify-between text-sm">
+            <label className="flex items-center">
+              <input type="checkbox" className="mr-2" />
+              Remember me
+            </label>
+            <Link to="/forgetPasswordPage" className="text-indigo-500 hover:underline">
+              Forgot password?
+            </Link>
+          </div>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <button
             type="submit"
@@ -111,7 +113,7 @@ const AdminLoginForm = () => {
               loading ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? 'Logging in...' : 'Sign In'}
           </button>
         </form>
       </div>

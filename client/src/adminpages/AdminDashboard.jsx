@@ -4,7 +4,8 @@ import DashboardHome from './Dashboard';
 import Members from './Members'; // uses /api/get-all-users and /api/update-user-records
 import Transactions from './Transactions'; // assumed to handle new transactions
 import CreateAccount from './CreateAccount'; // assumed to create new users
-import TransactionHistory from './TransactionHistory'; // uses /api/get-transaction-history
+import TransactionHistory from './TransactionHistory'; 
+import Notifications from './Notifications'; // uses /api/get-transaction-history
 import Logout from './Logout';
 
 const AdminDashboard = () => {
@@ -23,6 +24,9 @@ const AdminDashboard = () => {
         return <Transactions />; // handles deposits/loans
       case 'TransactionHistory':
         return <TransactionHistory />; // shows transaction records
+
+          case 'Notifications':
+        return <Notifications />; // handles users request 
       case 'Logout':
         return <Logout />;
       default:
