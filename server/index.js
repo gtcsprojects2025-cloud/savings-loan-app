@@ -114,7 +114,7 @@ app.post('/api/upload-loan-application-doc', upload.single('file'), async (req, 
 
     await doc.save();
 
-    res.status(200).json(doc);
+    res.status(200).json({message:"application sent successfully"});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

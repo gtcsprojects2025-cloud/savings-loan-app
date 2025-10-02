@@ -25,6 +25,22 @@ const { Schema } = mongoose;
         type: String,
         required: false
     },
+    guarantor:{
+        type: String,
+        required: false
+    },
+    interest:{
+        type: String,
+        required: false
+    },
+    dueDate:{
+        type: String,
+        required: false
+    },
+    status:{
+        type: String,
+        required: false
+    },
     dateCreated:{
         type: Date,
         required: true
