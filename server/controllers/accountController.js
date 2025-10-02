@@ -97,9 +97,14 @@ export async function transaction(req, res) {
             const depositAmount = Number(req.body.savingAmount);
             const loanDepositAmount = Number(req.body.loanAmount);
             const depositAccount = await ACCOUNT.updateOne(
-             { BVN: req.body.BVN },           // Filter
-             { $inc: { savingAmount: depositAmount} },
-            { $inc: { loanAmount: loanDepositAmount} } );
+            { BVN: req.body.BVN }, // Filter
+            {
+                $inc: {
+                savingAmount: depositAmount,
+                loanAmount: loanDepositAmount
+                }
+            }
+            );
              console.log("Account updated")
             if (!depositAccount) return res.status(404).json({message:'User not found'});
             res.status(200).json({ message: 'Deposit successfully!' });
