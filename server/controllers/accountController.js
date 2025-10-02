@@ -95,9 +95,11 @@ export async function transaction(req, res) {
         }else{
             console.log("proccessing records")
             const depositAmount = Number(req.body.savingAmount);
+            const loanAmount = Number(req.body.loanAmount);
             const depositAccount = await ACCOUNT.updateOne(
              { BVN: req.body.BVN },           // Filter
-             { $inc: { savingAmount: depositAmount} } );
+             { $inc: { savingAmount: depositAmount} },
+            { $inc: { loanAmountAmount: loanAmount} } );
              console.log("Account updated")
             if (!depositAccount) return res.status(404).json({message:'User not found'});
             res.status(200).json({ message: 'Deposit successfully!' });
