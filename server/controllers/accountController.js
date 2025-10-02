@@ -71,6 +71,10 @@ export async function transaction(req, res) {
             loanAmount:req.body.loanAmount,
             transactionType:req.body.transactionType,
             comment: req.body.comment,
+            status: req.body.status,
+            dueDate: req.body.dueDate,
+            interest:req.body.interest,
+            guarantor:req.body.guarantor,
             dateCreated:new Date()
         }
 
