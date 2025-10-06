@@ -15,6 +15,7 @@ const Sidebar = ({ activeTab, setActiveTab, toggleSidebar }) => {
     { name: 'Create Account', icon: UserPlusIcon },
     { name: 'Transactions', icon: BanknotesIcon },
     { name: 'TransactionHistory', icon: ClipboardDocumentListIcon },
+    { name: 'Notifications', icon: ClipboardDocumentListIcon },
     { name: 'Logout', icon: ArrowRightOnRectangleIcon },
   ];
 
