@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 const Transactions = () => {
@@ -8,6 +8,10 @@ const Transactions = () => {
     BVN: '',
     savingAmount: '',
     loanAmount: '',
+    dueDate: '',
+    interest: '',
+    guarantor: '',
+    status: '',
     comment: '',
     senderBVN: '',
     receiverBVN: '',
@@ -17,71 +21,75 @@ const Transactions = () => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [selectedUserAccount, setSelectedUserAccount] = useState(null);
+
+  // Fetch account whenever email or BVN changes
+  useEffect(() => {
+    const fetchAccount = async () => {
+      if (!formData.email && !formData.BVN) {
+        setSelectedUserAccount(null);
+        return;
+      }
+      try {
+        const res = await fetch('https://savings-loan-app.vercel.app/api/get-user-account-records');
+        const data = await res.json();
+        if (res.status === 200 && Array.isArray(data)) {
+          const match = data.find(u =>
+            (formData.email && u.email?.toLowerCase() === formData.email.toLowerCase()) ||
+            (formData.BVN && u.BVN === formData.BVN)
+          );
+          if (match) {
+            setSelectedUserAccount({
+              totalSaving: Number(match.savingAmount || 0),
+              totalLoan: Number(match.loanAmount || 0),
+            });
+          } else {
+            setSelectedUserAccount({ totalSaving: 0, totalLoan: 0 });
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error('Error fetching account data');
+        setSelectedUserAccount(null);
+      }
+    };
+
+    // Debounce for live typing
+    const timeout = setTimeout(fetchAccount, 500);
+    return () => clearTimeout(timeout);
+  }, [formData.email, formData.BVN]);
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSearch = async () => {
-    const name = searchTerm.trim().toLowerCase();
-    if (!name) return;
-
-    console.log('Searching for user by name:', name);
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return;
 
     try {
       const res = await fetch('https://savings-loan-app.vercel.app/api/get-all-users');
       const data = await res.json();
-
-      console.log('Fetched all users:', data);
-
       if (res.status === 200 && Array.isArray(data)) {
-        const matches = data.filter((user) =>
-          user.firstName?.toLowerCase().includes(name) ||
-          user.lastName?.toLowerCase().includes(name) ||
-          user.otherNames?.toLowerCase().includes(name)
+        const matches = data.filter(u =>
+          (u.firstName || '').toLowerCase().includes(term) ||
+          (u.lastName || '').toLowerCase().includes(term) ||
+          (u.otherNames || '').toLowerCase().includes(term)
         );
-        console.log('Filtered matches:', matches);
         setSearchResults(matches);
-        toast.success('Search complete');
       } else {
-        toast.error('Unexpected response format');
         setSearchResults([]);
+        toast.error('Unexpected response format');
       }
     } catch (err) {
-      console.error('Search error:', err);
+      console.error(err);
       toast.error('Server error during search');
     }
   };
 
-  const handleSelectUser = async (user) => {
-    console.log('Selected user:', user);
-
-    try {
-      const res = await fetch('https://savings-loan-app.vercel.app/api/get-user-account-records');
-      const data = await res.json();
-
-      console.log('Fetched account records:', data);
-
-      if (res.status === 200 && Array.isArray(data)) {
-        const match = data.find((u) => u.email?.toLowerCase() === user.email?.toLowerCase());
-        if (match) {
-          setFormData((prev) => ({
-            ...prev,
-            email: match.email || '',
-            BVN: match.BVN || '',
-          }));
-          toast.success('User account loaded');
-        } else {
-          toast.error('No account record found for selected user');
-        }
-      } else {
-        toast.error('Unexpected response format');
-      }
-    } catch (err) {
-      console.error('Account fetch error:', err);
-      toast.error('Error loading user account');
-    }
-
+  const handleSelectUser = (user) => {
+    setFormData(prev => ({ ...prev, email: user.email || '', BVN: user.BVN || '' }));
     setSearchResults([]);
     setSearchTerm('');
   };
@@ -105,12 +113,18 @@ const Transactions = () => {
         BVN: formData.BVN,
         savingAmount: formData.savingAmount,
         loanAmount: formData.loanAmount,
+        ...(normalizedType === 'deposit' && formData.loanAmount
+          ? {
+              dueDate: formData.dueDate,
+              interest: formData.interest,
+              guarantor: formData.guarantor,
+              status: formData.status,
+            }
+          : {}),
         transactionType: normalizedType,
         comment: formData.comment,
       };
     }
-
-    console.log('Submitting transaction:', payload);
 
     try {
       const res = await fetch('https://savings-loan-app.vercel.app/api/transaction', {
@@ -118,17 +132,32 @@ const Transactions = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
       const data = await res.json();
-      console.log('Transaction response:', data);
 
       if (res.status === 200) {
         toast.success(data.message || 'Transaction successful!');
+        // Refresh totals after transaction
+        if (formData.email || formData.BVN) {
+          const res2 = await fetch('https://savings-loan-app.vercel.app/api/get-user-account-records');
+          const data2 = await res2.json();
+          if (res2.status === 200 && Array.isArray(data2)) {
+            const match = data2.find(u =>
+              (formData.email && u.email?.toLowerCase() === formData.email.toLowerCase()) ||
+              (formData.BVN && u.BVN === formData.BVN)
+            );
+            if (match) {
+              setSelectedUserAccount({
+                totalSaving: Number(match.savingAmount || 0),
+                totalLoan: Number(match.loanAmount || 0),
+              });
+            }
+          }
+        }
       } else {
         toast.error(data.message || data.error || 'Transaction failed.');
       }
     } catch (err) {
-      console.error('Transaction error:', err);
+      console.error(err);
       toast.error('Network error. Please try again.');
     } finally {
       setLoading(false);
@@ -137,9 +166,11 @@ const Transactions = () => {
 
   const renderForm = () => {
     const isTransfer = activeTab === 'transfer';
+    const isDeposit = activeTab === 'deposit';
 
     return (
       <div className="relative">
+        {/* Search (not needed for transfer) */}
         {!isTransfer && (
           <div className="mb-4">
             <label className="block font-medium mb-1">Search by Name</label>
@@ -147,7 +178,7 @@ const Transactions = () => {
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 placeholder="Enter name"
                 className="flex-1 px-4 py-2 border rounded-md"
               />
@@ -159,6 +190,7 @@ const Transactions = () => {
                 Search
               </button>
             </div>
+
             {searchResults.length > 0 && (
               <ul className="mt-2 border rounded-md bg-white shadow-sm max-h-40 overflow-y-auto">
                 {searchResults.map((user, index) => (
@@ -175,7 +207,19 @@ const Transactions = () => {
           </div>
         )}
 
-        <form onSubmit={(e) => e.preventDefault()} className={`bg-white p-6 rounded-lg shadow-md ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
+        {/* Display total balances */}
+        {selectedUserAccount && (
+          <div className="mb-4 p-4 bg-gray-100 rounded-md flex justify-between font-medium">
+            <div>Total Saving: ₦{selectedUserAccount.totalSaving.toLocaleString()}</div>
+            <div>Total Loan: ₦{selectedUserAccount.totalLoan.toLocaleString()}</div>
+          </div>
+        )}
+
+        {/* Transaction Form */}
+        <form
+          onSubmit={e => e.preventDefault()}
+          className={`bg-white p-6 rounded-lg shadow-md ${loading ? 'opacity-50 pointer-events-none' : ''}`}
+        >
           <table className="table-auto w-full border-separate border-spacing-y-4">
             <tbody>
               {isTransfer ? (
@@ -186,10 +230,9 @@ const Transactions = () => {
                       <input
                         type="text"
                         name="senderBVN"
-                        value={formData.senderBVN || ''}
+                        value={formData.senderBVN}
                         onChange={handleChange}
-                        placeholder="Enter sender BVN"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                        className="w-full px-4 py-2 border rounded-md"
                         required
                       />
                     </td>
@@ -200,10 +243,9 @@ const Transactions = () => {
                       <input
                         type="text"
                         name="receiverBVN"
-                        value={formData.receiverBVN || ''}
+                        value={formData.receiverBVN}
                         onChange={handleChange}
-                        placeholder="Enter receiver BVN"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                        className="w-full px-4 py-2 border rounded-md"
                         required
                       />
                     </td>
@@ -214,10 +256,9 @@ const Transactions = () => {
                       <input
                         type="number"
                         name="amount"
-                        value={formData.amount || ''}
+                        value={formData.amount}
                         onChange={handleChange}
-                        placeholder="Enter amount"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                        className="w-full px-4 py-2 border rounded-md"
                         required
                       />
                     </td>
@@ -231,10 +272,9 @@ const Transactions = () => {
                       <input
                         type="email"
                         name="email"
-                        value={formData.email || ''}
+                        value={formData.email}
                         onChange={handleChange}
-                        placeholder="Enter email"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                        className="w-full px-4 py-2 border rounded-md"
                         required
                       />
                     </td>
@@ -245,10 +285,9 @@ const Transactions = () => {
                       <input
                         type="text"
                         name="BVN"
-                        value={formData.BVN || ''}
+                        value={formData.BVN}
                         onChange={handleChange}
-                        placeholder="Enter BVN"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                        className="w-full px-4 py-2 border rounded-md"
                         required
                       />
                     </td>
@@ -259,10 +298,9 @@ const Transactions = () => {
                       <input
                         type="number"
                         name="savingAmount"
-                        value={formData.savingAmount || ''}
+                        value={formData.savingAmount}
                         onChange={handleChange}
-                        placeholder="Enter saving amount"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                        className="w-full px-4 py-2 border rounded-md"
                       />
                     </td>
                   </tr>
@@ -272,29 +310,85 @@ const Transactions = () => {
                       <input
                         type="number"
                         name="loanAmount"
-                        value={formData.loanAmount || ''}
+                        value={formData.loanAmount}
                         onChange={handleChange}
-                                               placeholder="Enter loan amount"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                        className="w-full px-4 py-2 border rounded-md"
+                      />
+                    </td>
+                  </tr>
+                  {isDeposit && formData.loanAmount && (
+                    <>
+                      <tr>
+                        <td className="font-medium text-sm">Due Date</td>
+                        <td>
+                          <input
+                            type="date"
+                            name="dueDate"
+                            value={formData.dueDate}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded-md"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="font-medium text-sm">Interest %</td>
+                        <td>
+                          <input
+                            type="number"
+                            name="interest"
+                            value={formData.interest}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded-md"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="font-medium text-sm">Guarantor</td>
+                        <td>
+                          <input
+                            type="text"
+                            name="guarantor"
+                            value={formData.guarantor}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded-md"
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="font-medium text-sm">Status</td>
+                        <td>
+                          <select
+                            name="status"
+                            value={formData.status}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded-md"
+                          >
+                            <option value="">Select status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="overdue">Overdue</option>
+                          </select>
+                        </td>
+                      </tr>
+                    </>
+                  )}
+                  <tr>
+                    <td className="font-medium text-sm">Comment</td>
+                    <td>
+                      <textarea
+                        name="comment"
+                        value={formData.comment}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border rounded-md"
                       />
                     </td>
                   </tr>
                 </>
               )}
-              <tr>
-                <td className="font-medium text-sm">Comment</td>
-                <td>
-                  <textarea
-                    name="comment"
-                    value={formData.comment || ''}
-                    onChange={handleChange}
-                    placeholder="Optional comment"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                  />
-                </td>
-              </tr>
             </tbody>
           </table>
+
           <button
             type="button"
             onClick={() => handleSubmit(activeTab)}
@@ -313,19 +407,16 @@ const Transactions = () => {
       <h1 className="text-2xl font-bold mb-6">Transactions</h1>
 
       <div className="flex gap-4 mb-6">
-        {['deposit', 'withdraw', 'transfer'].map((tab) => (
+        {['deposit', 'withdraw', 'transfer'].map(tab => (
           <button
             key={tab}
             onClick={() => {
-              console.log('Switched to tab:', tab);
               setActiveTab(tab);
-              setFormData((prev) => ({ ...prev, transactionType: tab.toLowerCase() }));
+              setFormData(prev => ({ ...prev, transactionType: tab.toLowerCase() }));
               setSearchResults([]);
               setSearchTerm('');
             }}
-            className={`px-4 py-2 rounded ${
-              activeTab === tab ? 'bg-orange-500 text-white' : 'bg-gray-200'
-            }`}
+            className={`px-4 py-2 rounded ${activeTab === tab ? 'bg-orange-500 text-white' : 'bg-gray-200'}`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
