@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import DashboardHome from './Dashboard';
-import Members from './Members'; // uses /api/get-all-users and /api/update-user-records
-import Transactions from './Transactions'; // assumed to handle new transactions
-import CreateAccount from './CreateAccount'; // assumed to create new users
-import TransactionHistory from './TransactionHistory'; 
-import Notifications from './Notifications'; // uses /api/get-transaction-history
+import Members from './Members';
+import Transactions from './Transactions';
+import CreateAccount from './CreateAccount';
+import TransactionHistory from './TransactionHistory';
+import Notifications from './Notifications';
 import Logout from './Logout';
+import UserRegistration from './UserRegistration'; // ✅ import your new page
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -17,16 +18,17 @@ const AdminDashboard = () => {
       case 'Dashboard':
         return <DashboardHome />;
       case 'View Members':
-        return <Members />; // shows all users and allows updates
+        return <Members />;
+      case 'User Registration': // ✅ new tab
+        return <UserRegistration />;
       case 'Create Account':
-        return <CreateAccount />; // creates new user accounts
+        return <CreateAccount />;
       case 'Transactions':
-        return <Transactions />; // handles deposits/loans
+        return <Transactions />;
       case 'TransactionHistory':
-        return <TransactionHistory />; // shows transaction records
-
-          case 'Notifications':
-        return <Notifications />; // handles users request 
+        return <TransactionHistory />;
+      case 'Notifications':
+        return <Notifications />;
       case 'Logout':
         return <Logout />;
       default:
