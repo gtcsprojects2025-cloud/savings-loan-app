@@ -16,7 +16,7 @@ const { Schema } = mongoose;
     },
     otherNames:{
         type: String,
-        required: true
+        required: false
     },
      DOB:{
         type: Date,
