@@ -7,6 +7,22 @@ import OTP from "../models/otp.js";
 import AdminLogin from "../models/adminLogin.js";
 //import { SHA256 } from "crypto-js";
 
+ // Send OTP via email (or SMS)
+  const transporter = nodemailer.createTransport({
+    secure:false,
+    host: 'smtp.gmail.com',
+    port:587,
+    requireTLS:true,
+    logger: true,
+    debug:true,
+    auth: {
+      user: 'rolandmario2@gmail.com',
+      pass: 'nnlykezsxuhyibbp',
+    },
+
+
+  });
+
 
 export async function registerMember(req, res) {
     const newMember ={title:req.body.title, firstName:req.body.firstName,
@@ -18,6 +34,13 @@ export async function registerMember(req, res) {
            referenceName:req.body.referenceName, referencePhoneNo:req.body.referencePhoneNo,
            nextOfKin:req.body.nextOfKin, nextOfKinPhone:req.body.nextOfKinPhone}
 
+      const mailOptions = {
+        from: "rolandmario2@gmail.com",
+        to: req.body.email,
+        subject: 'GTCS Member Registration',
+        text: `Your GTCS membership registration was succesfull. Your logins: email: ${req.body.email}, password: ${req.body.password}`,
+    };
+
     try {
         const emailExists = await Register.findOne({email: req.body.email})
         console.log("Member Already exists", emailExists)
@@ -27,6 +50,7 @@ export async function registerMember(req, res) {
         }else{
          const memberRecords = new Register(newMember);
          await memberRecords.save();
+         await transporter.sendMail(mailOptions);
          res.status(200).json({message: 'Member registration successfull'})
         }
 
