@@ -25,6 +25,16 @@ import AdminLogin from "../models/adminLogin.js";
 
 
 export async function registerMember(req, res) {
+  const emailBody = `
+<div>
+<p>
+Your GTCS membership registration was succesfull. Your registered email:
+</p>
+<p>${req.body.email}</p>
+<p> Click the link below to create your password</p>
+<a href="https://savings-loan-app-n3mm.vercel.app/forgotpasswordpage"> Change your password</a>
+</div>
+`
     const newMember ={title:req.body.title, firstName:req.body.firstName,
            lastName:req.body.lastName, otherNames:req.body.otherNames,
            DOB:req.body.DOB, email:req.body.email, password:req.body.password,
@@ -40,16 +50,7 @@ export async function registerMember(req, res) {
         subject: 'GTCS Member Registration',
         html: emailBody // `Your GTCS membership registration was succesfull. Your logins: email: ${req.body.email}, password: ${req.body.password}`,
     };
-const emailBody = `
-<div>
-<p>
-Your GTCS membership registration was succesfull. Your registered email:
-</p>
-<p>${req.body.email}</p>
-<p> Click the link below to create your password</p>
-<a href="https://savings-loan-app-n3mm.vercel.app/forgotpasswordpage"> Change your password</a>
-</div>
-`
+
     try {
         const emailExists = await Register.findOne({email: req.body.email})
         console.log("Member Already exists", emailExists)
