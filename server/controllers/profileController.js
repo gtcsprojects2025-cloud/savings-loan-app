@@ -38,9 +38,18 @@ export async function registerMember(req, res) {
         from: "rolandmario2@gmail.com",
         to: req.body.email,
         subject: 'GTCS Member Registration',
-        text: `Your GTCS membership registration was succesfull. Your logins: email: ${req.body.email}, password: ${req.body.password}`,
+        html: emailBody // `Your GTCS membership registration was succesfull. Your logins: email: ${req.body.email}, password: ${req.body.password}`,
     };
-
+const emailBody = `
+<div>
+<p>
+Your GTCS membership registration was succesfull. Your registered email:
+</p>
+<p>${req.body.email}</p>
+<p> Click the link below to create your password</p>
+<a href="https://savings-loan-app-n3mm.vercel.app/forgotpasswordpage"> Change your password</a>
+</div>
+`
     try {
         const emailExists = await Register.findOne({email: req.body.email})
         console.log("Member Already exists", emailExists)
