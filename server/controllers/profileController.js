@@ -9,10 +9,10 @@ import AdminLogin from "../models/adminLogin.js";
 
  // Send OTP via email (or SMS)
   const transporter = nodemailer.createTransport({
-    secure:false,
+    secure:true,
     host: 'mail.godstreasury.com',//'smtp.gmail.com',
-    port:587,
-    //requireTLS:true,
+    port:465,
+    requireTLS:true,
     logger: true,
     debug:true,
     auth: {
