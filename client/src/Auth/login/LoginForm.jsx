@@ -116,12 +116,15 @@ const LoginForm = () => {
         </form>
 
         <div className="mt-6 text-sm text-center text-gray-600 space-y-2">
-          <p>
-            Don’t have an account?{' '}
-            <Link to="/Auth/register/" className="text-brandBlue font-medium hover:underline">
-              Register
-            </Link>
-          </p>
+        {/* 
+<p>
+  Don’t have an account?{' '}
+  <Link to="/Auth/register/" className="text-brandBlue font-medium hover:underline">
+    Register
+  </Link>
+</p>
+*/}
+
           <p>
             <Link to="/forgotpasswordpage" className="text-brandOrange font-medium hover:underline">
               Forgot password?

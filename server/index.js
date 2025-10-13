@@ -16,7 +16,7 @@ import{ registerMember, memberLogin, generateOTP, verifyOTP, updatePassword, get
 import cors from 'cors';
 
 import { create_account, transaction, getUserAmount, getTransactionHistory, getAllMembersTransactions, getUserAccountRecords } from "./controllers/accountController.js";
-import { uploadDocument, fetchUserLoanApplicationDetails, fetchAllLoanApplicationDetails, uploadFileToCloudinary } from "./controllers/documentController.js";
+import { uploadDocument, fetchUserLoanApplicationDetails, fetchAllLoanApplicationDetails,  personalLoanApplication } from "./controllers/documentController.js";
 import LoanDocument from "./models/loanDocument.js";
 
 
@@ -85,7 +85,7 @@ app.post('/api/generate-otp', generateOTP);
 app.post("/api/verify-otp", verifyOTP);
 app.post("/api/create-user-account", create_account);
 app.post("/api/admin-login", adminLogin)
-//app.post('/api/upload-loan-application-doc', upload.single('file'), jsonParser, uploadDocument)
+app.post('/api/personal-loan-application', personalLoanApplication)
 app.post('/api/upload-loan-application-doc', upload.single('file'), async (req, res) => {
   try {
     const { email, firstName, surName, BVN } = req.body;

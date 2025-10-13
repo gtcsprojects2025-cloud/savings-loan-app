@@ -1,6 +1,7 @@
 import LoanDocument from "../models/loanDocument.js";
 //import { v2 as cloudinary } from 'cloudinary'; // ✅ Correct
 import cloudinary from '../cloudinary/cloudinaryConfig.js'
+import TRANSACTION from "../models/transactions.js";
 export async function uploadDocument(req, res) {
     console.log("running uploaddoc fn...")
     try {
@@ -30,7 +31,8 @@ export async function uploadDocument(req, res) {
 export async function fetchUserLoanApplicationDetails(req, res) {
   try {
         const email = req.query.email
-        const loan_details = await LoanDocument.find({email:email});
+        //const loan_details = await LoanDocument.find({email:email});
+        const loan_details = await TRANSACTION.find({email:email})
         if(!loan_details) res.status(400).json({error: "User with this email does not exists"});
         res.status(200).json({loan_details}); 
   } catch (error) {
@@ -54,30 +56,26 @@ export async function fetchAllLoanApplicationDetails(req, res) {
 export async function personalLoanApplication(req, res) {
   const applicationDetails ={
     email: req.body.email,
-    BVN: req.body.BVN,
+    
     loanAmount: req.body.loanAmount,
     loanType: req.body.loanType,
     employmentStatus: req.body.employmentStatus,
-    loanPurpose: req.body.loanPurpose,
+    purpose: req.body.loanPurpose,
     monthlyIncome: req.body.monthlyIncome,
     bankName: req.body.bankName,
-    
+    accountHolder: req.body.accountHolder,
+    accountNumber: req.body.accountNumber, 
+  }
+
+  try {
+    const personalLoan = new LoanDocument(applicationDetails);
+    await personalLoan.save()
+    res.status(200).json({message: "Loan application successful"})
+  } catch (error) {
+    res.status(500).json({error:"Unsuccessfull try again"})
   }
 }
 
 
 
 
-export async function uploadFileToCloudinary(req, res) {
-    try {
-    const result = await cloudinary.uploader.upload_stream(
-      { resource_type: 'auto' },
-      (error, result) => {
-        if (error) return res.status(500).send(error);
-        res.status(200).json({ url: result.secure_url });
-      }
-    ).end(req.file.buffer);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}

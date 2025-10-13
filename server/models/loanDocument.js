@@ -8,7 +8,15 @@ const { Schema } = mongoose;
   surName: String,
   BVN: Number,
   email:String,
-  uploadDate: {
+  loanType: String,
+  loanAmount: Number,
+  purpose: String,
+  employmentStatus: String,
+  monthlyIncome: Number,
+  accountHolder: String,
+  bankName: String,
+  accountNumber: String,
+  createdAt :{
     type: Date,
     default: Date.now
   }
@@ -16,3 +24,4 @@ const { Schema } = mongoose;
 
  const LoanDocument = mongoose.model("LoanDocument", loanDocumentSchema);
   export default LoanDocument;
+  

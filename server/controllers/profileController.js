@@ -7,8 +7,34 @@ import OTP from "../models/otp.js";
 import AdminLogin from "../models/adminLogin.js";
 //import { SHA256 } from "crypto-js";
 
+ // Send OTP via email (or SMS)
+  const transporter = nodemailer.createTransport({
+    secure:false,
+    host: 'smtp.gmail.com',
+    port:587,
+    requireTLS:true,
+    logger: true,
+    debug:true,
+    auth: {
+      user: 'rolandmario2@gmail.com',
+      pass: 'nnlykezsxuhyibbp',
+    },
+
+
+  });
+
 
 export async function registerMember(req, res) {
+  const emailBody = `
+<div>
+<p>
+Your GTCS membership registration was succesfull. Your registered email:
+</p>
+<p>${req.body.email}</p>
+<p> Click the link below to create your password</p>
+<a href="https://savings-loan-app-n3mm.vercel.app/forgotpasswordpage"> Change your password</a>
+</div>
+`
     const newMember ={title:req.body.title, firstName:req.body.firstName,
            lastName:req.body.lastName, otherNames:req.body.otherNames,
            DOB:req.body.DOB, email:req.body.email, password:req.body.password,
@@ -17,6 +43,13 @@ export async function registerMember(req, res) {
            residentialState:req.body.residentialState, officeAddress:req.body.officeAddress,
            referenceName:req.body.referenceName, referencePhoneNo:req.body.referencePhoneNo,
            nextOfKin:req.body.nextOfKin, nextOfKinPhone:req.body.nextOfKinPhone}
+
+      const mailOptions = {
+        from: "rolandmario2@gmail.com",
+        to: req.body.email,
+        subject: 'GTCS Member Registration',
+        html: emailBody // `Your GTCS membership registration was succesfull. Your logins: email: ${req.body.email}, password: ${req.body.password}`,
+    };
 
     try {
         const emailExists = await Register.findOne({email: req.body.email})
@@ -27,6 +60,7 @@ export async function registerMember(req, res) {
         }else{
          const memberRecords = new Register(newMember);
          await memberRecords.save();
+         await transporter.sendMail(mailOptions);
          res.status(200).json({message: 'Member registration successfull'})
         }
 
@@ -175,35 +209,42 @@ export async function getAllUsers(req, res) {
 
 
 export async function updateUserRecords(req, res) {
-      try {
-   
+  try {
     const updatedUser = await Register.updateOne(
-     { email: req.body.email },           // Filter
-     { $set: { title: req.body.title } },
-      { $set: { firstName: req.body.firstName } },
-      { $set: { lastName: req.body.lastName } },
-      { $set: { otherNames: req.body.otherNames } },
-      { $set: { DOB: req.body.DOB } },
-      { $set: { phoneNo: req.body.phoneNo } },
-      { $set: { phoneNo2: req.body.phoneNo2 } },
-      { $set: { BVN: req.body.BVN } },
-      { $set: { NIN: req.body.NIN } },
-      { $set: { residentialAddress: req.body.residentialAddress } },
-      { $set: { residentialState: req.body.residentialState } },
-      { $set: { officeAddress: req.body.officeAddress } },
-      { $set: { referenceName: req.body.referenceName } },
-      { $set: { referencePhoneNo: req.body.referencePhoneNo } },
-      { $set: { guarantorName: req.body.guarantorName } },
-      { $set: { guarantorPhone: req.body.guarantorPhone } },
-      { $set: { guarantorName2: req.body.guarantorName2 } },
-      { $set: { guarantorPhone2: req.body.guarantorPhone2 } }, );
+      { email: req.body.email }, // Filter
+      {
+        $set: {
+          title: req.body.title,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          otherNames: req.body.otherNames,
+          DOB: req.body.DOB,
+          phoneNo: req.body.phoneNo,
+          phoneNo2: req.body.phoneNo2,
+          BVN: req.body.BVN,
+          NIN: req.body.NIN,
+          residentialAddress: req.body.residentialAddress,
+          residentialState: req.body.residentialState,
+          officeAddress: req.body.officeAddress,
+          referenceName: req.body.referenceName,
+          referencePhoneNo: req.body.referencePhoneNo,
+          nextOfKin: req.body.nextOfKin,
+          nextOfKinPhone: req.body.nextOfKinPhone,
 
-    if (!updatedUser) return res.status(404).json({message:'User not found'});
-    res.status(200).json({ message: 'User records updated successfully!' });
-    } catch (error) {
-        res.status(500).json({message: 'Error updating user'});
+        }
+      }
+    );
+
+    if (updatedUser.modifiedCount === 0) {
+      return res.status(404).json({ message: 'User not found or no changes made' });
     }
+
+    res.status(200).json({ message: 'User records updated successfully!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating user', error: error.message });
+  }
 }
+
 
 export async function adminLogin(req, res){
     try {
