@@ -56,30 +56,26 @@ export async function fetchAllLoanApplicationDetails(req, res) {
 export async function personalLoanApplication(req, res) {
   const applicationDetails ={
     email: req.body.email,
-    BVN: req.body.BVN,
+    
     loanAmount: req.body.loanAmount,
     loanType: req.body.loanType,
     employmentStatus: req.body.employmentStatus,
-    loanPurpose: req.body.loanPurpose,
+    purpose: req.body.loanPurpose,
     monthlyIncome: req.body.monthlyIncome,
     bankName: req.body.bankName,
-    
+    accountHolder: req.body.accountHolder,
+    accountNumber: req.body.accountNumber, 
+  }
+
+  try {
+    const personalLoan = new LoanDocument(applicationDetails);
+    await personalLoan.save()
+    res.status(200).json({message: "Loan application successful"})
+  } catch (error) {
+    res.status(500).json({error:"Unsuccessfull try again"})
   }
 }
 
 
 
 
-export async function uploadFileToCloudinary(req, res) {
-    try {
-    const result = await cloudinary.uploader.upload_stream(
-      { resource_type: 'auto' },
-      (error, result) => {
-        if (error) return res.status(500).send(error);
-        res.status(200).json({ url: result.secure_url });
-      }
-    ).end(req.file.buffer);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
