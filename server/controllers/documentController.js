@@ -1,6 +1,7 @@
 import LoanDocument from "../models/loanDocument.js";
 //import { v2 as cloudinary } from 'cloudinary'; // ✅ Correct
 import cloudinary from '../cloudinary/cloudinaryConfig.js'
+import TRANSACTION from "../models/transactions.js";
 export async function uploadDocument(req, res) {
     console.log("running uploaddoc fn...")
     try {
@@ -30,7 +31,8 @@ export async function uploadDocument(req, res) {
 export async function fetchUserLoanApplicationDetails(req, res) {
   try {
         const email = req.query.email
-        const loan_details = await LoanDocument.find({email:email});
+        //const loan_details = await LoanDocument.find({email:email});
+        const loan_details = await TRANSACTION.find({email:email})
         if(!loan_details) res.status(400).json({error: "User with this email does not exists"});
         res.status(200).json({loan_details}); 
   } catch (error) {
