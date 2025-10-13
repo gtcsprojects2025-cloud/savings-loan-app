@@ -15,7 +15,8 @@ const { Schema } = mongoose;
     },
     loanAmount:{
         type:Number,
-        required: false
+        required: false,
+        default: 0
     },
     transactionType:{
         type:String,
