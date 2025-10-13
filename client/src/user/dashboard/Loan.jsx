@@ -1,8 +1,24 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import emailjs from '@emailjs/browser';
 import loan from '../../assets/loan.png';
+
+// Retry fetch with exponential backoff
+const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      return response;
+    } catch (err) {
+      if (i < retries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, delay * Math.pow(2, i)));
+        console.warn(`Retry ${i + 1} for ${url}`);
+      } else {
+        throw err;
+      }
+    }
+  }
+};
 
 const Loan = () => {
   const {
@@ -20,32 +36,51 @@ const Loan = () => {
   const [isUploaded, setIsUploaded] = useState(false);
 
   const onSubmitSelfLoan = async (data) => {
+    const email = localStorage.getItem('email');
+    if (!email) {
+      toast.error('No email found for logged-in user. Please log in again.');
+      return;
+    }
+
     try {
-      const templateParams = {
+      const requestBody = {
+        email,
         loanType: data.loanType,
-        amount: data.amount,
+        loanAmount: Number(data.amount),
         purpose: data.purpose,
         employmentStatus: data.employmentStatus,
-        income: data.income,
-        accountHolderName: data.accountHolderName,
+        monthlyIncome: Number(data.income),
+        accountHolder: data.accountHolderName,
         bankName: data.bankName,
         accountNumber: data.accountNumber,
-        to_email: 'feezyakinwunmi001@gmail.com',
       };
 
-      await emailjs.send(
-        'YOUR_SERVICE_ID', // Replace with your EmailJS Service ID
-        'YOUR_TEMPLATE_ID', // Replace with your EmailJS Template ID
-        templateParams,
-        'YOUR_USER_ID' // Replace with your EmailJS User ID
+      console.log('Self-loan application data:', requestBody);
+
+      const response = await fetchWithRetry(
+        'https://savings-loan-app.vercel.app/api/personal-loan-application',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // 'Authorization': `Bearer ${localStorage.getItem('userToken')}`, // Uncomment if needed
+          },
+          body: JSON.stringify(requestBody),
+        }
       );
 
-      console.log('Self-loan application data:', data);
-      toast.success('Self-loan application submitted and email sent!');
-      reset();
+      const result = await response.json();
+      console.log('Self-loan API response:', result);
+
+      if (response.ok) {
+        toast.success('Self-loan application submitted successfully!');
+        reset();
+      } else {
+        toast.error(`Failed to submit self-loan application: ${result.message || 'Server error'}`);
+      }
     } catch (error) {
-      console.error('Error sending email:', error);
-      toast.error('Failed to send self-loan application. Please try again.');
+      console.error('Error submitting self-loan application:', error);
+      toast.error('Failed to submit self-loan application. Please try again.');
     }
   };
 
@@ -428,7 +463,5 @@ const Loan = () => {
     </div>
   );
 };
-
-emailjs.init('YOUR_USER_ID'); // Replace with your EmailJS User ID
 
 export default Loan;

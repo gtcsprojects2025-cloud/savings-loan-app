@@ -1,29 +1,14 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
   for (let i = 0; i < retries; i++) {
     try {
       const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
       return response;
     } catch (err) {
       if (i < retries - 1) {
@@ -47,57 +32,53 @@ const Obligations = () => {
   const email = localStorage.getItem('email') || 'rolandmario2@gmail.com';
   const userToken = localStorage.getItem('userToken') || 'demo-token';
 
-  // Demo data for obligations
-  const demoObligations = [
-    { id: 'loan-001', loanAmount: 50000, dueDate: '2025-12-01', interest: 8, guarantor: 'John Doe', status: 'Active', notes: 'Business loan' },
-    { id: 'loan-002', loanAmount: 75000, dueDate: '2026-03-15', interest: 3, guarantor: 'Jane Smith', status: 'Pending', notes: 'Personal loan' },
-    { id: 'loan-003', loanAmount: 100000, dueDate: '2025-11-30', interest: 8, guarantor: 'Michael Brown', status: 'Active', notes: 'Home purchase' },
-    { id: 'loan-004', loanAmount: 25000, dueDate: '2026-01-10', interest: 3, guarantor: 'Emily Davis', status: 'Overdue', notes: 'Education loan' },
-    { id: 'loan-005', loanAmount: 120000, dueDate: '2026-06-20', interest: 8, guarantor: 'David Wilson', status: 'Active', notes: 'Business expansion' },
-    { id: 'loan-006', loanAmount: 30000, dueDate: '2025-10-05', interest: 3, guarantor: 'Sarah Johnson', status: 'Pending', notes: 'Medical expenses' },
-    { id: 'loan-007', loanAmount: 80000, dueDate: '2026-02-28', interest: 8, guarantor: 'Chris Lee', status: 'Active', notes: 'Vehicle purchase' },
-    { id: 'loan-008', loanAmount: 45000, dueDate: '2025-09-15', interest: 3, guarantor: 'Anna Taylor', status: 'Overdue', notes: 'Personal loan' },
-    { id: 'loan-009', loanAmount: 60000, dueDate: '2026-04-01', interest: 8, guarantor: 'Mark Anderson', status: 'Active', notes: 'Business loan' },
-    { id: 'loan-010', loanAmount: 90000, dueDate: '2026-05-10', interest: 3, guarantor: 'Lisa Martinez', status: 'Pending', notes: 'Education loan' },
-  ];
-
   useEffect(() => {
     const fetchObligations = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Commented out API call (to be updated with provided endpoint)
-        /*
         const response = await fetchWithRetry(
-          `https://savings-loan-app.vercel.app/api/get-obligations?email=${email}`,
+          `https://savings-loan-app.vercel.app/api/get-transaction-history?email=${encodeURIComponent(email)}`,
           {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${userToken}`,
+              // 'Authorization': `Bearer ${userToken}`, // Uncomment if needed
             },
           }
         );
         const result = await response.json();
         console.log('Obligations API response:', JSON.stringify(result, null, 2));
-        if (response.ok && result.obligation_details) {
-          const transformedObligations = result.obligation_details.map((ob, index) => ({
-            id: ob._id || `loan-${index + 1}`,
-            loanAmount: ob.loanAmount || 0,
-            dueDate: format(new Date(ob.dueDate), 'yyyy-MM-dd'),
-            interest: ob.interestRate || 0,
-            guarantor: ob.guarantorName || 'N/A',
-            status: ob.status || 'Active',
-            notes: ob.notes || 'No notes',
-          }));
+
+        if (result.transaction_details && Array.isArray(result.transaction_details)) {
+          const transformedObligations = result.transaction_details
+            .filter((tx) => Number(tx.loanAmount) > 0 || tx.guarantor || tx.interest || tx.dueDate)
+            .map((tx, index) => {
+              console.log('Processing transaction:', {
+                id: tx._id,
+                loanAmount: tx.loanAmount,
+                dueDate: tx.dueDate,
+                interest: tx.interest,
+                guarantor: tx.guarantor,
+                status: tx.status,
+                comment: tx.comment,
+              });
+              return {
+                id: tx._id || `loan-${index + 1}`,
+                loanAmount: Number(tx.loanAmount) || 0,
+                dueDate: tx.dueDate ? format(parseISO(tx.dueDate), 'yyyy-MM-dd') : 'N/A',
+                interest: tx.interest || '0',
+                guarantor: tx.guarantor || 'N/A',
+                status: tx.status || 'Unknown',
+                notes: tx.comment || 'No notes',
+              };
+            });
+          console.log('Transformed obligations:', transformedObligations);
           setObligations(transformedObligations);
         } else {
-          console.warn('No obligation data found:', result.message);
+          console.warn('No obligation data found:', result.message || 'Invalid response format');
           setObligations([]);
         }
-        */
-        // Using demo data for now
-        setObligations(demoObligations);
       } catch (err) {
         console.error('Obligation fetch error:', err.message);
         setError(`Failed to load obligations: ${err.message}`);
@@ -194,14 +175,14 @@ const Obligations = () => {
                   <td className="p-3">{item.guarantor}</td>
                   <td
                     className={`p-3 ${
-                      item.status === 'Active'
+                      item.status.toLowerCase() === 'approved'
                         ? 'text-green-600'
-                        : item.status === 'Pending'
+                        : item.status.toLowerCase() === 'pending'
                         ? 'text-yellow-600'
                         : 'text-red-600'
                     }`}
                   >
-                    {item.status}
+                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                   </td>
                   {modalItem && modalItem.id === item.id && (
                     <div className="absolute z-10 bg-white border border-gray-200 shadow-lg rounded-lg p-4 w-80 left-1/2 transform -translate-x-1/2 mt-12">
@@ -211,7 +192,7 @@ const Obligations = () => {
                       <p><strong>Due Date:</strong> {item.dueDate}</p>
                       <p><strong>Interest:</strong> {item.interest}%</p>
                       <p><strong>Guarantor:</strong> {item.guarantor}</p>
-                      <p><strong>Status:</strong> {item.status}</p>
+                      <p><strong>Status:</strong> {item.status.charAt(0).toUpperCase() + item.status.slice(1)}</p>
                       <p><strong>Notes:</strong> {item.notes}</p>
                     </div>
                   )}
@@ -220,6 +201,9 @@ const Obligations = () => {
             </tbody>
           </table>
         </div>
+        {paginatedObligations.length === 0 && (
+          <div className="text-center text-gray-600 mt-4">No loan obligations found</div>
+        )}
         <div className="flex justify-between items-center mt-4">
           <button
             onClick={handlePrevious}

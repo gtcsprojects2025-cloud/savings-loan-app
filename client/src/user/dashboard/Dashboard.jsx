@@ -41,7 +41,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
 
   const isLoggedIn = !!localStorage.getItem('userToken');
-  const email = localStorage.getItem('email') || 'rolandmario2@gmail.com';
+  const email = localStorage.getItem('email') ;
   const userToken = localStorage.getItem('userToken') || 'demo-token';
 
   // Retry fetch with exponential backoff
@@ -238,7 +238,7 @@ if (userResponse.ok) {
         return <Loan />;
       case 'Profile':
         return <Profile />;
-      case 'Loan List':
+      case 'Loan Details':
         return <Obligations/>;
       case 'Logout':
         return <Logout />;

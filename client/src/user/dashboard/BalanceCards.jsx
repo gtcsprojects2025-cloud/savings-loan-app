@@ -10,11 +10,13 @@ const BalanceCards = ({ balances }) => {
     if (daysLeft < 0) return 'Overdue';
     return `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`;
   };
-
+//change icon to naira icon 
   const cards = [
     {
       title: 'Total Balance',
       amount: balances.savings,
+      //change to naira icon 
+
       icon: CurrencyDollarIcon,
       color: 'text-blue-500',
     },
@@ -51,8 +53,15 @@ const BalanceCards = ({ balances }) => {
               </div>
             </>
           )}
-          <div className="flex items-center gap-4">
-            <card.icon className={`h-8 w-8 ${card.color}`} />
+          <div className="flex items-center gap-4">           
+            {/* {card.title !== 'Loan Balance' && (
+            )}                       */}
+             <span className="text-4xl flex items-center justify-center w-16 h-16 p-1 font-bold text-{cards.color} rounded-full ">₦</span>
+
+            {/* {card.title ==='Loan Balance' && (
+                        <card.icon className={``} />
+   )} */}
+
             <div>
               <h3 className="text-lg font-semibold text-gray-500">{card.title}</h3>
               <p className="text-2xl font-bold text-black flex items-center">
