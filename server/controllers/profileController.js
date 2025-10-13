@@ -10,14 +10,14 @@ import AdminLogin from "../models/adminLogin.js";
  // Send OTP via email (or SMS)
   const transporter = nodemailer.createTransport({
     secure:false,
-    host: 'smtp.gmail.com',
-    port:587,
+    host: 'mail.godstreasury.com',//'smtp.gmail.com',
+    port:465,
     requireTLS:true,
     logger: true,
     debug:true,
     auth: {
-      user: 'rolandmario2@gmail.com',
-      pass: 'nnlykezsxuhyibbp',
+      user: 'johnson.taiwo@godstreasury.com',
+      pass: 'J@hnson123',//'nnlykezsxuhyibbp',
     },
 
 
@@ -45,7 +45,7 @@ Your GTCS membership registration was succesfull. Your registered email:
            nextOfKin:req.body.nextOfKin, nextOfKinPhone:req.body.nextOfKinPhone}
 
       const mailOptions = {
-        from: "rolandmario2@gmail.com",
+        from: '"GTCS SUPPORT" <johnson.taiwo@godstreasury.com>',
         to: req.body.email,
         subject: 'GTCS Member Registration',
         html: emailBody // `Your GTCS membership registration was succesfull. Your logins: email: ${req.body.email}, password: ${req.body.password}`,
@@ -108,20 +108,20 @@ console.log("otp :", otp)
   // Send OTP via email (or SMS)
   const transporter = nodemailer.createTransport({
     secure:false,
-    host: 'smtp.gmail.com',
-    port:587,
+    host: 'mail.godstreasury.com',//'smtp.gmail.com',
+    port:465,
     requireTLS:true,
     logger: true,
     debug:true,
     auth: {
-      user: 'rolandmario2@gmail.com',
-      pass: 'nnlykezsxuhyibbp',
+      user: 'johnson.taiwo@godstreasury.com',
+      pass: 'J@hnson123',//'nnlykezsxuhyibbp',
     },
 
 
   });
     const mailOptions = {
-    from: "rolandmario2@gmail.com",
+    from: '"GTCS SUPPORT" <johnson.taiwo@godstreasury.com>',
     to: email,
     subject: 'Your OTP Code',
     text: `Your OTP is: ${otp}`,
