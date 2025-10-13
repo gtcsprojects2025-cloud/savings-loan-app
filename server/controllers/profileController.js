@@ -11,15 +11,17 @@ import AdminLogin from "../models/adminLogin.js";
   const transporter = nodemailer.createTransport({
     secure:false,
     host: 'mail.godstreasury.com',//'smtp.gmail.com',
-    port:465,
-    requireTLS:true,
+    port:587,
+    //requireTLS:true,
     logger: true,
     debug:true,
     auth: {
       user: 'johnson.taiwo@godstreasury.com',
       pass: 'J@hnson123',//'nnlykezsxuhyibbp',
     },
-
+  tls: {
+    rejectUnauthorized: false
+  }
 
   });
 
