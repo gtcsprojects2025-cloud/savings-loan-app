@@ -79,7 +79,7 @@ export async function transaction(req, res) {
         }
 
     const mailOptions = {
-        from: "rolandmario2@gmail.com",
+        from: '"GTCS SUPPORT" <rolandmario2@gmail.com>',
         to: req.body.email,
         subject: 'GTCS Account Creation',
         text: `A successfull transaction has been completed on your GTCS account`,

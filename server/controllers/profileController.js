@@ -108,22 +108,24 @@ export async function generateOTP(req, res){
   });
 console.log("otp :", otp)
   // Send OTP via email (or SMS)
-  const transporter = nodemailer.createTransport({
-    secure:false,
-    host: 'mail.godstreasury.com',//'smtp.gmail.com',
+ const transporter = nodemailer.createTransport({
+    secure:true,
+    host: 'smtp.gmail.com',
     port:465,
     requireTLS:true,
     logger: true,
     debug:true,
     auth: {
-      user: 'johnson.taiwo@godstreasury.com',
-      pass: 'J@hnson123',//'nnlykezsxuhyibbp',
+      user: 'rolandmario2@gmail.com',
+      pass: 'nnlykezsxuhyibbp',
     },
-
+  tls: {
+    rejectUnauthorized: false
+  }
 
   });
     const mailOptions = {
-    from: '"GTCS SUPPORT" <johnson.taiwo@godstreasury.com>',
+    from: '"GTCS SUPPORT" <rolandmario2@gmail.com.com>',
     to: email,
     subject: 'Your OTP Code',
     text: `Your OTP is: ${otp}`,
