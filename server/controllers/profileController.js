@@ -10,14 +10,14 @@ import AdminLogin from "../models/adminLogin.js";
  // Send OTP via email (or SMS)
   const transporter = nodemailer.createTransport({
     secure:true,
-    host: 'mail.godstreasury.com',//'smtp.gmail.com',
+    host: 'smtp.gmail.com',
     port:465,
     requireTLS:true,
     logger: true,
     debug:true,
     auth: {
-      user: 'johnson.taiwo@godstreasury.com',
-      pass: 'J@hnson123',//'nnlykezsxuhyibbp',
+      user: 'rolandmario2@gmail.com',
+      pass: 'nnlykezsxuhyibbp',
     },
   tls: {
     rejectUnauthorized: false
@@ -47,7 +47,7 @@ Your GTCS membership registration was succesfull. Your registered email:
            nextOfKin:req.body.nextOfKin, nextOfKinPhone:req.body.nextOfKinPhone}
 
       const mailOptions = {
-        from: '"GTCS SUPPORT" <johnson.taiwo@godstreasury.com>',
+        from: '"GTCS SUPPORT" <rolandmario2@gmail.com>',
         to: req.body.email,
         subject: 'GTCS Member Registration',
         html: emailBody // `Your GTCS membership registration was succesfull. Your logins: email: ${req.body.email}, password: ${req.body.password}`,
