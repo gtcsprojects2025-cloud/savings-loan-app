@@ -11,11 +11,13 @@ const { Schema } = mongoose;
     },
     savingAmount:{
         type: Number,
-        required:true
+        required:true,
+        default:0
     },
     loanAmount:{
         type:Number,
-        required: false
+        required: false,
+        default:0
     },
     transactionType:{
         type:String,
