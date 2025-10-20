@@ -6,7 +6,10 @@ import nodemailer from "nodemailer"
 import OTP from "../models/otp.js";
 import AdminLogin from "../models/adminLogin.js";
 //import { SHA256 } from "crypto-js";
-require('dotenv').config();
+
+
+import dotenv from 'dotenv';
+dotenv.config();
  // Send OTP via email (or SMS)
   const transporter = nodemailer.createTransport({
     secure:true,
@@ -24,8 +27,7 @@ require('dotenv').config();
   }
 
   });
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 
 
 
@@ -57,13 +59,6 @@ Your GTCS membership registration was succesfull. Your registered email:
         subject: 'GTCS Member Registration',
         html: emailBody // `Your GTCS membership registration was succesfull. Your logins: email: ${req.body.email}, password: ${req.body.password}`,
     };
-    const msg = {
-        to: req.body.email,
-        from: 'john.olumutimi@godstreasury.com',
-        subject: 'GTCS Member Registration',
-        text: 'Thanks for joining us.',
-        html: emailBody,
-      };
 
     try {
         const emailExists = await Register.findOne({email: req.body.email})
@@ -74,10 +69,8 @@ Your GTCS membership registration was succesfull. Your registered email:
         }else{
          const memberRecords = new Register(newMember);
          await memberRecords.save();
-         //await transporter.sendMail(mailOptions);
-         sgMail.send(msg)
-            .then(() => console.log('Email sent'))
-            .catch(error => console.error('Send error:', error));
+         await transporter.sendMail(mailOptions);
+
         res.status(200).json({message: 'Member registration successfull'})
         }
 

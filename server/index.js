@@ -80,6 +80,7 @@ app.use(express.urlencoded({ extended: true })); // 👈 Parses URL-encoded bodi
 app.use(express.json())
 app.use('/upload', express.static('upload'))
 app.post("/api/register", registerMember)
+// app.post('/api/sendmail', testSendgrid)
 app.post("/api/login", memberLogin)
 app.post('/api/generate-otp', generateOTP);
 app.post("/api/verify-otp", verifyOTP);

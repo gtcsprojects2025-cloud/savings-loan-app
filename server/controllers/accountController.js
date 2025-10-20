@@ -2,8 +2,11 @@ import ACCOUNT from "../models/account.js"
 import TRANSACTION from "../models/transactions.js";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer"
-const sgMail = require('@sendgrid/mail');
-require('dotenv').config();
+import sgMail from '@sendgrid/mail';
+
+import dotenv from 'dotenv';
+dotenv.config();
+
  // Send OTP via email (or SMS)
   const transporter = nodemailer.createTransport({
     secure:false,
@@ -77,15 +80,7 @@ export async function transaction(req, res) {
             guarantor:req.body.guarantor,
             dateCreated:new Date()
         }
-        const emailBody ='<p>A successfull transaction has been completed on your GTCS account</p>'
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        const msg = {
-        to: req.body.email,
-        from: 'john.olumutimi@godstreasury.com',
-        subject: 'GTCS Member Registration',
-        text: 'Thanks for joining us.',
-        html: emailBody,
-      };
+
     const mailOptions = {
         from: '"GTCS SUPPORT" <rolandmario2@gmail.com>',
         to: req.body.email,
@@ -118,10 +113,8 @@ export async function transaction(req, res) {
             res.status(200).json({ message: 'Deposit successfully!' });
             const transaction_details = new TRANSACTION(account_details);
             await transaction_details.save();
-            // await transporter.sendMail(mailOptions);
-            sgMail.send(msg)
-            .then(() => console.log('Email sent'))
-            .catch(error => console.error('Send error:', error));
+             await transporter.sendMail(mailOptions);
+
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
@@ -253,3 +246,5 @@ export async function getUserAccountRecords(req, res) {
     res.status(500).json({error: "server error try again or contact admin"})
   }
 }
+
+
