@@ -45,8 +45,13 @@ export async function create_account(req, res) {
                 text: `Your GTCS Account has been created succesfully with the initial saving deposit of ${req.body.savingAmount}`,
             };
          const emailBody = `
- <p> Your Account has been successfully created with the initial Amount of ${req.body.savingAmount} and Loan amount of ${req.body.loanAmount}
- `
+         <div>
+         <p>Dear ${req.body.email},</p>
+            <p> Your Account has been successfully created with the initial Amount of NGN ${req.body.savingAmount}.00</p>
+            <p>Loan amount of NGN ${req.body.loanAmount}.00</p>
+            <p>Date: ${Date.now}</p>
+         </div>
+`
         const acountExists = await ACCOUNT.findOne({BVN: req.body.BVN});
         console.log("accountInfo: ", acountExists)
         if(acountExists){
@@ -57,7 +62,7 @@ export async function create_account(req, res) {
         await details.save();
         await transaction_details.save();
         // await transporter.sendMail(mailOptions);
-        await sendMail(req.body.email, 'GTCS Account Creation', '', emailBody)
+        await sendMail(req.body.email, 'GTCS Account Creation', 'Account created successfully', emailBody)
         res.status(200).json({message:"Account created successfully"}) 
         
         }
@@ -87,8 +92,12 @@ export async function transaction(req, res) {
         }
 
          const emailBody = `
- <p> Your Account has been deposited with ${req.body.savingAmount} naira
- `
+         <div>
+         <h2>Deposit Alert!</h2>
+         <p>NGN ${req.body.savingAmount}.00 has been added to your GTCS Saving Account</p>
+         <p> Date: ${Date.now}</p>
+         </div>
+         `
     const mailOptions = {
         from: '"GTCS SUPPORT" <rolandmario2@gmail.com>',
         to: req.body.email,

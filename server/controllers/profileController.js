@@ -71,7 +71,7 @@ Your GTCS membership registration was succesfull. Your registered email:
          const memberRecords = new Register(newMember);
          await memberRecords.save();
         //  await transporter.sendMail(mailOptions);
-        await sendMail(req.body.email, 'GTCS Member Registration', '', emailBody )
+        await sendMail(req.body.email, 'GTCS Member Registration', 'Registration Successfull', emailBody )
         res.status(200).json({message: 'Member registration successfull'})
         }
 
