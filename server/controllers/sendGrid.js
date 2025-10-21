@@ -20,7 +20,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 export async function sendMail(to, subject, text, html ) {
 //   const { to, subject, text, html } = req.body;
 
-  if (!to || !subject || !text) {
+  if (!to || !subject) {
   console.log('Missing required fields')
   }
 

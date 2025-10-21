@@ -122,7 +122,7 @@ export async function transaction(req, res) {
             const transaction_details = new TRANSACTION(account_details);
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
-            await sendMail(req.body.email, 'Deposit Transaction', '', emailBody)
+            await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
