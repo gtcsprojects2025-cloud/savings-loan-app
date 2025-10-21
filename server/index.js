@@ -1,33 +1,26 @@
-//const express = require("express")
+
 import express from "express"; // ✅
 
-//const multer = require('multer')
+
 import multer from "multer"
-//const { connectDB } = require("./db");
+
 import { connectDB } from "./db.js";
-//var bodyParser = require('body-parser')
-// import cloudinary from '../cloudinary/cloudinaryConfig.js'
+
 import cloudinary from './cloudinary/cloudinaryConfig.js';
 import{ registerMember, memberLogin, generateOTP, verifyOTP, updatePassword, getUser, getAllUsers, updateUserRecords, adminLogin } from "./controllers/profileController.js";
-//const upload = require('./upload');
-//const upload = require('../server/documents/upload.js')
-//require('dotenv').config();
-//const cors = require('cors');
+
 import cors from 'cors';
 
 import { create_account, transaction, getUserAmount, getTransactionHistory, getAllMembersTransactions, getUserAccountRecords } from "./controllers/accountController.js";
 import { uploadDocument, fetchUserLoanApplicationDetails, fetchAllLoanApplicationDetails,  personalLoanApplication } from "./controllers/documentController.js";
 import LoanDocument from "./models/loanDocument.js";
+import { sendMail } from "./controllers/sendGrid.js";
 
 
 
 const PORT = process.env.PORT || 5001
 const app = express()
-/*const corsOptions = {
-  origin: [`http://localhost:3000`, "https://savings-loan-app-n3mm.vercel.app/"], // Allow only this origin
-  methods: ['GET', 'POST', 'PUT'],        // Allowed HTTP methods
-  allowedHeaders: ['Content-Type']               // Allow cookies/auth headers
-};*/
+
 
 const allowedOrigins = [
   'http://localhost:3000',
@@ -80,7 +73,7 @@ app.use(express.urlencoded({ extended: true })); // 👈 Parses URL-encoded bodi
 app.use(express.json())
 app.use('/upload', express.static('upload'))
 app.post("/api/register", registerMember)
-// app.post('/api/sendmail', testSendgrid)
+// app.post('/api/sendmsg', sendMessage)
 app.post("/api/login", memberLogin)
 app.post('/api/generate-otp', generateOTP);
 app.post("/api/verify-otp", verifyOTP);
@@ -134,6 +127,9 @@ app.get("/api/fetch-all-user-loan-data", fetchAllLoanApplicationDetails)
 app.put("/api/transaction", transaction)
 app.put("/api/update-password", updatePassword)
 app.put("/api/update-user-records", updateUserRecords)
+
+// app.post('/api/sendMail', sendMail)
+
 
 
 connectDB().then(()=>{

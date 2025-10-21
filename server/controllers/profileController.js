@@ -9,6 +9,7 @@ import AdminLogin from "../models/adminLogin.js";
 
 
 import dotenv from 'dotenv';
+import { sendMail } from "./sendGrid.js";
 dotenv.config();
  // Send OTP via email (or SMS)
   const transporter = nodemailer.createTransport({
@@ -69,8 +70,8 @@ Your GTCS membership registration was succesfull. Your registered email:
         }else{
          const memberRecords = new Register(newMember);
          await memberRecords.save();
-         await transporter.sendMail(mailOptions);
-
+        //  await transporter.sendMail(mailOptions);
+        await sendMail(req.body.email, 'GTCS Member Registration', '', emailBody )
         res.status(200).json({message: 'Member registration successfull'})
         }
 

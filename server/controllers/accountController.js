@@ -2,12 +2,14 @@ import ACCOUNT from "../models/account.js"
 import TRANSACTION from "../models/transactions.js";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer"
-import sgMail from '@sendgrid/mail';
+
 
 import dotenv from 'dotenv';
+import { sendMail } from "./sendGrid.js";
 dotenv.config();
 
  // Send OTP via email (or SMS)
+
   const transporter = nodemailer.createTransport({
     secure:false,
     host: 'smtp.gmail.com',
@@ -42,7 +44,9 @@ export async function create_account(req, res) {
                 subject: 'GTCS Account Creation',
                 text: `Your GTCS Account has been created succesfully with the initial saving deposit of ${req.body.savingAmount}`,
             };
-        
+         const emailBody = `
+ <p> Your Account has been successfully created with the initial Amount of ${req.body.savingAmount} and Loan amount of ${req.body.loanAmount}
+ `
         const acountExists = await ACCOUNT.findOne({BVN: req.body.BVN});
         console.log("accountInfo: ", acountExists)
         if(acountExists){
@@ -52,7 +56,8 @@ export async function create_account(req, res) {
         const transaction_details = new TRANSACTION(account_details);
         await details.save();
         await transaction_details.save();
-        await transporter.sendMail(mailOptions);
+        // await transporter.sendMail(mailOptions);
+        await sendMail(req.body.email, 'GTCS Account Creation', '', emailBody)
         res.status(200).json({message:"Account created successfully"}) 
         
         }
@@ -81,6 +86,9 @@ export async function transaction(req, res) {
             dateCreated:new Date()
         }
 
+         const emailBody = `
+ <p> Your Account has been deposited with ${req.body.savingAmount} naira
+ `
     const mailOptions = {
         from: '"GTCS SUPPORT" <rolandmario2@gmail.com>',
         to: req.body.email,
@@ -113,8 +121,8 @@ export async function transaction(req, res) {
             res.status(200).json({ message: 'Deposit successfully!' });
             const transaction_details = new TRANSACTION(account_details);
             await transaction_details.save();
-             await transporter.sendMail(mailOptions);
-
+            //  await transporter.sendMail(mailOptions);
+            await sendMail(req.body.email, 'Deposit Transaction', '', emailBody)
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
@@ -247,4 +255,11 @@ export async function getUserAccountRecords(req, res) {
   }
 }
 
+
+
+
+
+
+
+// Start the server
 
