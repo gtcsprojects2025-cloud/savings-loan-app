@@ -21,10 +21,7 @@ export async function sendMail(to, subject, text, html ) {
 //   const { to, subject, text, html } = req.body;
 
   if (!to || !subject || !text) {
-    return res.status(400).json({
-      success: false,
-      message: "Missing required fields: to, subject, text",
-    });
+  console.log('Missing required fields')
   }
 
   const msg = {
@@ -32,17 +29,13 @@ export async function sendMail(to, subject, text, html ) {
     from: process.env.SENDGRID_SENDER,
     subject,
     text,
-    html: html || `<p>${text}</p>`,
+    html: html,
   };
 
   try {
-    const response = await sgMail.send(msg);
+    await sgMail.send(msg);
     console.log(`Email sent successfully to ${to}`);
-    return res.status(200).json({
-      success: true,
-      message: "Email sent successfully",
-      response,
-    });
+
   } catch (error) {
     console.error("❌ Error sending email:", error);
 
