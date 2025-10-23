@@ -17,6 +17,11 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
+
+    // 👇 START OF MODIFICATION: Convert email to lowercase
+    const lowercaseEmail = data.email.toLowerCase();
+    // 👆 END OF MODIFICATION
+
     try {
       const hashedPassword = SHA256(data.password).toString();
 
@@ -24,7 +29,8 @@ const LoginForm = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: data.email,
+          // 👇 Use the lowercase email for the API payload
+          email: lowercaseEmail,
           password: hashedPassword,
         }),
       });
@@ -34,7 +40,8 @@ const LoginForm = () => {
       if (response.status === 200) {
         toast.success(result.message || 'Login was successful!');
         localStorage.setItem('userToken', 'demo-token');
-        localStorage.setItem('email', data.email);
+        // 👇 Store the lowercase email in localStorage
+        localStorage.setItem('email', lowercaseEmail);
         navigate('/');
       } else if (response.status === 403) {
         toast.error('User NOT found!');
@@ -116,8 +123,7 @@ const LoginForm = () => {
         </form>
 
         <div className="mt-6 text-sm text-center text-gray-600 space-y-2">
-        {/* 
-<p>
+          {/* <p>
   Don’t have an account?{' '}
   <Link to="/Auth/register/" className="text-brandBlue font-medium hover:underline">
     Register

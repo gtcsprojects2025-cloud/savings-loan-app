@@ -31,7 +31,8 @@ const ForgotPasswordPage = () => {
   };
 
   const handleEmailSubmit = async (data) => {
-    const userEmail = (data.email || email).trim();
+    // 🔑 CONVERTING TO LOWERCASE HERE
+    const userEmail = (data.email || email).trim().toLowerCase(); 
     setLoading(true);
     setEmail(userEmail);
 
@@ -215,7 +216,7 @@ const ForgotPasswordPage = () => {
               <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
               <input
                 type="password"
-                               {...register('confirmPassword', {
+                {...register('confirmPassword', {
                   required: 'Please confirm your password',
                   validate: (value) =>
                     value === watch('newPassword') || 'Passwords do not match',
