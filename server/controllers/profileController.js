@@ -84,7 +84,7 @@ Your GTCS membership registration was succesfull. Your registered email:
 export async function memberLogin(req, res){
     try {
        
-       const user = await Register.findOne({email: req.body.email?.trim()});
+       const user = await Register.findOne({email: { $regex: `^${req.body.email}$`, $options: 'i' }});
             if(!user){
                 res.status(403).json({ message: 'User NOT found!' });
             }else{
