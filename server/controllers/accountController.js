@@ -6,6 +6,7 @@ import nodemailer from "nodemailer"
 
 import dotenv from 'dotenv';
 import { sendMail } from "./sendGrid.js";
+import Register from "../models/register.js";
 dotenv.config();
 
  // Send OTP via email (or SMS)
@@ -53,6 +54,9 @@ export async function create_account(req, res) {
             <p>Date: ${Date.now}</p>
          </div>
 `
+        const userRegistered = await Register.findOne({BVN: req.body.BVN})
+
+        if(!userRegistered) res.status(400).json({message: 'User Not Yet Registered !'})
         const acountExists = await ACCOUNT.findOne({BVN: req.body.BVN});
         console.log("accountInfo: ", acountExists)
         if(acountExists){
