@@ -3,7 +3,11 @@ const { Schema } = mongoose;
  const accountSchema = new Schema({
     email:{
         type: String,
-        required: true
+        required: false
+    },
+    phoneNo:{
+        type: String,
+        required: false
     },
     BVN:{
         type: Number,

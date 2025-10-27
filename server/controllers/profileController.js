@@ -83,8 +83,8 @@ Your GTCS membership registration was succesfull. Your registered email:
 
 export async function memberLogin(req, res){
     try {
-       
-       const user = await Register.findOne({email: { $regex: `^${req.body.email}$`, $options: 'i' }});
+       if(req.body.email){
+               const user = await Register.findOne({email: { $regex: `^${req.body.email}$`, $options: 'i' }});
             if(!user){
                 res.status(403).json({ message: 'User NOT found!' });
             }else{
@@ -96,6 +96,23 @@ export async function memberLogin(req, res){
                 res.status(405).json({ message: 'Wrong login credentials!' });
                 }
             }
+       }else if(req.body.phoneNo){
+            const user = await Register.findOne({phoneNo: req.body.phoneNo });
+            if(!user){
+                res.status(403).json({ message: 'User NOT found!' });
+            }else{
+              console.log("password", user.password, req.body.password)
+                if (user.password=== String(req.body.password)) {
+                console.log("Login successful:");
+                res.status(200).json({ message: 'Login was successful!' });
+                } else {
+                res.status(405).json({ message: 'Wrong login credentials!' });
+                }
+            }
+       }else{
+        res.json({message: 'login credentials required!'})
+       }
+
 
 
     } catch (error) {

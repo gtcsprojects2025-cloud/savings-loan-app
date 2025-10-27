@@ -3,7 +3,11 @@ const { Schema } = mongoose;
  const loginSchema = new Schema({
     email:{
         type: String,
-        required: true
+        required: false
+    },
+    phoneNo:{
+        type: String,
+        required: false
     },
     password:{
         type: String,
