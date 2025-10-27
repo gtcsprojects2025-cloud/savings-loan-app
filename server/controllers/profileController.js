@@ -112,7 +112,7 @@ export async function memberLogin(req, res){
             }
        }else{
         console.log("login cred required")
-        res.json({message: 'login credentials required!'})
+        res.status(400).json({message: 'login credentials required!'})
        }
 
 
