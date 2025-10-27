@@ -106,10 +106,12 @@ export async function memberLogin(req, res){
                 console.log("Login successful:");
                 res.status(200).json({ message: 'Login was successful!' });
                 } else {
+                  console.log("Wrong credentials")
                 res.status(405).json({ message: 'Wrong login credentials!' });
                 }
             }
        }else{
+        console.log("login cred required")
         res.json({message: 'login credentials required!'})
        }
 
