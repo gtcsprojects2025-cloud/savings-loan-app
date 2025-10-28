@@ -35,16 +35,16 @@ const Members = () => {
   };
 
   const handleSearch = () => {
-    const term = searchTerm.trim().toLowerCase();
+    const term = searchTerm.trim();
     if (!term) return setFilteredUsers(users);
     const filtered = users.filter(user =>
-      user.email?.toLowerCase().includes(term)
+      user.BVN?.toString().includes(term)
     );
     setFilteredUsers(filtered);
     setCurrentPage(1);
   };
 
-  const handleViewUser = async (email) => {
+  const handleViewUser = async (bvn) => {
     setLoadingUser(true);
     setEditMode(false);
     setSelectedUser(null);
@@ -52,11 +52,11 @@ const Members = () => {
       const res = await fetch('https://savings-loan-app.vercel.app/api/get-all-users');
       const data = await res.json();
       if (res.status === 200 && Array.isArray(data)) {
-        const fullUser = data.find(u => u.email?.toLowerCase() === email?.toLowerCase());
+        const fullUser = data.find(u => u.BVN?.toString() === bvn?.toString());
         if (fullUser) {
           setSelectedUser(fullUser);
         } else {
-          toast.error('User with this email not found.');
+          toast.error('User with this BVN not found.');
         }
       } else {
         toast.error(data.message || data.error || 'Failed to fetch user details.');
@@ -85,7 +85,7 @@ const Members = () => {
           const refetchData = await refetch.json();
           if (Array.isArray(refetchData)) {
             const updatedUser = refetchData.find(
-              u => u.email?.toLowerCase() === selectedUser.email?.toLowerCase()
+              u => u.BVN?.toString() === selectedUser.BVN?.toString()
             );
             if (updatedUser) {
               setSelectedUser(updatedUser);
@@ -118,7 +118,7 @@ const Members = () => {
       <div className="flex flex-col lg:flex-row gap-4 mb-6">
         <input
           type="text"
-          placeholder="Search by email"
+          placeholder="Search by BVN"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="flex-1 px-4 py-2 border rounded-md"
@@ -156,7 +156,7 @@ const Members = () => {
                   <td className="px-4 py-2 border">₦{(user.loanAmount ?? 0).toLocaleString()}</td>
                   <td className="px-4 py-2 border space-x-2">
                     <button
-                      onClick={() => handleViewUser(user.email)}
+                      onClick={() => handleViewUser(user.BVN)}
                       className="text-blue-600 hover:underline"
                     >
                       View
@@ -229,7 +229,7 @@ const Members = () => {
                             [field]: e.target.value,
                           }))
                         }
-                        className="w-full px-4 py-2 border rounded-md"
+                                            className="w-full px-4 py-2 border rounded-md"
                       />
                     ) : (
                       <p className="px-4 py-2 border rounded-md bg-gray-50">

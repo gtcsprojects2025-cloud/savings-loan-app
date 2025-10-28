@@ -88,7 +88,8 @@ function UserRegistration() {
     };
 
     const validateStep = (data, step) => {
-        const step1RequiredFields = ['title', 'lastName', 'firstName', 'dob', 'email', 'password', 'confirmPassword'];
+        // MODIFIED: 'email' removed from step1RequiredFields
+        const step1RequiredFields = ['title', 'lastName', 'firstName', 'dob', 'password', 'confirmPassword'];
         const step2RequiredFields = ['primaryPhone', 'nin', 'bvn', 'residentialAddress', 'residentialState'];
         const step3RequiredFields = ['nextOfKin', 'nextOfKinMobile'];
 
@@ -102,7 +103,8 @@ function UserRegistration() {
         });
 
         if (step === 1) {
-            if (data.email && !/^[^@]+@[^@]+\.[^@]+$/.test(data.email)) {
+            // MODIFIED: Only validate email format if a value is present
+            if (data.email?.trim() && !/^[^@]+@[^@]+\.[^@]+$/.test(data.email)) {
                 newErrors.email = 'Invalid email format';
             }
             if (data.password && data.password.length < 8) {
@@ -163,9 +165,8 @@ function UserRegistration() {
                 const hashedPassword = SHA256(data.password).toString();
                 console.log('Hashed password:', hashedPassword);
 
-                // 👇 START OF MODIFICATION: Convert email to lowercase for the payload
-                const lowercaseEmail = data.email.toLowerCase();
-                // 👆 END OF MODIFICATION
+                // Use optional email and convert to lowercase if present
+                const lowercaseEmail = data.email ? data.email.toLowerCase() : '';
 
                 const formPayload = {
                     title: data.title,
@@ -173,7 +174,7 @@ function UserRegistration() {
                     lastName: data.lastName,
                     otherNames: data.otherNames,
                     DOB: data.dob,
-                    // 👇 Use the lowercase email in the payload
+                    // Use the optional email in the payload
                     email: lowercaseEmail,
                     password: hashedPassword,
                     phoneNo: `${data.primaryPhoneCountry}${data.primaryPhone}`,
@@ -229,7 +230,7 @@ function UserRegistration() {
                                 : step < current
                                     ? 'bg-orange-500 scale-105'
                                     : 'bg-gray-400'
-                            }`}
+                        }`}
                     >
                         {step}
                     </div>
@@ -337,26 +338,28 @@ function UserRegistration() {
                                 )}
                             </div>
 
+                            {/* START MODIFICATION: Email is now OPTIONAL */}
                             <div className="relative space-y-1">
                                 <label className="block text-sm font-medium text-gray-700">
-                                    Email Address <span className="text-red-500">*</span>
+                                    Email Address {/* Removed <span className="text-red-500">*</span> */}
                                 </label>
                                 <input
                                     type="email"
                                     {...register('email', {
-                                        required: 'Invalid: Email is required',
+                                        // Removed required: 'Invalid: Email is required'
                                         pattern: {
                                             value: /^[^@]+@[^@]+\.[^@]+$/,
                                             message: 'Invalid email format'
                                         },
                                     })}
                                     className="mt-1 block w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-150 ease-in-out sm:text-sm"
-                                    placeholder="e.g. user@example.com"
+                                    placeholder="e.g. user@example.com (Optional)"
                                 />
                                 {formErrors.email && (
                                     <span className="mt-1 text-sm text-red-600 font-medium">{formErrors.email?.message}</span>
                                 )}
                             </div>
+                            {/* END MODIFICATION: Email is now OPTIONAL */}
 
                             <div className="relative space-y-1">
                                 <label className="block text-sm font-medium text-gray-700">
@@ -432,7 +435,7 @@ function UserRegistration() {
                                     isStepValid(watch(), 1) && !loading
                                         ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-orange-500/50 hover:scale-105 active:scale-95'
                                         : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
-                                    }`}
+                                }`}
                             >
                                 <span>Next</span>
                                 <svg className={`w-5 h-5 transition-transform ${isStepValid(watch(), 1) ? 'translate-x-0' : '-translate-x-2 opacity-0'} duration-300`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -571,12 +574,13 @@ function UserRegistration() {
                                 )}
                             </div>
 
-                            <div className="relative space-y-1 md:col-span-2">
+                            <div className="relative space-y-1">
                                 <label className="block text-sm font-medium text-gray-700">Office Address</label>
-                                <textarea
+                                <input
+                                    type="text"
                                     {...register('officeAddress')}
-                                    className="mt-1 block w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-150 ease-in-out sm:text-sm min-h-[80px]"
-                                    placeholder="Optional office address"
+                                    className="mt-1 block w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-150 ease-in-out sm:text-sm"
+                                    placeholder="Optional"
                                 />
                             </div>
                         </div>
@@ -584,19 +588,25 @@ function UserRegistration() {
                         <div className="flex justify-between space-x-4 pt-4">
                             <button
                                 type="button"
-                                onClick={() => setCurrentStep(1)}
-                                className="w-1/2 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 font-semibold text-lg rounded-lg shadow-lg transition-all duration-300 ease-in-out transform bg-gray-600 hover:bg-gray-700 text-white shadow-gray-400/50 hover:scale-105 active:scale-95"
+                                onClick={() => {
+                                    setCurrentStep(1);
+                                    setShowButtonWarning(false);
+                                }}
+                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 font-semibold text-lg rounded-lg shadow-md transition-all duration-300 ease-in-out transform bg-gray-500 hover:bg-gray-600 text-white hover:scale-105 active:scale-95"
                             >
-                                Back
+                                <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                                <span>Back</span>
                             </button>
                             <button
                                 type="submit"
                                 disabled={loading || !isStepValid(watch(), 2)}
-                                className={`w-1/2 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 font-semibold text-lg rounded-lg shadow-lg transition-all duration-300 ease-in-out transform ${
+                                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 font-semibold text-lg rounded-lg shadow-lg transition-all duration-300 ease-in-out transform ${
                                     isStepValid(watch(), 2) && !loading
                                         ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-orange-500/50 hover:scale-105 active:scale-95'
                                         : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
-                                    }`}
+                                }`}
                             >
                                 <span>Next</span>
                                 <svg className={`w-5 h-5 transition-transform ${isStepValid(watch(), 2) ? 'translate-x-0' : '-translate-x-2 opacity-0'} duration-300`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -617,7 +627,7 @@ function UserRegistration() {
                                     type="text"
                                     {...register('referenceName')}
                                     className="mt-1 block w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-150 ease-in-out sm:text-sm"
-                                    placeholder="Optional reference name"
+                                    placeholder="Optional"
                                 />
                             </div>
 
@@ -641,7 +651,7 @@ function UserRegistration() {
                                         })}
                                         onChange={(e) => handlePhoneChange(e, 'referenceMobile')}
                                         className="flex-grow mt-1 block w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-150 ease-in-out sm:text-sm"
-                                        placeholder="Optional reference mobile"
+                                        placeholder="Optional"
                                     />
                                 </div>
                                 {formErrors.referenceMobile && (
@@ -649,33 +659,22 @@ function UserRegistration() {
                                 )}
                             </div>
 
-                            <div className="relative space-y-1">
-                                <label className="block text-sm font-medium text-gray-700">Product</label>
-                                <input
-                                    type="text"
-                                    {...register('product')}
-                                    className="mt-1 block w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-150 ease-in-out sm:text-sm"
-                                    placeholder="Optional product choice"
-                                />
-                            </div>
-
-                            <div className="hidden md:block"></div>
-
+                            
                             <div className="relative space-y-1">
                                 <label className="block text-sm font-medium text-gray-700">
                                     Next of Kin Name <span className="text-red-500">*</span>
                                 </label>
                                 <input
-                                    {...register('nextOfKin', { required: 'Invalid: Next of kin name is required' })}
                                     type="text"
+                                    {...register('nextOfKin', { required: 'Invalid: Next of kin name is required' })}
                                     className="mt-1 block w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-150 ease-in-out sm:text-sm"
-                                    placeholder="e.g. Jane Doe"
+                                    placeholder="e.g. Mary Smith"
                                 />
                                 {formErrors.nextOfKin && (
                                     <span className="mt-1 text-sm text-red-600 font-medium">{formErrors.nextOfKin?.message}</span>
                                 )}
                             </div>
-                            
+
                             <div className="relative space-y-1">
                                 <label className="block text-sm font-medium text-gray-700">
                                     Next of Kin Mobile <span className="text-red-500">*</span>
@@ -711,38 +710,55 @@ function UserRegistration() {
                         <div className="flex justify-between space-x-4 pt-4">
                             <button
                                 type="button"
-                                onClick={() => setCurrentStep(2)}
-                                disabled={loading}
-                                className={`w-1/2 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 font-semibold text-lg rounded-lg shadow-lg transition-all duration-300 ease-in-out transform ${
-                                    loading 
-                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
-                                        : 'bg-gray-600 hover:bg-gray-700 text-white shadow-gray-400/50 hover:scale-105 active:scale-95'
-                                    }`}
+                                onClick={() => {
+                                    setCurrentStep(2);
+                                    setShowButtonWarning(false);
+                                }}
+                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 font-semibold text-lg rounded-lg shadow-md transition-all duration-300 ease-in-out transform bg-gray-500 hover:bg-gray-600 text-white hover:scale-105 active:scale-95"
                             >
-                                Back
+                                <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                                <span>Back</span>
                             </button>
                             <button
                                 type="submit"
                                 disabled={loading || !isStepValid(watch(), 3)}
-                                className={`w-1/2 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 font-semibold text-lg rounded-lg shadow-lg transition-all duration-300 ease-in-out transform ${
+                                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 sm:py-3 font-semibold text-lg rounded-lg shadow-lg transition-all duration-300 ease-in-out transform ${
                                     isStepValid(watch(), 3) && !loading
                                         ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-orange-500/50 hover:scale-105 active:scale-95'
                                         : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
-                                    }`}
+                                }`}
                             >
-                                {loading ? 'Registering...' : 'Complete Registration'}
+                                {loading ? (
+                                    <>
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>Register</span>
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </>
+                                )}
                             </button>
                         </div>
                     </form>
                 )}
 
-                {/* Success Modal */}
                 {showModal && (
-                    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-                        <div className="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full text-center transform transition-all duration-300 scale-100">
-                            <Checkmark className="h-20 w-20 mx-auto mb-4" />
-                            <h3 className="text-xl font-bold text-orange-600 mb-2">Registration Successful!</h3>
-                            <p className="text-gray-600 text-sm">Your account has been created successfully. The form will reset in a moment.</p>
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300">
+                        <div className="bg-white rounded-xl shadow-2xl p-8 sm:p-10 max-w-sm w-full text-center transform transition-transform duration-300 scale-100">
+                            <div className="mx-auto w-16 h-16 mb-4">
+                                <Checkmark className="w-full h-full" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-orange-600 mb-3">Registration Complete!</h3>
+                            <p className="text-gray-600">Your account has been successfully created. You can now log in.</p>
                         </div>
                     </div>
                 )}
