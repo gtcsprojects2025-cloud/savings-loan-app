@@ -6,6 +6,7 @@ import nodemailer from "nodemailer"
 
 import dotenv from 'dotenv';
 import { sendMail } from "./sendGrid.js";
+import Register from "../models/register.js";
 dotenv.config();
 
  // Send OTP via email (or SMS)
@@ -30,6 +31,7 @@ export async function create_account(req, res) {
     try {
         const account_details = {
             email:req.body.email,
+            phoneNo:req.body.phoneNo,
             BVN:req.body.BVN,
             savingAmount:req.body.savingAmount,
             loanAmount:req.body.loanAmount,
@@ -46,12 +48,15 @@ export async function create_account(req, res) {
             };
          const emailBody = `
          <div>
-         <p>Dear ${req.body.email},</p>
+         <p>Dear ${req.body.email || req.body.phoneNo},</p>
             <p> Your Account has been successfully created with the initial Amount of NGN ${req.body.savingAmount}.00</p>
             <p>Loan amount of NGN ${req.body.loanAmount}.00</p>
             <p>Date: ${Date.now}</p>
          </div>
 `
+        const userRegistered = await Register.findOne({BVN: req.body.BVN})
+
+        if(!userRegistered) res.status(400).json({message: 'User Not Yet Registered !'})
         const acountExists = await ACCOUNT.findOne({BVN: req.body.BVN});
         console.log("accountInfo: ", acountExists)
         if(acountExists){
@@ -62,9 +67,13 @@ export async function create_account(req, res) {
         await details.save();
         await transaction_details.save();
         // await transporter.sendMail(mailOptions);
-        await sendMail(req.body.email, 'GTCS Account Creation', 'Account created successfully', emailBody)
+        if(req.body.email){
+            await sendMail(req.body.email, 'GTCS Account Creation', 'Account created successfully', emailBody)
         res.status(200).json({message:"Account created successfully"}) 
         
+        }else{
+           res.status(200).json({message:"Account created successfully"})  
+        }
         }
 
     } catch (error) {
