@@ -62,7 +62,7 @@ Your GTCS membership registration was succesfull. Your registered email:
     };
 
     try {
-        const emailExists = await Register.findOne({email: req.body.email})
+        const emailExists = await Register.findOne({phoneNo: req.body.phoneNo})
         console.log("Member Already exists", emailExists)
         if(emailExists){
             

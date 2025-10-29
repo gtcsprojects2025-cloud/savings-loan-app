@@ -32,6 +32,7 @@ const LoginForm = () => {
           // 👇 Use the lowercase email for the API payload
           email: lowercaseEmail,
           password: hashedPassword,
+          phoneNo: data.phoneNo
         }),
       });
 
@@ -85,6 +86,8 @@ const LoginForm = () => {
               <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
             )}
           </div>
+          {/* phone Number field */}
+
 
           <div className="relative">
             <label className="block text-sm font-semibold text-gray-700">Password</label>
