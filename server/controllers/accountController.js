@@ -75,9 +75,11 @@ const smsBody =`Dear ${req.body.email || req.body.phoneNo}
         // await transporter.sendMail(mailOptions);
         if(req.body.email){
             await sendMail(req.body.email, 'GTCS Account Creation', 'Account created successfully', emailBody)
+            await sendSMSNG(req.body.phoneNo, smsBody)
         res.status(200).json({message:"Account created successfully"}) 
         
         }else{
+            await sendSMSNG(req.body.phoneNo, smsBody)
            res.status(200).json({message:"Account created successfully"})  
         }
         }
@@ -151,7 +153,7 @@ export async function transaction(req, res) {
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
             await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
-            await sendSMSNG(req.body.phoneNo, smsBody)
+            // await sendSMSNG(req.body.phoneNo, smsBody)
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
