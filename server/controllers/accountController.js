@@ -5,7 +5,7 @@ import nodemailer from "nodemailer"
 
 
 import dotenv from 'dotenv';
-import { sendMail } from "./sendGrid.js";
+import { sendMail, sendSMSNG } from "./sendGrid.js";
 import Register from "../models/register.js";
 dotenv.config();
 
@@ -53,6 +53,12 @@ export async function create_account(req, res) {
             <p>Loan amount of NGN ${req.body.loanAmount}.00</p>
             <p>Date: ${Date.now}</p>
          </div>
+`
+
+const smsBody =`Dear ${req.body.email || req.body.phoneNo}
+            Your Account has been successfully created with the initial Amount of NGN ${req.body.savingAmount}.00
+            Loan amount of NGN ${req.body.loanAmount}.00
+            Date: ${Date.now}
 `
         const userRegistered = await Register.findOne({BVN: req.body.BVN})
 
@@ -107,6 +113,10 @@ export async function transaction(req, res) {
          <p> Date: ${Date.now}</p>
          </div>
          `
+         const smsBody =`Deposit Alert!
+         NGN ${req.body.savingAmount}.00 has been added to your GTCS Saving Account.
+          Date: ${Date.now}
+`
     const mailOptions = {
         from: '"GTCS SUPPORT" <rolandmario2@gmail.com>',
         to: req.body.email,
@@ -141,6 +151,7 @@ export async function transaction(req, res) {
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
             await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
+            await sendSMSNG(req.body.phoneNo, smsBody)
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
@@ -163,6 +174,7 @@ export async function transaction(req, res) {
             const transaction_details = new TRANSACTION(account_details);
             await transaction_details.save();
             await transporter.sendMail(mailOptions);
+           
         }
         }else{
             // transfer logic

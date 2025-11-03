@@ -14,7 +14,7 @@ import cors from 'cors';
 import { create_account, transaction, getUserAmount, getTransactionHistory, getAllMembersTransactions, getUserAccountRecords } from "./controllers/accountController.js";
 import { uploadDocument, fetchUserLoanApplicationDetails, fetchAllLoanApplicationDetails,  personalLoanApplication } from "./controllers/documentController.js";
 import LoanDocument from "./models/loanDocument.js";
-import { sendMail } from "./controllers/sendGrid.js";
+// import { sendMail, sendSMS, twiliosms } from "./controllers/sendGrid.js";
 
 
 
@@ -74,6 +74,7 @@ app.use(express.json())
 app.use('/upload', express.static('upload'))
 app.post("/api/register", registerMember)
 // app.post('/api/sendmsg', sendMessage)
+// app.post('/api/sms', twiliosms)
 app.post("/api/login", memberLogin)
 app.post('/api/generate-otp', generateOTP);
 app.post("/api/verify-otp", verifyOTP);
