@@ -24,7 +24,8 @@ const app = express()
 
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://savings-loan-app-n3mm.vercel.app'
+  'https://savings-loan-app-n3mm.vercel.app',
+  'https://gtcooperative.com'
 ];
 
 const corsOptions = {
