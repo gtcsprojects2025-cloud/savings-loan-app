@@ -337,7 +337,7 @@ const Profile = () => {
       setError(null);
       try {
         const response = await fetchWithRetry(
-          `https://savings-loan-app.vercel.app/api/get-user?email=${email}`,
+          `https://admin.gtcooperative.com/api/get-user?email=${email}`,
           {
             method: 'GET',
             headers: {

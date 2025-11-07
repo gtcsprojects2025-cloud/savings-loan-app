@@ -74,7 +74,7 @@ const fetchData = async () => {
     // Fetch user details
   // Fetch user details
 const userResponse = await fetchWithRetry(
-  `https://savings-loan-app.vercel.app/api/get-user?email=${email}`,
+  `https://admin.gtcooperative.com/api/get-user?email=${email}`,
   {
     method: 'GET',
     headers: {
@@ -129,7 +129,7 @@ if (userResponse.ok) {
 
   // Fetch user amounts
     const amountResponse = await fetchWithRetry(
-      `https://savings-loan-app.vercel.app/api/get-user-amount?email=${email}`,
+      `https://admin.gtcooperative.com/api/get-user-amount?email=${email}`,
       {
         method: 'GET',
         headers: {
@@ -156,7 +156,7 @@ if (userResponse.ok) {
 
     // Fetch transaction history
     const transactionResponse = await fetchWithRetry(
-      `https://savings-loan-app.vercel.app/api/get-transaction-history?email=${email}`,
+      `https://admin.gtcooperative.com/api/get-transaction-history?email=${email}`,
       {
         method: 'GET',
         headers: {
@@ -187,7 +187,7 @@ if (userResponse.ok) {
     console.error('Dashboard fetch error:', {
       message: error.message,
       status: error.status,
-      endpoint: 'https://savings-loan-app.vercel.app/api/*',
+      endpoint: 'https://admin.gtcooperative.com/api/*',
       email,
       token: userToken,
     });

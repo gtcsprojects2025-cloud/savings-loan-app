@@ -15,7 +15,7 @@ const Notifications = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        'https://savings-loan-app.vercel.app/api/fetch-all-user-loan-data'
+        'https://admin.gtcooperative.com/api/fetch-all-user-loan-data'
       );
       const data = await res.json();
 

@@ -192,7 +192,7 @@ function UserRegistration() {
                 };
                 console.log('Submitting form data:', formPayload);
 
-                const response = await fetch('https://savings-loan-app.vercel.app/api/register', {
+                const response = await fetch('https://admin.gtcooperative.com/api/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

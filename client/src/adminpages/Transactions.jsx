@@ -31,7 +31,7 @@ const Transactions = () => {
         return;
       }
       try {
-        const res = await fetch('https://savings-loan-app.vercel.app/api/get-user-account-records');
+        const res = await fetch('https://admin.gtcooperative.com/api/get-user-account-records');
         const data = await res.json();
         if (res.status === 200 && Array.isArray(data)) {
           const match = data.find(u =>
@@ -69,7 +69,7 @@ const Transactions = () => {
     if (!term) return;
 
     try {
-      const res = await fetch('https://savings-loan-app.vercel.app/api/get-all-users');
+      const res = await fetch('https://admin.gtcooperative.com/api/get-all-users');
       const data = await res.json();
       if (res.status === 200 && Array.isArray(data)) {
         const matches = data.filter(u =>
@@ -127,7 +127,7 @@ const Transactions = () => {
     }
 
     try {
-      const res = await fetch('https://savings-loan-app.vercel.app/api/transaction', {
+      const res = await fetch('https://admin.gtcooperative.com/api/transaction', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -138,7 +138,7 @@ const Transactions = () => {
         toast.success(data.message || 'Transaction successful!');
         // Refresh totals after transaction
         if (formData.email || formData.BVN) {
-          const res2 = await fetch('https://savings-loan-app.vercel.app/api/get-user-account-records');
+          const res2 = await fetch('https://admin.gtcooperative.com/api/get-user-account-records');
           const data2 = await res2.json();
           if (res2.status === 200 && Array.isArray(data2)) {
             const match = data2.find(u =>

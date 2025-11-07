@@ -38,7 +38,7 @@ const SavingsChart = () => {
     try {
       console.log('Fetching transactions for email:', email);
       const response = await fetchWithRetry(
-        `https://savings-loan-app.vercel.app/api/get-transaction-history?email=${email}`,
+        `https://admin.gtcooperative.com/api/get-transaction-history?email=${email}`,
         {
           method: 'GET',
           headers: {

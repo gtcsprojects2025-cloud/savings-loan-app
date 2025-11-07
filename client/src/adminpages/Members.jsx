@@ -19,7 +19,7 @@ const Members = () => {
   const fetchAccountRecords = async () => {
     setLoading(true);
     try {
-      const res = await fetch('https://savings-loan-app.vercel.app/api/get-user-account-records');
+      const res = await fetch('https://admin.gtcooperative.com/api/get-user-account-records');
       const data = await res.json();
       if (res.status === 200) {
         setUsers(data);
@@ -49,7 +49,7 @@ const Members = () => {
     setEditMode(false);
     setSelectedUser(null);
     try {
-      const res = await fetch('https://savings-loan-app.vercel.app/api/get-all-users');
+      const res = await fetch('https://admin.gtcooperative.com/api/get-all-users');
       const data = await res.json();
       if (res.status === 200 && Array.isArray(data)) {
         const fullUser = data.find(u => u.BVN?.toString() === bvn?.toString());
@@ -70,7 +70,7 @@ const Members = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await fetch('https://savings-loan-app.vercel.app/api/update-user-records', {
+      const res = await fetch('https://admin.gtcooperative.com/api/update-user-records', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedUser),
@@ -81,7 +81,7 @@ const Members = () => {
         setEditMode(false);
 
         setTimeout(async () => {
-          const refetch = await fetch('https://savings-loan-app.vercel.app/api/get-all-users');
+          const refetch = await fetch('https://admin.gtcooperative.com/api/get-all-users');
           const refetchData = await refetch.json();
           if (Array.isArray(refetchData)) {
             const updatedUser = refetchData.find(

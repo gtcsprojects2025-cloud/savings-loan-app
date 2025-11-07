@@ -38,7 +38,7 @@ const Obligations = () => {
       setError(null);
       try {
         const response = await fetchWithRetry(
-          `https://savings-loan-app.vercel.app/api/get-transaction-history?email=${encodeURIComponent(email)}`,
+          `https://admin.gtcooperative.com/api/get-transaction-history?email=${encodeURIComponent(email)}`,
           {
             method: 'GET',
             headers: {

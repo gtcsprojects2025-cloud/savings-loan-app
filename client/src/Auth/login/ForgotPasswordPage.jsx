@@ -37,7 +37,7 @@ const ForgotPasswordPage = () => {
     setEmail(userEmail);
 
     try {
-      const response = await fetch('https://savings-loan-app.vercel.app/api/generate-otp', {
+      const response = await fetch('https://admin.gtcooperative.com/api/generate-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: userEmail }),

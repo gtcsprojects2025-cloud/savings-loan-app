@@ -58,7 +58,7 @@ const Loan = () => {
       console.log('Self-loan application data:', requestBody);
 
       const response = await fetchWithRetry(
-        'https://savings-loan-app.vercel.app/api/personal-loan-application',
+        'https://admin.gtcooperative.com/api/personal-loan-application',
         {
           method: 'POST',
           headers: {
@@ -95,7 +95,7 @@ const Loan = () => {
         formData.append('surName', data.surName);
         formData.append('BVN', data.BVN);
 
-        const response = await fetch('https://savings-loan-app.vercel.app/api/upload-loan-application-doc', {
+        const response = await fetch('https://admin.gtcooperative.com/api/upload-loan-application-doc', {
           method: 'POST',
           body: formData, // No Content-Type header needed, FormData sets multipart/form-data automatically
         });

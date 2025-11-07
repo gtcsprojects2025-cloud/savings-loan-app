@@ -20,7 +20,7 @@ const TransactionHistory = () => {
   const fetchAllTransactions = async () => {
     setLoading(true);
     try {
-      const res = await fetch('https://savings-loan-app.vercel.app/api/get-all-members-transactions', {
+      const res = await fetch('https://admin.gtcooperative.com/api/get-all-members-transactions', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
