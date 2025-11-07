@@ -23,7 +23,7 @@ const AdminLoginForm = () => {
 
       console.log('Sending payload:', payload);
 
-      const response = await fetch('https://savings-loan-app.vercel.app/api/admin-login', {
+      const response = await fetch('https://admin.gtcooperative.com/api/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

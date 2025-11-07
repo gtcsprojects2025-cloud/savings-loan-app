@@ -25,7 +25,7 @@ const LoginForm = () => {
     try {
       const hashedPassword = SHA256(data.password).toString();
 
-      const response = await fetch('https://savings-loan-app.vercel.app/api/login', {
+      const response = await fetch('https://admin.gtcooperative.com/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
