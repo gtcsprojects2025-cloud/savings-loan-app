@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import SHA256 from 'crypto-js/sha256';
+// import SHA256 from 'crypto-js/sha256';
 import { toast } from 'react-toastify';
 
 const AdminLoginForm = () => {
