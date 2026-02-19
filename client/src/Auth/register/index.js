@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import SHA256 from 'crypto-js/sha256';
 import './register.css';
 import gtcslogo from '../../assets/gtcslogo.png';
 import check from '../../assets/check.png';
-import { useNavigate, Link } from 'react-router-dom';
+import {  Link } from 'react-router-dom';
 
 function Register() {
   const {

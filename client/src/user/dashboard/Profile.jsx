@@ -306,7 +306,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const email = localStorage.getItem('email') || 'rolandmario2@gmail.com';
-  const userToken = localStorage.getItem('userToken') || 'demo-token';
+  // const userToken = localStorage.getItem('userToken') || 'demo-token';
 
   const {
     register,

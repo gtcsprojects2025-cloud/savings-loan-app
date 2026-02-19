@@ -56,7 +56,7 @@ function UserRegistration() {
     });
 
     const [currentStep, setCurrentStep] = useState(1);
-    const [showButtonWarning, setShowButtonWarning] = useState(false);
+    const [, setShowButtonWarning] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);

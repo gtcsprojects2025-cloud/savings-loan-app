@@ -18,7 +18,7 @@ const AdminLoginForm = () => {
     setError('');
 
     try {
-      const hashedPassword = SHA256(password).toString();
+      // const hashedPassword = SHA256(password).toString();
       const payload = { email, password: password };
 
       console.log('Sending payload:', payload);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CurrencyDollarIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
-import { differenceInDays, format } from 'date-fns';
+import { differenceInDays, } from 'date-fns';
 
 const BalanceCards = ({ balances }) => {
   // Calculate time left for loan due date

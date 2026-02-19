@@ -1,5 +1,5 @@
 import React from 'react';
-import { HomeIcon, ChartBarIcon, CurrencyDollarIcon, ArrowRightOnRectangleIcon, UserIcon, BanknotesIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, ChartBarIcon,  ArrowRightOnRectangleIcon, UserIcon, BanknotesIcon } from '@heroicons/react/24/outline';
 
 const Sidebar = ({ activeTab, setActiveTab, toggleSidebar }) => {
   const tabs = [

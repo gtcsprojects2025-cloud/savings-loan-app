@@ -27,7 +27,7 @@ const TransactionHistory = () => {
   const [error, setError] = useState(null);
   const itemsPerPage = 10;
   const email = localStorage.getItem('email') || 'rolandmario2@gmail.com';
-  const userToken = localStorage.getItem('userToken') || 'demo-token';
+  // const userToken = localStorage.getItem('userToken') || 'demo-token';
 
   useEffect(() => {
     const fetchTransactions = async () => {
