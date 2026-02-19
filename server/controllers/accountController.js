@@ -73,9 +73,10 @@ const smsBody =`Dear ${req.body.email || req.body.phoneNo}
         await details.save();
         await transaction_details.save();
         // await transporter.sendMail(mailOptions);
+        await sendSMSNG(`+${req.body.phoneNo}`, smsBody)
         if(req.body.email){
             await sendMail(req.body.email, 'GTCS Account Creation', 'Account created successfully', emailBody)
-            await sendSMSNG(req.body.phoneNo, smsBody)
+            await sendSMSNG(`+${req.body.phoneNo}`, smsBody)
         res.status(200).json({message:"Account created successfully"}) 
         
         }else{
