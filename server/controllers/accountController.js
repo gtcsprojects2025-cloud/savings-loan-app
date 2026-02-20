@@ -61,10 +61,11 @@ const smsBody =`Dear ${req.body.email || req.body.phoneNo}
             Date: ${Date.now}
 `
         const userRegistered = await Register.findOne({BVN: req.body.BVN})
+        console.log("registered pnone No", userRegistered.phoneNo)
 
         if(!userRegistered) res.status(400).json({message: 'User Not Yet Registered !'})
         const acountExists = await ACCOUNT.findOne({BVN: req.body.BVN});
-        console.log("accountInfo: ", acountExists)
+        console.log("accountInfo: ", acountExists, userRegistered.phoneNo)
         if(acountExists){
             res.status(400).json({message:"User account Already Exists"})
         }else{
@@ -148,13 +149,15 @@ export async function transaction(req, res) {
             }
             );
              console.log("Account updated")
+             const phone = await Register.findOne()
+             await sendSMSNG(req.body.phoneNo, smsBody)
             if (!depositAccount) return res.status(404).json({message:'User not found'});
             res.status(200).json({ message: 'Deposit successfully!' });
             const transaction_details = new TRANSACTION(account_details);
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
             await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
-            // await sendSMSNG(req.body.phoneNo, smsBody)
+            await sendSMSNG(req.body.phoneNo, smsBody)
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
