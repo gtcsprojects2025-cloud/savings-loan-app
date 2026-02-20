@@ -26,7 +26,7 @@ const SavingsChart = () => {
   const email = localStorage.getItem('email');
 
   // Function to fetch transactions from the API
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     if (!email) {
       setError('No email found in localStorage');
       setLoading(false);
@@ -83,7 +83,7 @@ const SavingsChart = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [email]);
 
   // Function to process transactions for the savings chart
   const processChartData = (transactions) => {
@@ -149,7 +149,7 @@ const SavingsChart = () => {
       console.warn('No email found in localStorage');
       setError('Email is required');
     }
-  },[email, fetchTransactions]);
+  },[fetchTransactions]);
 
   useEffect(() => {
     console.log('SavingsChart final data:', data);

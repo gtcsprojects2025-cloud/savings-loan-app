@@ -26,7 +26,7 @@ const LoanChart = () => {
   const email = localStorage.getItem('email');
 
   // Function to fetch transactions from the API
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     if (!email) {
       setError('No email found in localStorage');
       setLoading(false);
@@ -83,7 +83,7 @@ const LoanChart = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [email]);
 
   // Function to process transactions for the loan chart
   const processChartData = (transactions) => {
@@ -149,7 +149,7 @@ const LoanChart = () => {
       console.warn('No email found in localStorage');
       setError('Email is required');
     }
-  },[email, fetchTransactions] );
+  },[fetchTransactions] );
 
   useEffect(() => {
     console.log('LoanChart final data:', data);
