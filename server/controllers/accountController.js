@@ -74,7 +74,7 @@ const smsBody =`Dear ${req.body.email || req.body.phoneNo}
         await details.save();
         await transaction_details.save();
         // await transporter.sendMail(mailOptions);
-        await sendSMSNG(`+${req.body.phoneNo}`, smsBody)
+        await sendSMSNG(`+${userRegistered.phoneNo}`, smsBody)
         if(req.body.email){
             await sendMail(req.body.email, 'GTCS Account Creation', 'Account created successfully', emailBody)
             await sendSMSNG(`+${req.body.phoneNo}`, smsBody)
@@ -130,7 +130,9 @@ export async function transaction(req, res) {
         if(req.body.transactionType==="deposit"){
         //find account records
         console.log("validating records")
+        
         const account_records = await ACCOUNT.findOne({BVN: req.body.BVN});
+        
         console.log("validated...")
         if(!account_records){
             res.status(400).json({message: "account not found"});
@@ -149,15 +151,15 @@ export async function transaction(req, res) {
             }
             );
              console.log("Account updated")
-             const phone = await Register.findOne()
-             await sendSMSNG(req.body.phoneNo, smsBody)
+             const userRegistered = await Register.findOne({BVN: req.body.BVN})
+            //  await sendSMSNG(`+${userRegistered.phoneNo}`, smsBody)
             if (!depositAccount) return res.status(404).json({message:'User not found'});
             res.status(200).json({ message: 'Deposit successfully!' });
             const transaction_details = new TRANSACTION(account_details);
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
             await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
-            await sendSMSNG(req.body.phoneNo, smsBody)
+            await sendSMSNG(`+${userRegistered.phoneNo}`, smsBody)
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
