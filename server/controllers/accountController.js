@@ -159,7 +159,7 @@ export async function transaction(req, res) {
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
             await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
-            await sendSMSNG(`+${userRegistered.phoneNo}`, smsBody)
+            await sendSMSNG(`+2347068497568`, smsBody)
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
