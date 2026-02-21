@@ -151,14 +151,14 @@ export async function transaction(req, res) {
             }
             );
              console.log("Account updated")
-             const userRegistered = await Register.findOne({BVN: req.body.BVN})
+            //  const userRegistered = await Register.findOne({BVN: req.body.BVN})
             //  await sendSMSNG(`+${userRegistered.phoneNo}`, smsBody)
             if (!depositAccount) return res.status(404).json({message:'User not found'});
             res.status(200).json({ message: 'Deposit successfully!' });
             const transaction_details = new TRANSACTION(account_details);
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
-            await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
+            // await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
             await sendSMSNG(`+2347068497568`, smsBody)
         }
         }else if(req.body.transactionType==="withdraw"){
