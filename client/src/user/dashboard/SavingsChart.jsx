@@ -149,7 +149,7 @@ const SavingsChart = () => {
       console.warn('No email found in localStorage');
       setError('Email is required');
     }
-  },[fetchTransactions]);
+  },[email, fetchTransactions]);
 
   useEffect(() => {
     console.log('SavingsChart final data:', data);

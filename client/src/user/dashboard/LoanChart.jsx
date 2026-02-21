@@ -149,7 +149,7 @@ const LoanChart = () => {
       console.warn('No email found in localStorage');
       setError('Email is required');
     }
-  },[fetchTransactions] );
+  },[email, fetchTransactions] );
 
   useEffect(() => {
     console.log('LoanChart final data:', data);
