@@ -8,7 +8,7 @@ export default function prepareNumbersForSMS(input) {
     if (!input) return "";
 
     // 1. Remove ALL non-digits (spaces, +, -, etc.)
-    let cleaned = input.trim().replace(/\D/g, '');
+    let cleaned = String(input).trim().replace(/\D/g, '');
     console.log("Digits only: ", cleaned);
 
     // 2. Fix the 2340... error
