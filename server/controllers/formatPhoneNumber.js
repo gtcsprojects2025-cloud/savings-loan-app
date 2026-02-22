@@ -4,29 +4,37 @@
  * @returns {string} - e.g., "+2347068497568,+2347068497568"
  */
 export default function prepareNumbersForSMS(input) {
-    console.log("number formatting started....", input)
+    console.log("Number formatting started....", input);
     if (!input) return "";
 
+    // 1. Remove ALL non-digits (spaces, +, -, etc.)
     let cleaned = input.trim().replace(/\D/g, '');
-    console.log("close all spaces.: ", cleaned)
+    console.log("Digits only: ", cleaned);
 
-        // Fix the +2340... error
-        if (cleaned.startsWith('2340')) {
-            cleaned = '234' + cleaned.substring(3);
-        }
-         console.log("remove local 0, ", cleaned)
+    // 2. Fix the 2340... error
+    // If input was +2340803..., cleaned is 2340803...
+    // 2(0) 3(1) 4(2) 0(3) <- Index 3 is the '0'
+    if (cleaned.startsWith('2340')) {
+        // We want '234' + everything AFTER the 0 (starting at index 4)
+        cleaned = '234' + cleaned.substring(4);
+        console.log("Removed extra 0 after 234: ", cleaned);
+    }
 
-        // Convert 070... to 23470...
-        if (cleaned.length === 11 && cleaned.startsWith('0')) {
-            cleaned = '234' + cleaned.substring(1);
-        }
+    // 3. Convert local 070... to international 23470...
+    if (cleaned.length === 11 && cleaned.startsWith('0')) {
+        cleaned = '234' + cleaned.substring(1);
+        console.log("Converted local 0 to 234: ", cleaned);
+    }
 
-        console.log("number formatting ended....", cleaned)
-        // Add the plus sign
-        return `+${cleaned}`;
+    // 4. Ensure it starts with 234 (standardizes numbers like 7068...)
+    if (cleaned.length === 10 && !cleaned.startsWith('234')) {
+        cleaned = '234' + cleaned;
+    }
+
+    console.log("Number formatting ended....", `+${cleaned}`);
     
-
-   
+    // Return with the plus sign
+    return `+${cleaned}`;
 }
 
 // --- Usage in your SMS logic ---
