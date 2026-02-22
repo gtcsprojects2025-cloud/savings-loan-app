@@ -139,6 +139,7 @@ Date: ${date}`;
         console.log("validating records")
         
         const account_records = await ACCOUNT.findOne({BVN: req.body.BVN});
+        const userRegistered = await Register.findOne({BVN: req.body.BVN})
         
         console.log("validated...")
         if(!account_records){
