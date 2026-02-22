@@ -6,12 +6,7 @@
 export default function prepareNumbersForSMS(input) {
     if (!input) return "";
 
-    // 1. Split by comma and trim whitespace
-    const numberArray = input.split(',');
-
-    const formattedNumbers = numberArray.map(num => {
-        // Remove all non-numeric characters
-        let cleaned = num.trim().replace(/\D/g, '');
+    let cleaned = input.trim().replace(/\D/g, '');
 
         // Fix the +2340... error
         if (cleaned.startsWith('2340')) {
@@ -25,10 +20,9 @@ export default function prepareNumbersForSMS(input) {
 
         // Add the plus sign
         return `+${cleaned}`;
-    });
+    
 
-    // 2. Join them back with a comma (no spaces)
-    return formattedNumbers.join(',');
+   
 }
 
 // --- Usage in your SMS logic ---
