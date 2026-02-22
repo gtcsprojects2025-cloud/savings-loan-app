@@ -166,6 +166,7 @@ Date: ${date}`;
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
             // await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
+            console.log('formatted phone No: ',formatNigerianNumber(userRegistered.phoneNo))
             await sendSMSNG(formatNigerianNumber(userRegistered.phoneNo), smsBody)
         }
         }else if(req.body.transactionType==="withdraw"){
