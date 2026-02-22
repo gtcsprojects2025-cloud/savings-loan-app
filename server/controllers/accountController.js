@@ -7,7 +7,7 @@ import nodemailer from "nodemailer"
 import dotenv from 'dotenv';
 import { sendMail, sendSMSNG } from "./sendGrid.js";
 import Register from "../models/register.js";
-import { formatNigerianNumber } from "./formatPhoneNumber.js";
+import prepareNumbersForSMS, { formatNigerianNumber } from "./formatPhoneNumber.js";
 dotenv.config();
 
  // Send OTP via email (or SMS)
@@ -167,8 +167,9 @@ Date: ${date}`;
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
             // await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
-            console.log('formatted phone No: ',formatNigerianNumber(userRegistered.phoneNo))
-            await sendSMSNG(formatNigerianNumber(userRegistered.phoneNo), smsBody)
+            const formattedPhoneNo = prepareNumbersForSMS(userRegistered.phoneNo)
+            console.log('formatted phone No: ',formattedPhoneNo)
+            await sendSMSNG(formattedPhoneNo, smsBody)
             res.status(200).json({ message: 'Deposit successfully!' });
         }
         }else if(req.body.transactionType==="withdraw"){
