@@ -161,14 +161,16 @@ Date: ${date}`;
              console.log("Account updated")
             //  const userRegistered = await Register.findOne({BVN: req.body.BVN})
             //  await sendSMSNG(`+${userRegistered.phoneNo}`, smsBody)
+            const formattedPhoneNo = prepareNumbersForSMS(userRegistered.phoneNo)
+            console.log('formatted phone No: ',formattedPhoneNo)
+            
             if (!depositAccount) return res.status(404).json({message:'User not found'});
             
             const transaction_details = new TRANSACTION(account_details);
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
             // await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
-            const formattedPhoneNo = prepareNumbersForSMS(userRegistered.phoneNo)
-            console.log('formatted phone No: ',formattedPhoneNo)
+            
             await sendSMSNG(formattedPhoneNo, smsBody)
             res.status(200).json({ message: 'Deposit successfully!' });
         }
