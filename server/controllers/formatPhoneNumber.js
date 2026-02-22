@@ -8,11 +8,13 @@ export default function prepareNumbersForSMS(input) {
     if (!input) return "";
 
     let cleaned = input.trim().replace(/\D/g, '');
+    console.log("close all spaces.: ", cleaned)
 
         // Fix the +2340... error
         if (cleaned.startsWith('2340')) {
-            cleaned = '234' + cleaned.substring(4);
+            cleaned = '234' + cleaned.substring(3);
         }
+         console.log("remove local 0, ", cleaned)
 
         // Convert 070... to 23470...
         if (cleaned.length === 11 && cleaned.startsWith('0')) {
