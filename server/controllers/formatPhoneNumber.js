@@ -4,6 +4,7 @@
  * @returns {string} - e.g., "+2347068497568,+2347068497568"
  */
 export default function prepareNumbersForSMS(input) {
+    console.log("number formatting started....", input)
     if (!input) return "";
 
     let cleaned = input.trim().replace(/\D/g, '');
@@ -18,6 +19,7 @@ export default function prepareNumbersForSMS(input) {
             cleaned = '234' + cleaned.substring(1);
         }
 
+        console.log("number formatting ended....", cleaned)
         // Add the plus sign
         return `+${cleaned}`;
     
