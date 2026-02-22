@@ -7,6 +7,7 @@ import nodemailer from "nodemailer"
 import dotenv from 'dotenv';
 import { sendMail, sendSMSNG } from "./sendGrid.js";
 import Register from "../models/register.js";
+import { formatNigerianNumber } from "./formatPhoneNumber.js";
 dotenv.config();
 
  // Send OTP via email (or SMS)
@@ -117,10 +118,16 @@ export async function transaction(req, res) {
          <p> Date: ${Date.now}</p>
          </div>
          `
-         const smsBody =`Deposit Alert!
-         NGN ${req.body.savingAmount}.00 has been added to your GTCS Saving Account.
-          Date: ${Date.now}
-`
+const amount = Number(req.body.savingAmount).toLocaleString();
+const date = new Date().toLocaleString('en-NG', { 
+    dateStyle: 'medium', 
+    timeStyle: 'short' 
+});
+
+const smsBody = `Deposit Alert!
+NGN ${amount}.00 has been added to your GTCS Saving Account.
+Date: ${date}`;
+
     const mailOptions = {
         from: '"GTCS SUPPORT" <rolandmario2@gmail.com>',
         to: req.body.email,
@@ -159,7 +166,7 @@ export async function transaction(req, res) {
             await transaction_details.save();
             //  await transporter.sendMail(mailOptions);
             // await sendMail(req.body.email, 'Deposit Transaction', 'Deposit', emailBody)
-            await sendSMSNG(`+2347068497568`, smsBody)
+            await sendSMSNG(formatNigerianNumber(userRegistered.phoneNo), smsBody)
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
