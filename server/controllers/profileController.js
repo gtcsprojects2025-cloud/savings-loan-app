@@ -223,7 +223,7 @@ export async function getUser(req, res) {
     const email = req.query.email;
     console.log("params:", email)
     const userExist = await Register.findOne({email: email});
-    if(!userExist) res.status(400).json({error: "User does not exist"});
+    if(!userExist) return res.status(400).json({error: "User does not exist"});
     res.status(200).json({userExist})
   } catch (error) {
     res.status(500).json({error: "Server issue try again"})
