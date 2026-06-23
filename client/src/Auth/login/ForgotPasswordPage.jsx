@@ -35,7 +35,7 @@ const ForgotPasswordPage = () => {
     const userEmail = (data.email || email).trim().toLowerCase(); 
     setLoading(true);
     setEmail(userEmail);
-
+console.log("otp generation...")
     try {
       const response = await fetch('https://admin.gtcooperative.com/api/generate-otp', {
         method: 'POST',
@@ -51,6 +51,7 @@ const ForgotPasswordPage = () => {
         setStep(2);
         startCountdown();
       } else {
+        console.log('Error:', result.error)
         toast.error(result.error || 'Failed to send OTP');
       }
     } catch (error) {

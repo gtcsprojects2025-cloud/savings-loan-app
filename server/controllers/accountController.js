@@ -7,7 +7,7 @@ import nodemailer from "nodemailer"
 import dotenv from 'dotenv';
 import { sendMail, sendSMSNG } from "./sendGrid.js";
 import Register from "../models/register.js";
-import prepareNumbersForSMS, { formatNigerianNumber } from "./formatPhoneNumber.js";
+import prepareNumbersForSMS from "./formatPhoneNumber.js";
 dotenv.config();
 
  // Send OTP via email (or SMS)
@@ -176,14 +176,14 @@ Date: ${date}`;
         }
         }else if(req.body.transactionType==="withdraw"){
             // withdraw logic
-        console.log("validating records")
+        console.log("validating withdrawal records")
         const account_records = await ACCOUNT.findOne({BVN: req.body.BVN});
         console.log("validated...")
         if(!account_records){
             res.status(400).json({message: "account not found"});
-            console.log("records not found")
+            console.log(" withdrawal records not found")
         }else{
-            console.log("proccessing records")
+            console.log("proccessing withdrawal records")
             const withdrawalAmount = Number(req.body.savingAmount);
             const loanDepositAmount = Number(req.body.loanAmount);
             const withdrawAccount = await ACCOUNT.updateOne(

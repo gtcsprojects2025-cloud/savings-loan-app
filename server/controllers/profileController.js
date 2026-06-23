@@ -126,6 +126,7 @@ export async function memberLogin(req, res){
 }
 
 export async function generateOTP(req, res){
+  console.log('generating otp....')
     try {
   const { email } = req.body;
 
@@ -145,8 +146,8 @@ console.log("otp :", otp)
     logger: true,
     debug:true,
     auth: {
-      user: 'rolandmario2@gmail.com',
-      pass: 'nnlykezsxuhyibbp',
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
   tls: {
     rejectUnauthorized: false
@@ -168,7 +169,7 @@ console.log("otp :", otp)
     })
   }*/
 
-   const otpRec = {email:req.body.email, otp}
+   const otpRec = {email, otp}
    const newOTP = new OTP(otpRec)
   
     await transporter.sendMail(mailOptions);
