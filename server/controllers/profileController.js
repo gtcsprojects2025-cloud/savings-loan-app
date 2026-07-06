@@ -155,7 +155,7 @@ console.log("otp :", otp)
 
   });
     const mailOptions = {
-    from: '"GTCS SUPPORT" <rolandmario2@gmail.com.com>',
+    from: '"GTCS SUPPORT" <rolandmario2@gmail.com>',
     to: email,
     subject: 'Your OTP Code',
     text: `Your OTP is: ${otp}`,

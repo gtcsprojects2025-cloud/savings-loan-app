@@ -262,7 +262,10 @@ export async function getUserAmount(req, res) {
     try {
         const email = req.query.email
         const fetch_details = await ACCOUNT.findOne({email:email});
-        if(!fetch_details) res.status(400).json({error: "User with this email does not exists"});
+        if(!fetch_details){
+            res.status(400).json({error: "User with this email does not exists"});
+            return;
+        } 
         res.status(200).json({fetch_details});
         
         
@@ -277,7 +280,10 @@ export async function getTransactionHistory(req, res) {
     try {
         const email = req.query.email
         const transaction_details = await TRANSACTION.find({email:email});
-        if(!transaction_details) res.status(400).json({error: "User with this email does not exists"});
+        if(!transaction_details){
+            res.status(400).json({error: "User with this email does not exists"});
+            return;
+        }
         res.status(200).json({transaction_details});        
     } catch (error) {
         res.status(500).json({error:"Server error try again later"});
@@ -288,7 +294,10 @@ export async function getTransactionHistory(req, res) {
 export async function getAllMembersTransactions(req, res) {
     try {
     const allMembersTx = await TRANSACTION.find({})
-    if(!allMembersTx) res.status(400).json({message: "No member transaction found on the database"})
+    if(!allMembersTx) {
+        res.status(400).json({message: "No member transaction found on the database"})
+        return;
+    }
     res.status(200).json(allMembersTx)
   } catch (error) {
     res.status(500).json({error: "server error try again or contact admin"})
