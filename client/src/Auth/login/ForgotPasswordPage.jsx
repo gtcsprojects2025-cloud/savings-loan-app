@@ -65,7 +65,7 @@ console.log("otp generation...")
     setLoading(true);
 
     try {
-      const response = await fetch('https://savings-loan-app.vercel.app/api/verify-otp', {
+      const response = await fetch('https://admin.gtcooperative.com/api/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: data.otp.trim() }),
@@ -92,7 +92,7 @@ console.log("otp generation...")
 
     try {
       const hashedPassword = SHA256(data.newPassword).toString();
-      const response = await fetch('https://savings-loan-app.vercel.app/api/update-password', {
+      const response = await fetch('https://admin.gtcooperative.com/api/update-password', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: hashedPassword }),
