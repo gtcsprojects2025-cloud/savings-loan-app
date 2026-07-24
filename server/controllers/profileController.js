@@ -211,8 +211,12 @@ export async function updatePassword(req, res) {
      { email: req.body.email },           // Filter
      { $set: { password: req.body.password } } );
 
-    if (!updatedUser) return res.status(404).json({message:'User not found'});
-    res.status(200).json({ message: 'password updated successfully!' });
+    if (updatedUser.modifiedCount===0){
+      return res.status(404).json({message:'User not found'});
+    } else{
+      res.status(200).json({ message: 'password updated successfully!' });
+    }
+    
     } catch (error) {
         res.status(500).json({message: 'Error updating user'});
     }
