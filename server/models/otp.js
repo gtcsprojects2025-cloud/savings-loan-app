@@ -9,6 +9,10 @@ const { Schema } = mongoose;
         type: String,
         required: true
     },
+    verified:{
+        type: Boolean,
+        default: false
+    },
  })
 
  const OTP = mongoose.model("OTP", otpSchema );

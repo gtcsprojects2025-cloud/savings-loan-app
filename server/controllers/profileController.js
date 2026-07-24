@@ -190,6 +190,11 @@ export async function verifyOTP(req, res) {
             }else{
                 if (user.otp === req.body.otp) {
                 console.log("OTP Verification successful:");
+                // Mark OTP as verified
+                await OTP.updateOne(
+                  { email: req.body.email?.trim() },
+                  { $set: { verified: true } }
+                );
                 res.status(200).json({ message: 'OTP verification  was successful!' });
                 } else {
                 res.status(400).json({ message: 'Wrong OTP!' });
@@ -206,14 +211,22 @@ export async function verifyOTP(req, res) {
 
 export async function updatePassword(req, res) {
     try {
+      // First verify that OTP was verified for this email
+      const otpRecord = await OTP.findOne({ email: { $regex: `^${req.body.email?.trim()}$`, $options: 'i' }, verified: true });
+      
+      if (!otpRecord) {
+        return res.status(403).json({ message: 'OTP verification required before password update' });
+      }
    
     const updatedUser = await Register.updateOne(
-     { email: req.body.email },           // Filter
+     { email: { $regex: `^${req.body.email?.trim()}$`, $options: 'i' } },           // Filter - case insensitive
      { $set: { password: req.body.password } } );
 
     if (updatedUser.modifiedCount===0){
       return res.status(404).json({message:'User not found'});
     } else{
+      // Clean up the used OTP record
+      await OTP.deleteOne({ email: { $regex: `^${req.body.email?.trim()}$`, $options: 'i' } });
       res.status(200).json({ message: 'password updated successfully!' });
     }
     
