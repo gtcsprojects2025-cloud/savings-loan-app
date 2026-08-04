@@ -13,6 +13,11 @@ const { Schema } = mongoose;
         type: Boolean,
         default: false
     },
+    createdAt:{
+        type: Date,
+        default: Date.now,
+        expires: 900 // Auto-delete after 15 minutes (TTL index)
+    }
  })
 
  const OTP = mongoose.model("OTP", otpSchema );

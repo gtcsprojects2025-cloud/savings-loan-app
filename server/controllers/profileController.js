@@ -1,4 +1,3 @@
-
 import Login from "../models/login.js";
 import Register from "../models/register.js";
 import otpGenerator from "otp-generator";
@@ -128,7 +127,7 @@ export async function memberLogin(req, res){
 export async function generateOTP(req, res){
   console.log('generating otp....')
     try {
-  const { email } = req.body;
+  const email = req.body.email?.trim().toLowerCase();
 
   if (!email) return res.status(400).json({ error: 'Email is required' });
 
@@ -174,36 +173,47 @@ console.log("otp :", otp)
   
     await transporter.sendMail(mailOptions);
     
-    await newOTP.save();//sendMail(email, "Your OTP Code", otp)
+    await OTP.deleteMany({ email }); // Clear stale OTPs for this email before saving a new one
+    await newOTP.save();
     res.status(200).json({ message: 'OTP sent successfully'}); // Don't send OTP in production!
     
   } catch (error) {
+    console.log('Failed to send OTP:', error);
     res.status(500).json({ error: 'Failed to send OTP' });
   }
 }
 
 export async function verifyOTP(req, res) {
-    try {
-               const user = await OTP.findOne({email: req.body.email?.trim(), otp:req.body.otp});
-            if(!user){
-                res.status(403).json({ message: 'User has NOT requested OTP!' });
-            }else{
-                if (user.otp === req.body.otp) {
-                console.log("OTP Verification successful:");
-                // Mark OTP as verified
-                await OTP.updateOne(
-                  { email: req.body.email?.trim() },
-                  { $set: { verified: true } }
-                );
-                res.status(200).json({ message: 'OTP verification  was successful!' });
-                } else {
-                res.status(400).json({ message: 'Wrong OTP!' });
-                }
-            }
-    } catch (error) {
-        res.status(503).json({ message: 'Server Error. Contact Admin' });
-        console.log("Server issues: ", error)
+  try {
+    const email = req.body.email?.trim().toLowerCase();
+    const { otp } = req.body;
+
+    // Filter for active (non-expired) OTP records
+    const user = await OTP.findOne({
+      email: { $regex: `^${email}$`, $options: 'i' },
+      otp,
+      createdAt: { $gt: new Date(Date.now() - 15 * 60 * 1000) } // 15 minutes expiry
+    });
+
+    if (!user) {
+      return res.status(403).json({ message: 'User has NOT requested OTP!' });
     }
+
+    if (user.otp === otp) {
+      console.log("OTP Verification successful:");
+      // Mark the SPECIFIC verified OTP record as verified
+      await OTP.updateOne(
+        { _id: user._id },
+        { $set: { verified: true } }
+      );
+      return res.status(200).json({ message: 'OTP verification  was successful!' });
+    } else {
+      return res.status(400).json({ message: 'Wrong OTP!' });
+    }
+  } catch (error) {
+    console.log("Server issues: ", error);
+    return res.status(503).json({ message: 'Server Error. Contact Admin' });
+  }
 }
 
 
@@ -211,27 +221,36 @@ export async function verifyOTP(req, res) {
 
 export async function updatePassword(req, res) {
     try {
-      // First verify that OTP was verified for this email
-      const otpRecord = await OTP.findOne({ email: { $regex: `^${req.body.email?.trim()}$`, $options: 'i' }, verified: true });
-      
+      const email = req.body.email?.trim().toLowerCase();
+
+      // First verify that OTP was verified for this email (and is not expired - within last 15 minutes)
+      const otpRecord = await OTP.findOne({
+        email: { $regex: `^${email}$`, $options: 'i' },
+        verified: true,
+        createdAt: { $gt: new Date(Date.now() - 15 * 60 * 1000) } // 15 minutes expiry
+      });
+
       if (!otpRecord) {
         return res.status(403).json({ message: 'OTP verification required before password update' });
       }
-   
-    const updatedUser = await Register.updateOne(
-     { email: { $regex: `^${req.body.email?.trim()}$`, $options: 'i' } },           // Filter - case insensitive
-     { $set: { password: req.body.password } } );
 
-    if (updatedUser.modifiedCount===0){
-      return res.status(404).json({message:'User not found'});
-    } else{
+      const updatedUser = await Register.updateOne(
+        { email: { $regex: `^${email}$`, $options: 'i' } },           // Filter - case insensitive
+        { $set: { password: req.body.password } } );
+
+      // Use matchedCount to determine user existence.
+      // modifiedCount is 0 when the password is unchanged (no-op $set), which is still a success.
+      if (updatedUser.matchedCount === 0) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
       // Clean up the used OTP record
-      await OTP.deleteOne({ email: { $regex: `^${req.body.email?.trim()}$`, $options: 'i' } });
+      await OTP.deleteOne({ _id: otpRecord._id });
       res.status(200).json({ message: 'password updated successfully!' });
-    }
-    
+
     } catch (error) {
-        res.status(500).json({message: 'Error updating user'});
+      console.error('Error updating password:', error);
+      res.status(500).json({ message: 'Error updating user' });
     }
 }
 
@@ -321,5 +340,3 @@ export async function adminLogin(req, res){
     }
 
 }
-
-
